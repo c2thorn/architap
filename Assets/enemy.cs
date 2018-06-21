@@ -40,9 +40,10 @@ public class enemy : MonoBehaviour {
                 hit = true;
                 health -= controller.clickDamage;
                 healthBar.UpdateBar( health, maxHealth );
-                GameObject damageText = (GameObject) Instantiate(damageTextPrefab,Input.mousePosition,Quaternion.Euler(0, 0, 0));
-                damageText.GetComponent<Text>().text = ""+controller.clickDamage;
-                damageText.transform.parent = canvas.transform;
+                createFloatText(Input.mousePosition,controller.clickDamage, Color.red);
+                // GameObject damageText = (GameObject) Instantiate(damageTextPrefab,Input.mousePosition,Quaternion.Euler(0, 0, 0));
+                // damageText.GetComponent<Text>().text = ""+controller.clickDamage;
+                // damageText.transform.parent = canvas.transform;
             }
         }
 
@@ -60,8 +61,17 @@ public class enemy : MonoBehaviour {
 
     IEnumerator startDying() {
         yield return new WaitForSeconds(0.6f);
-        controller.enemyDied();
+        int goldIncrement = controller.enemyDied();
+        createFloatText(new Vector3(950f,80f,0f), goldIncrement, Color.yellow);
         yield return new WaitForSeconds(0.4f);
         Destroy(gameObject);
+    }
+
+    void createFloatText(Vector3 pos, int number, Color color) {
+        GameObject floatText = (GameObject) Instantiate(damageTextPrefab,pos,Quaternion.Euler(0, 0, 0));
+        floatText.GetComponent<Text>().text = ""+number;
+        floatText.GetComponent<Text>().color = color;
+        floatText.transform.parent = canvas.transform;
+        floatText.transform.position = pos;
     }
 }
