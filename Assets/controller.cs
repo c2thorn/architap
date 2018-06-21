@@ -19,6 +19,7 @@ public class controller : MonoBehaviour {
 	public int heroLevel = 1;
 	public int heroUpgradeCost = 10;
 	public int baseHeroUpgradeCost = 10;
+	public float heroUpgradeCostMultiplier = 1.07f;
 	public GameObject enemyPrefab = null;
     public SimpleHealthBar healthBar;
 	public Text levelText = null;
@@ -30,7 +31,6 @@ public class controller : MonoBehaviour {
 	void Start () {
 		int health = baseHealth*level;
 		int maxHealth = baseHealth*level;
-
 		healthBar.UpdateBar( health, maxHealth );
 		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMax;
 		heroLevelText.text = "Hero Level: "+heroLevel;
@@ -66,11 +66,10 @@ public class controller : MonoBehaviour {
 	}
 
 	public void heroLevelUp() {
-		Debug.Log("click");
 		heroLevel++;
 		gold -= heroUpgradeCost;
 		heroLevelText.text = "Hero Level: "+heroLevel;
-		heroUpgradeCost = baseHeroUpgradeCost*heroLevel*2;
+		heroUpgradeCost = (int)(baseHeroUpgradeCost*Mathf.Pow(heroUpgradeCostMultiplier,heroLevel));
 		heroLevelUpButton.GetComponentInChildren<Text>().text = "Level Up: "+heroUpgradeCost+"g";
 		clickDamage = (int)(heroLevel*clickMultiplier1*clickMultiplier2);
 	}
