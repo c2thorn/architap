@@ -10,6 +10,8 @@ public class enemy : MonoBehaviour {
     public Canvas canvas;
     public GameObject damageTextPrefab;
 
+    public GameObject diamondPrefab;
+
     public int health = 1;
     public int maxHealth = 2;
 
@@ -60,6 +62,9 @@ public class enemy : MonoBehaviour {
     }
 
     IEnumerator startDying() {
+        if(Random.value <= controller.diamondChance) {
+            GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+        }
         yield return new WaitForSeconds(0.6f);
         int goldIncrement = controller.enemyDied();
         createFloatText(new Vector3(950f,80f,0f), goldIncrement, Color.yellow);

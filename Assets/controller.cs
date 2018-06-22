@@ -7,6 +7,8 @@ public class controller : MonoBehaviour {
 
 	public int clickDamage = 1;
 	public int gold = 0;
+	public int diamonds = 0;
+	public float diamondChance = 0.05f;
 	public int level = 1;
 	public int levelCount = 1;
 	public int levelMax = 10;
@@ -72,5 +74,9 @@ public class controller : MonoBehaviour {
 		heroUpgradeCost = (int)(baseHeroUpgradeCost*Mathf.Pow(heroUpgradeCostMultiplier,heroLevel));
 		heroLevelUpButton.GetComponentInChildren<Text>().text = "Level Up: "+heroUpgradeCost+"g";
 		clickDamage = (int)(heroLevel*clickMultiplier1*clickMultiplier2);
+	}
+
+	public void getDiamond() {
+		diamonds++;
 	}
 }
