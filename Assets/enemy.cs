@@ -13,6 +13,9 @@ public class enemy : MonoBehaviour {
     public int health = 1;
     public int maxHealth = 2;
 
+    private float nextActionTime = 0.0f;
+	public float p1Period = 0.1f;
+
 	// Use this for initialization
 	void Start () {
         _animator = GetComponent<Animator>();
@@ -24,10 +27,24 @@ public class enemy : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (health > 0) {
-            bool hit = checkClick() && !checkDead();
+            partner1Damage();
+            bool hit = checkClick();
+            hit = !checkDead() && hit;
             _animator.SetBool("hit", hit);
         }
+        
     }
+
+	bool partner1Damage() {
+		if (Time.time > nextActionTime ) {
+			nextActionTime = Time.time + p1Period;
+			// execute block of code here
+            health -= controller.p1Damage;
+            healthBar.UpdateBar( health, maxHealth );
+            return true;
+		}
+        return false;
+	}
 
     bool checkClick() {
         bool hit = false;

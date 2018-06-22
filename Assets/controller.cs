@@ -26,7 +26,18 @@ public class controller : MonoBehaviour {
 	public Text goldText = null;
 	public Text heroLevelText = null;
 	public Button heroLevelUpButton = null;
+	public Text clickDamageText;
 
+	public int p1Damage = 0;
+	public int p1BaseDamage = 1;
+	public float p1Multiplier = 1.00f;
+	public int p1Level = 0;
+	public int p1UpgradeCost = 100;
+	public int basep1UpgradeCost = 100;
+	public float p1UpgradeCostMultiplier = 1.1f;
+	public Text p1LevelText;
+	public Button p1LevelUpButton;
+	public Text p1DamageText;
 	// Use this for initialization
 	void Start () {
 		int health = baseHealth*level;
@@ -35,11 +46,19 @@ public class controller : MonoBehaviour {
 		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMax;
 		heroLevelText.text = "Hero Level: "+heroLevel;
 		heroLevelUpButton.GetComponentInChildren<Text>().text = "Level Up: "+heroUpgradeCost+"g";
+		clickDamageText.text = "Damage: "+clickDamage;
+		p1LevelText.text = "Partner";
+		p1LevelUpButton.GetComponentInChildren<Text>().text = "Hire: "+p1UpgradeCost+"g";
+		p1DamageText.text = "";
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		heroLevelUpButton.interactable = gold >= heroUpgradeCost;
+		p1LevelUpButton.interactable = gold >= p1UpgradeCost;
+		clickDamageText.text = "Damage: "+clickDamage;
+		if (p1Level > 0)
+			p1DamageText.text = "Damage: "+p1Damage;
 	}
 
 	public int enemyDied () {
@@ -68,9 +87,20 @@ public class controller : MonoBehaviour {
 	public void heroLevelUp() {
 		heroLevel++;
 		gold -= heroUpgradeCost;
+		goldText.text = "Gold: "+gold;
 		heroLevelText.text = "Hero Level: "+heroLevel;
 		heroUpgradeCost = (int)(baseHeroUpgradeCost*Mathf.Pow(heroUpgradeCostMultiplier,heroLevel));
 		heroLevelUpButton.GetComponentInChildren<Text>().text = "Level Up: "+heroUpgradeCost+"g";
 		clickDamage = (int)(heroLevel*clickMultiplier1*clickMultiplier2);
+	}
+
+	public void p1LevelUp() {
+		p1Level++;
+		gold -= p1UpgradeCost;
+		goldText.text = "Gold: "+gold;
+		p1LevelText.text = "Hero Level: "+p1Level;
+		p1UpgradeCost = (int)(basep1UpgradeCost*Mathf.Pow(p1UpgradeCostMultiplier,p1Level));
+		p1LevelUpButton.GetComponentInChildren<Text>().text = "Level Up: "+p1UpgradeCost+"g";
+		p1Damage = (int)(p1BaseDamage*p1Multiplier*p1Level);
 	}
 }
