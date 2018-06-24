@@ -58,7 +58,11 @@ public class controller : MonoBehaviour {
 	public string[] enemyNouns;
 	public string[] enemyAdjectives;
 
+	public upgradeController upgradeController;
+
+	public GameObject goldPanel;
 	public GameObject diamondPanel;
+	public GameObject p1Board;
 	// Use this for initialization
 	void Start () {
 		int health = baseHealth*level;
@@ -73,6 +77,8 @@ public class controller : MonoBehaviour {
 		p1DamageText.text = "";
 		if (diamonds < 1)
 			diamondPanel.SetActive(false);
+		p1Board.SetActive(false);
+		goldPanel.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -82,15 +88,13 @@ public class controller : MonoBehaviour {
 		clickDamageText.text = "Damage: "+clickDamage;
 		if (p1Level > 0)
 			p1DamageText.text = "Damage: "+p1Damage;
-		if (diamonds > 0){ 
-			if (!diamondPanel.active)
-				diamondPanel.SetActive(true);
-		}
+
 		diamondText.text = "Diamonds: "+diamonds;
 		clickDamageM1Button.interactable = diamonds >= clickM1UpgradeCost;
 		p1DamageM1Button.interactable = diamonds >= p1M1UpgradeCost;
 		clickDamageMultiplierText.text = "+ "+(clickMultiplier1-1.0f)*100+"%";
 		p1DamageM1Text.text = "+ "+(p1Multiplier-1.0f)*100+"%";
+		goldText.text = "Gold: "+gold;
 	}
 
 	private void enemyLevelUp() {
@@ -101,6 +105,12 @@ public class controller : MonoBehaviour {
 
 	private int calculateGold() {
 		return (int)(baseGoldDrop*level*goldMultiplier1*goldMultiplier2);
+	}
+	public void RecalculateClickDamage() {
+		clickDamage = (int)(heroLevel*clickMultiplier1*clickMultiplier2);
+	}
+	public void RecalculateP1Damage() {
+		p1Damage = (int)(p1BaseDamage*p1Multiplier*p1Level);
 	}
 	public int enemyDied () {
 		int goldIncrement = boss ? calculateGold()*10 : calculateGold();
@@ -119,9 +129,9 @@ public class controller : MonoBehaviour {
 		}
 
 		spawnNewEnemy();
-
+		if (!goldPanel.active)
+			goldPanel.SetActive(true);
 		gold += goldIncrement;
-		goldText.text = "Gold: "+gold;
 		return goldIncrement;
 	}
 
@@ -150,21 +160,33 @@ public class controller : MonoBehaviour {
 	public void heroLevelUp() {
 		heroLevel++;
 		gold -= heroUpgradeCost;
-		goldText.text = "Gold: "+gold;
 		heroLevelText.text = "Hero Level: "+heroLevel;
 		heroUpgradeCost = (int)(baseHeroUpgradeCost*Mathf.Pow(heroUpgradeCostMultiplier,heroLevel));
 		heroLevelUpButton.GetComponentInChildren<Text>().text = "Level Up: "+heroUpgradeCost+"g";
-		clickDamage = (int)(heroLevel*clickMultiplier1*clickMultiplier2);
+		RecalculateClickDamage();
+		if (heroLevel >= 5) 
+			upgradeController.enableClickBoost1();
+		if (heroLevel >= 10) 
+			upgradeController.enableClickBoost2();
+		if (heroLevel >= 20) 
+			upgradeController.enableClickBoost3();
+		if (!p1Board.active)
+			p1Board.SetActive(true);
 	}
 
 	public void p1LevelUp() {
 		p1Level++;
 		gold -= p1UpgradeCost;
-		goldText.text = "Gold: "+gold;
 		p1LevelText.text = "Partner Level: "+p1Level;
 		p1UpgradeCost = (int)(basep1UpgradeCost*Mathf.Pow(p1UpgradeCostMultiplier,p1Level));
 		p1LevelUpButton.GetComponentInChildren<Text>().text = "Level Up: "+p1UpgradeCost+"g";
 		p1Damage = (int)(p1BaseDamage*p1Multiplier*p1Level);
+		if (p1Level >= 5) 
+			upgradeController.enablep1Boost1();
+		if (p1Level >= 10) 
+			upgradeController.enablep1Boost2();
+		if (p1Level >= 20) 
+			upgradeController.enablep1Boost3();
 	}
 	public void getDiamond() {
 		diamonds++;
@@ -189,4 +211,6 @@ public class controller : MonoBehaviour {
 		p1Multiplier += .25f;
 		p1Damage = (int)(p1BaseDamage*p1Multiplier*p1Level);
 	}
+
+
 }
