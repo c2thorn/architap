@@ -54,6 +54,9 @@ public class controller : MonoBehaviour {
 	public Button p1LevelUpButton;
 	public Text p1DamageText;
 	public bool boss = false;
+	public Text enemyDescriptionText;
+	public string[] enemyNouns;
+	public string[] enemyAdjectives;
 
 	public GameObject diamondPanel;
 	// Use this for initialization
@@ -141,6 +144,7 @@ public class controller : MonoBehaviour {
 		newEnemy.GetComponent<enemy>().health = health;
 		newEnemy.GetComponent<enemy>().maxHealth = maxHealth;
 		healthBar.UpdateBar( health, maxHealth );
+		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
 	}
 
 	public void heroLevelUp() {
