@@ -94,7 +94,8 @@ public class House : MonoBehaviour {
         GameObject floatText = (GameObject) Instantiate(damageTextPrefab,pos,Quaternion.Euler(0, 0, 0));
         floatText.GetComponent<Text>().text = text;
         floatText.GetComponent<Text>().color = color;
-        floatText.transform.parent = canvas.transform;
+        floatText.transform.SetParent(canvas.transform);
+        // floatText.transform.parent = canvas.transform;
         floatText.transform.position = pos;
     }
 }

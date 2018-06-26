@@ -65,6 +65,7 @@ public class controller : MonoBehaviour {
 	public GameObject p1Board;
 	// Use this for initialization
 	void Start () {
+		Application.runInBackground = true;
 		int health = 0;
 		int maxHealth = baseHealth*level;
 		healthBar.UpdateBar( health, maxHealth );
