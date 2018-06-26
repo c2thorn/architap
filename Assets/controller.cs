@@ -65,7 +65,7 @@ public class controller : MonoBehaviour {
 	public GameObject p1Board;
 	// Use this for initialization
 	void Start () {
-		int health = baseHealth*level;
+		int health = 0;
 		int maxHealth = baseHealth*level;
 		healthBar.UpdateBar( health, maxHealth );
 		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMax;
@@ -138,21 +138,21 @@ public class controller : MonoBehaviour {
 	private void spawnNewEnemy() {
 		int health, maxHealth, enemySelector;
 		if (boss) {
-			health = baseHealth*level*5;
+			health = 0;
 			maxHealth = baseHealth*level*5;
 			levelText.text = "Level "+level+"\nBOSS FIGHT!";
 			enemySelector = 5;
 		}
 		else {
-			health = baseHealth*level;
+			health = 0;
 			maxHealth = baseHealth*level;
 			levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMax;
 			enemySelector = ((level-1)/2)%5;
 		}
 
-		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(-.09f,-4.94f,-2f),Quaternion.Euler(0, 180, 0));
-		newEnemy.GetComponent<enemy>().health = health;
-		newEnemy.GetComponent<enemy>().maxHealth = maxHealth;
+		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-5f,-5f),Quaternion.Euler(0, Random.value*360f, 0));
+		newEnemy.GetComponent<House>().health = 0;
+		newEnemy.GetComponent<House>().maxHealth = maxHealth;
 		healthBar.UpdateBar( health, maxHealth );
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
 	}

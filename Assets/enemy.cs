@@ -12,7 +12,7 @@ public class enemy : MonoBehaviour {
 
     public GameObject diamondPrefab;
 
-    public int health = 1;
+    public int health = 0;
     public int maxHealth = 2;
 
     private float nextActionTime = 0.0f;
@@ -29,20 +29,19 @@ public class enemy : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (health > 0) {
+        if (health < maxHealth) {
             partner1Damage();
             bool hit = checkClick();
             hit = !checkDead() && hit;
             _animator.SetBool("hit", hit);
         }
-        
     }
 
 	bool partner1Damage() {
 		if (Time.time > nextActionTime ) {
 			nextActionTime = Time.time + p1Period;
 			// execute block of code here
-            health -= controller.p1Damage;
+            health += controller.p1Damage;
             healthBar.UpdateBar( health, maxHealth );
             return true;
 		}
@@ -58,7 +57,7 @@ public class enemy : MonoBehaviour {
 
             if (coll.OverlapPoint(wp)) {
                 hit = true;
-                health -= controller.clickDamage;
+                health += controller.clickDamage;
                 healthBar.UpdateBar( health, maxHealth );
                 createFloatText(Input.mousePosition,controller.clickDamage.ToString(), Color.red);
                 // GameObject damageText = (GameObject) Instantiate(damageTextPrefab,Input.mousePosition,Quaternion.Euler(0, 0, 0));
@@ -71,7 +70,7 @@ public class enemy : MonoBehaviour {
     }
 
     bool checkDead() {
-        if (health <= 0) {
+        if (health >= maxHealth) {
             _animator.SetBool("death", true);
             StartCoroutine(startDying());
             return true;
