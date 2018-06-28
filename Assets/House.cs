@@ -12,7 +12,7 @@ public class House : MonoBehaviour {
     public int health = 0;
     public int maxHealth = 2;
 
-    private float nextActionTime = 0.0f;
+    private float[] nextActionTime = new float[] {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	public float p1Period = 0.1f;
 	private BoxCollider2D coll;
 
@@ -34,22 +34,21 @@ public class House : MonoBehaviour {
 	void Update () {
 		transform.Rotate(0, Time.deltaTime+0.15f, 0);
         if (health < maxHealth) {
-            partner1Damage();
+            partnerDamage();
             bool hit = checkClick();
             hit = !checkDead() && hit;
             // _animator.SetBool("hit", hit);
         }
     }
 
-	bool partner1Damage() {
-		if (Time.time > nextActionTime ) {
-			nextActionTime = Time.time + p1Period;
-			// execute block of code here
-            health += controller.p1Damage;
-            healthBar.UpdateBar( health, maxHealth );
-            return true;
-		}
-        return false;
+	void partnerDamage() {
+        for (int i = 0; i < 7; i++){
+            if (Time.time > nextActionTime[i] ) {
+                nextActionTime[i] = Time.time + controller.periods[i];
+                health += controller.units[i+1];
+            }
+        }
+        healthBar.UpdateBar( health, maxHealth );
 	}
 
     bool checkClick() {
@@ -60,9 +59,9 @@ public class House : MonoBehaviour {
 
             if (coll.OverlapPoint(wp)) {
                 hit = true;
-                health += controller.clickDamage;
+                health += controller.units[0];
                 healthBar.UpdateBar( health, maxHealth );
-                createFloatText(Input.mousePosition,controller.clickDamage.ToString(), Color.red);
+                createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red);
             }
         }
 

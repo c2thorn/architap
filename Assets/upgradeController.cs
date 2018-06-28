@@ -8,7 +8,7 @@ public class upgradeController : MonoBehaviour {
 	public Button diamondButton;
 	public GameObject goldPanel;
 	public GameObject diamondPanel;
-	int characterAmount = 8;
+	public int characterAmount = 8;
 	public GameObject[] characterBoards;
 	public bool[] boostBought1 = new bool[] { false, false, false, false, false, false, false, false};
 	public bool[] boostBought2 = new bool[] { false, false, false, false, false, false, false, false};
@@ -27,8 +27,11 @@ public class upgradeController : MonoBehaviour {
 	void Start () {
 		for(int i = 0; i < characterAmount; i++) {
 			boost1[i].gameObject.SetActive(false);
+			boost1[i].interactable = false;
 			boost2[i].gameObject.SetActive(false);
+			boost2[i].interactable = false;
 			boost3[i].gameObject.SetActive(false);
+			boost3[i].interactable = false;
 			if (i != 0)
 				characterBoards[i].SetActive(false);
 		}
@@ -51,8 +54,9 @@ public class upgradeController : MonoBehaviour {
 		}
 	}
 
-	public void enableBoard(int i) {
-		characterBoards[i].SetActive(true);
+	public void enableBoard(int i) {		
+		if (i+1 < characterAmount && !characterBoards[i+1].active)
+			characterBoards[i+1].SetActive(true);
 	}
 
 	public void enableBoost1(int index) {
@@ -71,8 +75,8 @@ public class upgradeController : MonoBehaviour {
 	public void buyBoost1(int i) {
 		boostBought1[i] = true;
 		controller.gold -= boost1Price[i];
-		controller.clickMultiplier1 += .25f;
-		controller.RecalculateClickDamage();
+		controller.unitM1[i] += .25f;
+		controller.RecalculateUnits(i);
 		boost1[i].interactable = false;
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
@@ -82,8 +86,8 @@ public class upgradeController : MonoBehaviour {
 	public void buyBoost2(int i) {
 		boostBought2[i] = true;
 		controller.gold -= boost2Price[i];
-		controller.clickMultiplier1 += .25f;
-		controller.RecalculateClickDamage();
+		controller.unitM1[i] += .5f;
+		controller.RecalculateUnits(i);
 		boost2[i].interactable = false;
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
@@ -93,8 +97,8 @@ public class upgradeController : MonoBehaviour {
 	public void buyBoost3(int i) {
 		boostBought3[i] = true;
 		controller.gold -= boost3Price[i];
-		controller.clickMultiplier1 += .25f;
-		controller.RecalculateClickDamage();
+		controller.unitM1[i] += 1f;
+		controller.RecalculateUnits(i);
 		boost3[i].interactable = false;
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))

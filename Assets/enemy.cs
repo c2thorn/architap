@@ -41,7 +41,7 @@ public class enemy : MonoBehaviour {
 		if (Time.time > nextActionTime ) {
 			nextActionTime = Time.time + p1Period;
 			// execute block of code here
-            health += controller.p1Damage;
+            health += controller.units[1];
             healthBar.UpdateBar( health, maxHealth );
             return true;
 		}
@@ -57,9 +57,9 @@ public class enemy : MonoBehaviour {
 
             if (coll.OverlapPoint(wp)) {
                 hit = true;
-                health += controller.clickDamage;
+                health += controller.units[0];
                 healthBar.UpdateBar( health, maxHealth );
-                createFloatText(Input.mousePosition,controller.clickDamage.ToString(), Color.red);
+                createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red);
                 // GameObject damageText = (GameObject) Instantiate(damageTextPrefab,Input.mousePosition,Quaternion.Euler(0, 0, 0));
                 // damageText.GetComponent<Text>().text = ""+controller.clickDamage;
                 // damageText.transform.parent = canvas.transform;
