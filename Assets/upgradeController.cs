@@ -5,145 +5,100 @@ using UnityEngine.UI;
 
 public class upgradeController : MonoBehaviour {
 	public controller controller;
-	private bool clickBoost1Bought = false;
-	private bool clickBoost2Bought = false;
-	private bool clickBoost3Bought = false;
-	public Button clickBoost1;
-	public Button clickBoost2;
-	public Button clickBoost3;
-	public int clickBoost1Price = 100;
-	public int clickBoost2Price = 1000;
-	public int clickBoost3Price = 10000;
-	private bool p1Boost1Bought = false;
-	private bool p1Boost2Bought = false;
-	private bool p1Boost3Bought = false;
-	public Button p1Boost1;
-	public Button p1Boost2;
-	public Button p1Boost3;
-	public int p1Boost1Price = 250;
-	public int p1Boost2Price = 2500;
-	public int p1Boost3Price = 25000;
 	public Button diamondButton;
 	public GameObject goldPanel;
 	public GameObject diamondPanel;
+	int characterAmount = 8;
+	public GameObject[] characterBoards;
+	public bool[] boostBought1 = new bool[] { false, false, false, false, false, false, false, false};
+	public bool[] boostBought2 = new bool[] { false, false, false, false, false, false, false, false};
+	public bool[] boostBought3 = new bool[] { false, false, false, false, false, false, false, false};
+
+	public Button[] boost1;
+	public Button[] boost2;
+	public Button[] boost3;
+
+	public int[] boost1Price = new int[] {100, 250, 25000, 2500000, 2500000, 2500000, 2500000, 2500000};
+	public int[] boost2Price = new int[] {1000, 2500, 250000, 25000000, 25000000, 25000000, 25000000, 25000000};
+	public int[] boost3Price = new int[] {10000, 25000, 2500000, 250000000, 250000000, 250000000, 250000000, 250000000};
+
 
 	// Use this for initialization
 	void Start () {
-		clickBoost1.gameObject.SetActive(false);
-		clickBoost2.gameObject.SetActive(false);
-		clickBoost3.gameObject.SetActive(false);
-		p1Boost1.gameObject.SetActive(false);
-		p1Boost2.gameObject.SetActive(false);
-		p1Boost3.gameObject.SetActive(false);
+		for(int i = 0; i < characterAmount; i++) {
+			boost1[i].gameObject.SetActive(false);
+			boost2[i].gameObject.SetActive(false);
+			boost3[i].gameObject.SetActive(false);
+			if (i != 0)
+				characterBoards[i].SetActive(false);
+		}
 		diamondButton.gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (clickBoost1.gameObject.active && controller.gold >= clickBoost1Price && !clickBoost1Bought)
-			clickBoost1.interactable = true;
-		if (clickBoost2.gameObject.active && controller.gold >= clickBoost2Price && !clickBoost2Bought)
-			clickBoost2.interactable = true;
-		if (clickBoost3.gameObject.active && controller.gold >= clickBoost3Price && !clickBoost3Bought)
-			clickBoost3.interactable = true;
-		if (p1Boost1.gameObject.active && controller.gold >= p1Boost1Price && !p1Boost1Bought)
-			p1Boost1.interactable = true;
-		if (p1Boost2.gameObject.active && controller.gold >= p1Boost2Price && !p1Boost2Bought)
-			p1Boost2.interactable = true;
-		if (p1Boost3.gameObject.active && controller.gold >= p1Boost3Price && !p1Boost3Bought)
-			p1Boost3.interactable = true;
+		for(int i = 0; i < characterAmount; i++) {
+			if (boost1[i].gameObject.active && controller.gold >= boost1Price[i] && !boostBought1[i])
+				boost1[i].interactable = true;
+			if (boost2[i].gameObject.active && controller.gold >= boost2Price[i] && !boostBought2[i])
+				boost2[i].interactable = true;
+			if (boost3[i].gameObject.active && controller.gold >= boost3Price[i] && !boostBought3[i])
+				boost3[i].interactable = true;
+		}
 		if (controller.diamonds > 0){ 
 			if (!diamondButton.gameObject.active)
 				diamondButton.gameObject.SetActive(true);
 		}
 	}
 
-	public void enableClickBoost1() {
-		clickBoost1.gameObject.SetActive(true);
-		clickBoost1.interactable = false;
-	}
-	public void enableClickBoost2() {
-		clickBoost2.gameObject.SetActive(true);
-		clickBoost2.interactable = false;
-	}
-	public void enableClickBoost3() {
-		clickBoost3.gameObject.SetActive(true);
-		clickBoost3.interactable = false;
+	public void enableBoard(int i) {
+		characterBoards[i].SetActive(true);
 	}
 
-	public void buyClickBoost1() {
-		clickBoost1Bought = true;
-		controller.gold -= clickBoost1Price;
+	public void enableBoost1(int index) {
+		boost1[index].gameObject.SetActive(true);
+		boost1[index].interactable = false;
+	}
+	public void enableBoost2(int index) {
+		boost2[index].gameObject.SetActive(true);
+		boost2[index].interactable = false;
+	}
+	public void enableBoost3(int index) {
+		boost3[index].gameObject.SetActive(true);
+		boost3[index].interactable = false;
+	}
+
+	public void buyBoost1(int i) {
+		boostBought1[i] = true;
+		controller.gold -= boost1Price[i];
 		controller.clickMultiplier1 += .25f;
 		controller.RecalculateClickDamage();
-		clickBoost1.interactable = false;
+		boost1[i].interactable = false;
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			clickBoost1.GetComponent<Image>().color = newCol;
-	}
-	public void buyClickBoost2() {
-		clickBoost2Bought = true;
-		controller.gold -= clickBoost2Price;
-		controller.clickMultiplier1 += .5f;
-		controller.RecalculateClickDamage();
-		clickBoost2.interactable = false;
-		Color newCol;
-		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			clickBoost2.GetComponent<Image>().color = newCol;
-	}
-	public void buyClickBoost3() {
-		clickBoost3Bought = true;
-		controller.gold -= clickBoost3Price;
-		controller.clickMultiplier1 += 1f;
-		controller.RecalculateClickDamage();
-		clickBoost3.interactable = false;
-		Color newCol;
-		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			clickBoost3.GetComponent<Image>().color = newCol;
+			boost1[i].GetComponent<Image>().color = newCol;
 	}
 
-	public void enablep1Boost1() {
-		p1Boost1.gameObject.SetActive(true);
-		p1Boost1.interactable = false;
-	}
-	public void enablep1Boost2() {
-		p1Boost2.gameObject.SetActive(true);
-		p1Boost2.interactable = false;
-	}
-	public void enablep1Boost3() {
-		p1Boost3.gameObject.SetActive(true);
-		p1Boost3.interactable = false;
+	public void buyBoost2(int i) {
+		boostBought2[i] = true;
+		controller.gold -= boost2Price[i];
+		controller.clickMultiplier1 += .25f;
+		controller.RecalculateClickDamage();
+		boost2[i].interactable = false;
+		Color newCol;
+		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
+			boost2[i].GetComponent<Image>().color = newCol;
 	}
 
-	public void buyp1Boost1() {
-		p1Boost1Bought = true;
-		controller.gold -= p1Boost1Price;
-		controller.p1Multiplier += .25f;
-		controller.RecalculateP1Damage();
-		p1Boost1.interactable = false;
+	public void buyBoost3(int i) {
+		boostBought3[i] = true;
+		controller.gold -= boost3Price[i];
+		controller.clickMultiplier1 += .25f;
+		controller.RecalculateClickDamage();
+		boost3[i].interactable = false;
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			p1Boost1.GetComponent<Image>().color = newCol;
-	}
-	public void buyp1Boost2() {
-		p1Boost2Bought = true;
-		controller.gold -= p1Boost2Price;
-		controller.p1Multiplier += .5f;
-		controller.RecalculateP1Damage();
-		p1Boost2.interactable = false;
-		Color newCol;
-		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			p1Boost2.GetComponent<Image>().color = newCol;
-	}
-	public void buyp1Boost3() {
-		p1Boost3Bought = true;
-		controller.gold -= p1Boost3Price;
-		controller.p1Multiplier += 1f;
-		controller.RecalculateP1Damage();
-		p1Boost3.interactable = false;
-		Color newCol;
-		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			p1Boost3.GetComponent<Image>().color = newCol;
+			boost3[i].GetComponent<Image>().color = newCol;
 	}
 
 	public void goldTab() {
