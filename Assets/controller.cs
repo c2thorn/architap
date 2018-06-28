@@ -72,7 +72,7 @@ public class controller : MonoBehaviour {
 		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMax;
 		heroLevelText.text = "Hero Level: "+heroLevel;
 		heroLevelUpButton.GetComponentInChildren<Text>().text = "Level Up: "+heroUpgradeCost+"g";
-		clickDamageText.text = "Damage: "+clickDamage;
+		clickDamageText.text = "Units: "+clickDamage;
 		p1LevelText.text = "Partner";
 		p1LevelUpButton.GetComponentInChildren<Text>().text = "Hire: "+p1UpgradeCost+"g";
 		p1DamageText.text = "";
@@ -86,9 +86,9 @@ public class controller : MonoBehaviour {
 	void Update () {
 		heroLevelUpButton.interactable = gold >= heroUpgradeCost;
 		p1LevelUpButton.interactable = gold >= p1UpgradeCost;
-		clickDamageText.text = "Damage: "+clickDamage;
+		clickDamageText.text = "Units: "+clickDamage;
 		if (p1Level > 0)
-			p1DamageText.text = "Damage: "+p1Damage;
+			p1DamageText.text = "Units: "+p1Damage;
 
 		diamondText.text = "Diamonds: "+diamonds;
 		clickDamageM1Button.interactable = diamonds >= clickM1UpgradeCost;
