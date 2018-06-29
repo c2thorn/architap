@@ -13,9 +13,12 @@ public class controller : MonoBehaviour {
 	public int levelCount = 1;
 	public int levelMax = 10;
 	public int baseGoldDrop = 1;
-	public int baseHealth = 2;
-	public float goldMultiplier1 = 1.1f;
+	public float baseGoldMultiplier = 1.07f;
+	public int baseHealth = 5;
+	public float healthMultiplier = 1.12f;
+	public float goldMultiplier1 = 1f;
 	public float goldMultiplier2 = 1f;
+	public float baseUnitMultiplier = 1.04f;
 	public int[] baseUnits = new int[] {1, 1, 10, 100, 1000, 10000, 100000, 1000000};
 	public float[] periods = new float[] {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
 	public float[] unitM1 = new float[] {1.1f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
@@ -51,7 +54,7 @@ public class controller : MonoBehaviour {
 	void Start () {
 		Application.runInBackground = true;
 		int health = 0;
-		int maxHealth = baseHealth*level;
+		int maxHealth = calculateHealth(level);
 		healthBar.UpdateBar( health, maxHealth );
 		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMax;
 
@@ -91,10 +94,14 @@ public class controller : MonoBehaviour {
 	}
 
 	private int calculateGold() {
-		return (int)(baseGoldDrop*level*goldMultiplier1*goldMultiplier2);
+		return (int)(baseGoldDrop*Mathf.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
 	}
 	public void RecalculateUnits(int i) {
-		units[i] = (int)(baseUnits[i]*unitM1[i]*characterLevel[i]);
+		units[i] = units[i]+(int)(baseUnits[i]*unitM1[i]*Mathf.Pow(baseUnitMultiplier,characterLevel[i]));
+	}
+
+	public int calculateHealth(int i) {
+		return (int)(baseHealth*Mathf.Pow(healthMultiplier,level));
 	}
 	public int enemyDied () {
 		int goldIncrement = boss ? calculateGold()*10 : calculateGold();
@@ -122,13 +129,13 @@ public class controller : MonoBehaviour {
 		int health, maxHealth, enemySelector;
 		if (boss) {
 			health = 0;
-			maxHealth = baseHealth*level*5;
+			maxHealth = calculateHealth(level)*5;
 			levelText.text = "Level "+level+"\nBOSS FIGHT!";
 			enemySelector = 5;
 		}
 		else {
 			health = 0;
-			maxHealth = baseHealth*level;
+			maxHealth = calculateHealth(level);
 			levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMax;
 			enemySelector = ((level-1)/2)%5;
 		}

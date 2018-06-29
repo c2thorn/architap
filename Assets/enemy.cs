@@ -13,7 +13,7 @@ public class enemy : MonoBehaviour {
     public GameObject diamondPrefab;
 
     public int health = 0;
-    public int maxHealth = 2;
+    public int maxHealth = 5;
 
     private float nextActionTime = 0.0f;
 	public float p1Period = 0.1f;
