@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class upgradeController : MonoBehaviour {
 	public controller controller;
 	public Button diamondButton;
+	public Button itemButton;
 	public GameObject goldPanel;
 	public GameObject diamondPanel;
 	public int characterAmount = 8;
@@ -36,6 +37,7 @@ public class upgradeController : MonoBehaviour {
 				characterBoards[i].SetActive(false);
 		}
 		diamondButton.gameObject.SetActive(false);
+		itemButton.gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -48,10 +50,7 @@ public class upgradeController : MonoBehaviour {
 			if (boost3[i].gameObject.active && controller.gold >= boost3Price[i] && !boostBought3[i])
 				boost3[i].interactable = true;
 		}
-		if (controller.diamonds > 0){ 
-			if (!diamondButton.gameObject.active)
-				diamondButton.gameObject.SetActive(true);
-		}
+
 	}
 
 	public void enableBoard(int i) {		
@@ -112,5 +111,16 @@ public class upgradeController : MonoBehaviour {
 	public void diamondTab() {
 		goldPanel.SetActive(false);
 		diamondPanel.SetActive(true);
+	}
+
+	public void enableDiamondButton() {
+		if (!diamondButton.gameObject.active)
+			diamondButton.gameObject.SetActive(true);
+	}
+	public void enableItemButton() {
+		if (!itemButton.gameObject.active) {
+			itemButton.gameObject.SetActive(true);
+			
+		}
 	}
 }
