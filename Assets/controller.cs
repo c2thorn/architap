@@ -53,6 +53,10 @@ public class controller : MonoBehaviour {
 	public GameObject goldPanel;
 	public GameObject diamondPanel;
 
+	public Button instaGoldButton;
+	public Text instaGoldText;
+	public int instaGoldPrice = 20;
+
 	void Start () {
 		Application.runInBackground = true;
 		int health = 0;
@@ -71,6 +75,8 @@ public class controller : MonoBehaviour {
 		}
 		if (diamonds < 1)
 			diamondPanel.SetActive(false);
+		instaGoldButton.GetComponentInChildren<Text>().text = instaGoldPrice+" diamonds";
+		instaGoldText.text = calculateMaxGold()+" gold!";
 		goldPanel.SetActive(false);
 		tabsScrollView.SetActive(false);
 	}
@@ -86,6 +92,7 @@ public class controller : MonoBehaviour {
 		}
 		goldText.text = "Gold: "+gold;
 		diamondText.text = "Diamonds: "+diamonds;
+		instaGoldButton.interactable = diamonds >= instaGoldPrice;
 		// p1DamageM1Button.interactable = diamonds >= p1M1UpgradeCost;
 		// clickDamageMultiplierText.text = "+ "+(clickMultiplier1-1.0f)*100+"%";
 		// p1DamageM1Text.text = "+ "+(p1Multiplier-1.0f)*100+"%";
@@ -96,10 +103,15 @@ public class controller : MonoBehaviour {
 		baseHealth++;
 		levelCount = 1;
 		highestLevel++;
+		instaGoldText.text = calculateMaxGold()+" gold!";
 	}
 
 	private int calculateGold() {
 		return (int)(baseGoldDrop*Mathf.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
+	}
+
+	private int calculateMaxGold() {
+		return (int)(baseGoldDrop*Mathf.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2)*30;
 	}
 	public void RecalculateUnits(int i) {
 		units[i] = units[i]+(int)(baseUnits[i]*unitM1[i]*Mathf.Pow(baseUnitMultiplier,characterLevel[i]));
@@ -186,5 +198,10 @@ public class controller : MonoBehaviour {
 		unitM1[i] += .25f;
 		unitMultiplierText[i].text = " + "+m1Level[i]*25+"%"; 
 		RecalculateUnits(i);
+	}
+
+	public void buyInstaCash() {
+		gold += calculateMaxGold();
+		diamonds -= instaGoldPrice;
 	}
 }
