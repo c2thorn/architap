@@ -56,11 +56,12 @@ public class controller : MonoBehaviour {
 	public Button instaGoldButton;
 	public Text instaGoldText;
 	public int instaGoldPrice = 20;
+	public int instaGoldMultiplier = 200;
 
 	void Start () {
 		Application.runInBackground = true;
 		int health = 0;
-		int maxHealth = calculateHealth(level);
+		int maxHealth = calculateHealth();
 		healthBar.UpdateBar( health, maxHealth );
 		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
 
@@ -107,17 +108,17 @@ public class controller : MonoBehaviour {
 	}
 
 	private int calculateGold() {
-		return (int)(baseGoldDrop*Mathf.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
+		return Mathf.RoundToInt(baseGoldDrop*Mathf.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
 	}
 
 	private int calculateMaxGold() {
-		return (int)(baseGoldDrop*Mathf.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2)*30;
+		return Mathf.RoundToInt((baseGoldDrop*Mathf.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2))*instaGoldMultiplier;
 	}
 	public void RecalculateUnits(int i) {
-		units[i] = units[i]+(int)(baseUnits[i]*unitM1[i]*Mathf.Pow(baseUnitMultiplier,characterLevel[i]));
+		units[i] = characterLevel[i] == 0 ? 0 : units[i]+(int)(baseUnits[i]*unitM1[i]*Mathf.Pow(baseUnitMultiplier,characterLevel[i]));
 	}
 
-	public int calculateHealth(int i) {
+	public int calculateHealth() {
 		return (int)(baseHealth*Mathf.Pow(healthMultiplier,level));
 	}
 	public int enemyDied () {
@@ -148,20 +149,20 @@ public class controller : MonoBehaviour {
 		int health, maxHealth, enemySelector;
 		if (boss) {
 			health = 0;
-			maxHealth = calculateHealth(level)*5;
+			maxHealth = calculateHealth()*5;
 			levelText.text = "Level "+level+"\nBOSS FIGHT!";
 			enemySelector = 5;
 		}
 		else {
 			health = 0;
-			maxHealth = calculateHealth(level);
+			maxHealth = calculateHealth();
 			levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
 			enemySelector = ((level-1)/2)%5;
 		}
 
 		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-5f,-5f),Quaternion.Euler(0, Random.value*360f, 0));
 		newEnemy.GetComponent<House>().health = 0;
-		newEnemy.GetComponent<House>().maxHealth = maxHealth;
+		newEnemy.GetComponent<House>().maxHealth = maxHealth; //redundant?
 		healthBar.UpdateBar( health, maxHealth );
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
 	}
@@ -189,18 +190,43 @@ public class controller : MonoBehaviour {
 		}
 	}
 
-	public void buyM1Up(int i) {
+	public void buyClickM1Up() {
+		int i = 0;
 		m1Level[i]++;
 		diamonds -= m1UpgradeCost[i];
 		diamondText.text = "Diamonds: "+diamonds;
 		m1UpgradeCost[i] = (int)(m1UpgradeBaseCost[i]*Mathf.Pow(m1UpgradeCostMultiplier[i],m1Level[i]));
 		unitM1Button[i].GetComponentInChildren<Text>().text = m1UpgradeCost[i]+" diamonds";
 		unitM1[i] += .25f;
-		unitMultiplierText[i].text = " + "+m1Level[i]*25+"%"; 
+		unitMultiplierText[i].text = " + "+(m1Level[i]-1)*25+"%"; 
 		RecalculateUnits(i);
 	}
 
-	public void buyInstaCash() {
+	public void buyAllPartnersM1Up() {
+		for (int i = 1; i < upgradeController.characterAmount; i++) {
+			m1Level[i]++;
+			unitM1[i] += .25f;
+			RecalculateUnits(i);
+		}
+		diamonds -= m1UpgradeCost[1];
+		diamondText.text = "Diamonds: "+diamonds;
+		m1UpgradeCost[1] = (int)(m1UpgradeBaseCost[1]*Mathf.Pow(m1UpgradeCostMultiplier[1],m1Level[1]));
+		unitM1Button[1].GetComponentInChildren<Text>().text = m1UpgradeCost[1]+" diamonds";
+		unitMultiplierText[1].text = " + "+(m1Level[1]-1)*25+"%"; 
+	}
+
+	// public void buyM1Up(int i) {
+	// 	m1Level[i]++;
+	// 	diamonds -= m1UpgradeCost[i];
+	// 	diamondText.text = "Diamonds: "+diamonds;
+	// 	m1UpgradeCost[i] = (int)(m1UpgradeBaseCost[i]*Mathf.Pow(m1UpgradeCostMultiplier[i],m1Level[i]));
+	// 	unitM1Button[i].GetComponentInChildren<Text>().text = m1UpgradeCost[i]+" diamonds";
+	// 	unitM1[i] += .25f;
+	// 	unitMultiplierText[i].text = " + "+(m1Level[i]-1)*25+"%"; 
+	// 	RecalculateUnits(i);
+	// }
+
+	public void buyInstaGold() {
 		gold += calculateMaxGold();
 		diamonds -= instaGoldPrice;
 	}

@@ -28,6 +28,7 @@ public class House : MonoBehaviour {
 		coll = GameObject.Find("Click Area").GetComponent<BoxCollider2D>();
 		rend = GetComponent<MeshRenderer>();
 		rend.material.shader = unfinished;
+        maxHealth = controller.calculateHealth();
 	}
 	
 	// Update is called once per frame
