@@ -58,6 +58,10 @@ public class controller : MonoBehaviour {
 	public int instaGoldPrice = 20;
 	public int instaGoldMultiplier = 200;
 
+	public Button levelNavigateUpButton;
+	public Button levelNavigateDownButton;
+
+
 	void Start () {
 		Application.runInBackground = true;
 		int health = 0;
@@ -80,6 +84,8 @@ public class controller : MonoBehaviour {
 		instaGoldText.text = calculateMaxGold()+" gold!";
 		goldPanel.SetActive(false);
 		tabsScrollView.SetActive(false);
+		levelNavigateDownButton.gameObject.SetActive(false);
+		levelNavigateUpButton.gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -101,10 +107,11 @@ public class controller : MonoBehaviour {
 
 	private void enemyLevelUp() {
 		level++;
-		baseHealth++;
+		// baseHealth++;
 		levelCount = 1;
 		highestLevel++;
 		instaGoldText.text = calculateMaxGold()+" gold!";
+		levelNavigateDownButton.gameObject.SetActive(true);
 	}
 
 	private int calculateGold() {
@@ -123,19 +130,23 @@ public class controller : MonoBehaviour {
 	}
 	public int enemyDied () {
 		int goldIncrement = boss ? calculateGold()*10 : calculateGold();
-		if (boss) {
-			boss = false;
-			enemyLevelUp();
-		}
-		else {
-			levelCount++;
-			if (levelCount > levelMaxCount) {
-				if (level%10 == 0) 
-					boss = true;
-				else
-					enemyLevelUp();
+
+		if (level == highestLevel){
+			if (boss) {
+				boss = false;
+				enemyLevelUp();
+			}
+			else {
+				levelCount++;
+				if (levelCount > levelMaxCount) {
+					if (level%10 == 0) 
+						boss = true;
+					else
+						enemyLevelUp();
+				}
 			}
 		}
+
 		spawnNewEnemy();
 		if (!goldPanel.active){
 			goldPanel.SetActive(true);
@@ -229,5 +240,25 @@ public class controller : MonoBehaviour {
 	public void buyInstaGold() {
 		gold += calculateMaxGold();
 		diamonds -= instaGoldPrice;
+	}
+
+	public void levelNavigateUp() {
+		level++;
+		levelCount = level == highestLevel ? 1: levelMaxCount;
+		if (level == highestLevel)
+			levelNavigateUpButton.gameObject.SetActive(false);
+		levelNavigateDownButton.gameObject.SetActive(true);
+		Destroy(GameObject.FindGameObjectWithTag("enemy"));
+		spawnNewEnemy();
+	}
+
+	public void levelNavigateDown() {
+		level--;
+		levelCount = levelMaxCount;
+		if (level == 1)
+			levelNavigateDownButton.gameObject.SetActive(false);
+		levelNavigateUpButton.gameObject.SetActive(true);
+		Destroy(GameObject.FindGameObjectWithTag("enemy"));
+		spawnNewEnemy();
 	}
 }
