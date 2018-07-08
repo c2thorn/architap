@@ -9,6 +9,7 @@ public class House : MonoBehaviour {
     public Canvas canvas;
     public GameObject damageTextPrefab;
     public GameObject diamondPrefab;
+    public GameObject chestPrefab;
     public int health = 0;
     public int maxHealth = 2;
 
@@ -35,10 +36,11 @@ public class House : MonoBehaviour {
 	void Update () {
 		transform.Rotate(0, Time.deltaTime+0.15f, 0);
         if (health < maxHealth) {
-            partnerDamage();
-            bool hit = checkClick();
-            hit = !checkDead() && hit;
-            // _animator.SetBool("hit", hit);
+            if (!controller.itemDrop){
+                partnerDamage();
+                bool hit = checkClick();
+                hit = !checkDead() && hit;
+            }
         }
     }
 
@@ -79,7 +81,14 @@ public class House : MonoBehaviour {
     }
 
     IEnumerator startDying() {
-        if(controller.level >= 5 && Random.value <= controller.diamondChance) {
+        if (controller.boss) {
+            GameObject chest = (GameObject) Instantiate(chestPrefab,transform.position+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
+        }
+        else if (controller.level == 5 && controller.levelCount == 1) {
+            //Guarantee first diamond
+            GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+        }
+        else if(controller.level >= 6 && Random.value <= controller.diamondChance) {
             GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
 		rend.material.shader = finished;

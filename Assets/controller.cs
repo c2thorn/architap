@@ -60,6 +60,7 @@ public class controller : MonoBehaviour {
 
 	public Button levelNavigateUpButton;
 	public Button levelNavigateDownButton;
+	public bool itemDrop = false;
 
 
 	void Start () {
