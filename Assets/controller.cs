@@ -49,9 +49,7 @@ public class controller : MonoBehaviour {
 
 	public upgradeController upgradeController;
 
-	public GameObject tabsScrollView;
 	public GameObject goldPanel;
-	public GameObject diamondPanel;
 
 	public Button instaGoldButton;
 	public Text instaGoldText;
@@ -60,8 +58,6 @@ public class controller : MonoBehaviour {
 
 	public Button levelNavigateUpButton;
 	public Button levelNavigateDownButton;
-	public bool itemDrop = false;
-
 
 	void Start () {
 		Application.runInBackground = true;
@@ -79,12 +75,8 @@ public class controller : MonoBehaviour {
 			levelUpButton[i].GetComponentInChildren<Text>().text = "Hire: "+characterUpgradeCost[i]+"g";
 			unitText[i].text = "";
 		}
-		if (diamonds < 1)
-			diamondPanel.SetActive(false);
 		instaGoldButton.GetComponentInChildren<Text>().text = instaGoldPrice+" diamonds";
 		instaGoldText.text = calculateMaxGold()+" gold!";
-		goldPanel.SetActive(false);
-		tabsScrollView.SetActive(false);
 		levelNavigateDownButton.gameObject.SetActive(false);
 		levelNavigateUpButton.gameObject.SetActive(false);
 	}
@@ -131,6 +123,8 @@ public class controller : MonoBehaviour {
 	}
 	public int enemyDied () {
 		int goldIncrement = boss ? calculateGold()*10 : calculateGold();
+		if (level == 1 && levelCount == 1)
+			upgradeController.enableGoldButton();
 
 		if (level == highestLevel){
 			if (boss) {
@@ -147,12 +141,7 @@ public class controller : MonoBehaviour {
 				}
 			}
 		}
-
 		spawnNewEnemy();
-		if (!goldPanel.active){
-			goldPanel.SetActive(true);
-			tabsScrollView.SetActive(true);
-		}
 		gold += goldIncrement;
 		return goldIncrement;
 	}

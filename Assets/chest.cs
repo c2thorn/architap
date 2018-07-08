@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class chest : MonoBehaviour {
 
- public controller controller = null;
+ public ItemController itemController;
  public Animator animator;
+
+ public Item item;
 
 	// Use this for initialization
 	void Start () {
-		controller = GameObject.Find("controller").GetComponent<controller>();
-		controller.itemDrop = true;
+		itemController = GameObject.Find("ItemController").GetComponent<ItemController>();
+		itemController.itemDrop = true;
 		var x = Random.Range(-.2f, .2f);
 		var y = Random.Range(-.2f, .2f);
 		Vector2 direction = new Vector2(x, y);
@@ -34,8 +36,8 @@ public class chest : MonoBehaviour {
 
 	IEnumerator startDying() {
         yield return new WaitForSeconds(2f);
-		controller.itemDrop = false;
-        controller.getDiamond();
-        Destroy(gameObject);
+		itemController.itemDrop = false;
+		itemController.addItem(item);
+        Destroy(gameObject.transform.parent.gameObject);
     }
 }

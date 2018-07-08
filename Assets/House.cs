@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class House : MonoBehaviour {
     public controller controller = null;
+    public ItemController itemController;
     public SimpleHealthBar healthBar;
     public Canvas canvas;
     public GameObject damageTextPrefab;
@@ -24,6 +25,7 @@ public class House : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         controller = GameObject.Find("controller").GetComponent<controller>();
+        itemController = GameObject.Find("ItemController").GetComponent<ItemController>();
         healthBar = GameObject.Find("healthBar").GetComponent<SimpleHealthBar>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 		coll = GameObject.Find("Click Area").GetComponent<BoxCollider2D>();
@@ -36,7 +38,7 @@ public class House : MonoBehaviour {
 	void Update () {
 		transform.Rotate(0, Time.deltaTime+0.15f, 0);
         if (health < maxHealth) {
-            if (!controller.itemDrop){
+            if (!itemController.itemDrop){
                 partnerDamage();
                 bool hit = checkClick();
                 hit = !checkDead() && hit;
@@ -83,6 +85,7 @@ public class House : MonoBehaviour {
     IEnumerator startDying() {
         if (controller.boss) {
             GameObject chest = (GameObject) Instantiate(chestPrefab,transform.position+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
+            chest.GetComponentInChildren<chest>().item = itemController.getCurrentBossItem();
         }
         else if (controller.level == 5 && controller.levelCount == 1) {
             //Guarantee first diamond

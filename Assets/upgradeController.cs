@@ -9,6 +9,8 @@ public class upgradeController : MonoBehaviour {
 	public Button itemButton;
 	public GameObject goldPanel;
 	public GameObject diamondPanel;
+	public GameObject itemPanel;
+
 	public int characterAmount = 8;
 	public GameObject[] characterBoards;
 	public bool[] boostBought1 = new bool[] { false, false, false, false, false, false, false, false};
@@ -22,6 +24,8 @@ public class upgradeController : MonoBehaviour {
 	public int[] boost1Price = new int[] {100, 250, 25000, 2500000, 2500000, 2500000, 2500000, 2500000};
 	public int[] boost2Price = new int[] {1000, 2500, 250000, 25000000, 25000000, 25000000, 25000000, 25000000};
 	public int[] boost3Price = new int[] {10000, 25000, 2500000, 250000000, 250000000, 250000000, 250000000, 250000000};
+	public tabScroll tabScroll;
+	public GameObject tabsScrollView;
 
 
 	// Use this for initialization
@@ -38,6 +42,11 @@ public class upgradeController : MonoBehaviour {
 		}
 		diamondButton.gameObject.SetActive(false);
 		itemButton.gameObject.SetActive(false);
+		if (controller.diamonds < 1)
+			diamondPanel.SetActive(false);
+		goldPanel.SetActive(false);
+		itemPanel.SetActive(false);
+		tabsScrollView.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -107,10 +116,25 @@ public class upgradeController : MonoBehaviour {
 	public void goldTab() {
 		goldPanel.SetActive(true);
 		diamondPanel.SetActive(false);
+		itemPanel.SetActive(false);
 	}
 	public void diamondTab() {
 		goldPanel.SetActive(false);
 		diamondPanel.SetActive(true);
+		itemPanel.SetActive(false);
+	}
+
+	public void itemTab() {
+		goldPanel.SetActive(false);
+		diamondPanel.SetActive(false);
+		itemPanel.SetActive(true);
+	}
+
+	public void enableGoldButton() {
+		if (!goldPanel.active){
+			goldPanel.SetActive(true);
+			tabsScrollView.SetActive(true);
+		}
 	}
 
 	public void enableDiamondButton() {
@@ -120,7 +144,7 @@ public class upgradeController : MonoBehaviour {
 	public void enableItemButton() {
 		if (!itemButton.gameObject.active) {
 			itemButton.gameObject.SetActive(true);
-			
+			tabScroll.enable();
 		}
 	}
 }
