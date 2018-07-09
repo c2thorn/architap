@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class ItemController : MonoBehaviour {
 
 	public upgradeController uController;
@@ -24,13 +24,25 @@ public class ItemController : MonoBehaviour {
 
 	public void refreshInventoryUI() {
 		foreach (Transform child in itemContent.transform) {
-			GameObject.Destroy(child.gameObject);
+	//		GameObject.Destroy(child.gameObject);
 		}
 
 		for (int i = 0; i < inventory.Count; i++) {
 			float x = i % 2 > 0 ? 160f : -160f;
-			float y = (i / 2) * 200f;
-			GameObject itemIcon = (GameObject) Instantiate(itemSlotPrefab,new Vector3(x,y,0f),Quaternion.Euler(0, 0, 0), itemContent.transform);
+			float y = 425 - (i / 2) * 200f;
+			Vector3 pos = new Vector3(x,y,0f);
+			GameObject itemIcon = (GameObject) Instantiate(itemSlotPrefab,pos,Quaternion.Euler(0, 0, 0), itemContent.transform);
+			Debug.Log(pos);
+			itemIcon.GetComponent<RectTransform>().position = pos;
+			foreach (Transform child in itemIcon.transform) {
+				GameObject obj = child.gameObject;
+				if(obj.name == "Item Name") {
+					obj.GetComponent<Text>().text = inventory[i].name;
+				}
+				else if (obj.name == "Item Count") {
+					obj.GetComponent<Text>().text = inventory[i].count.ToString();
+				}
+			}
 		}
 	}
 
@@ -45,6 +57,7 @@ public class ItemController : MonoBehaviour {
 		if (!found)
 			inventory.Add(item);
 		uController.enableItemButton();
+		refreshInventoryUI();
 	}
 
 	public Item getCurrentBossItem() {
