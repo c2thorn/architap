@@ -84,7 +84,7 @@ public class upgradeController : MonoBehaviour {
 		boostBought1[i] = true;
 		controller.gold -= boost1Price[i];
 		controller.unitM1[i] += .25f;
-		controller.RecalculateUnits(i);
+		controller.RecalculateUnit(i);
 		boost1[i].interactable = false;
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
@@ -95,7 +95,7 @@ public class upgradeController : MonoBehaviour {
 		boostBought2[i] = true;
 		controller.gold -= boost2Price[i];
 		controller.unitM1[i] += .5f;
-		controller.RecalculateUnits(i);
+		controller.RecalculateUnit(i);
 		boost2[i].interactable = false;
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
@@ -106,7 +106,7 @@ public class upgradeController : MonoBehaviour {
 		boostBought3[i] = true;
 		controller.gold -= boost3Price[i];
 		controller.unitM1[i] += 1f;
-		controller.RecalculateUnits(i);
+		controller.RecalculateUnit(i);
 		boost3[i].interactable = false;
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))

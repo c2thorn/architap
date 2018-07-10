@@ -21,13 +21,15 @@ public class controller : MonoBehaviour {
 	public float goldMultiplier2 = 1f;
 	public float baseUnitMultiplier = 1.04f;
 	public int[] baseUnits = new int[] {1, 1, 10, 100, 1000, 10000, 100000, 1000000};
+	public int[] baseLevelUnits = new int[] {1, 0, 0, 0, 0, 0, 0, 0};
 	public float[] periods = new float[] {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
 	public float[] unitM1 = new float[] {1.1f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
 	public int[] m1Level = new int[] {1, 1, 1, 1, 1, 1, 1, 1};
 	public int[] m1UpgradeCost = new int[] {5, 8};
 	public int[] m1UpgradeBaseCost = new int[] {5, 8};
 	public float[] m1UpgradeCostMultiplier = new float[] {1.08f, 1.09f};
-	public float[] unitM2 = new float[] {1.1f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
+	public float[] unitM2 = new float[] {1.0f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
+	public float[] unitItemM3 = new float[] {1.0f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
 	public int[] characterLevel = new int[] {1, 0, 0, 0, 0, 0, 0, 0};
 	public int[] characterUpgradeCost = new int[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public int[] baseCharacterUpgradeCost = new int[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
@@ -46,16 +48,14 @@ public class controller : MonoBehaviour {
 	public Text enemyDescriptionText;
 	public string[] enemyNouns;
 	public string[] enemyAdjectives;
-
 	public upgradeController upgradeController;
+	public ItemController itemController;
 
 	public GameObject goldPanel;
-
 	public Button instaGoldButton;
 	public Text instaGoldText;
 	public int instaGoldPrice = 20;
 	public int instaGoldMultiplier = 200;
-
 	public Button levelNavigateUpButton;
 	public Button levelNavigateDownButton;
 
@@ -114,8 +114,28 @@ public class controller : MonoBehaviour {
 	private int calculateMaxGold() {
 		return Mathf.RoundToInt((baseGoldDrop*Mathf.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2))*instaGoldMultiplier;
 	}
-	public void RecalculateUnits(int i) {
-		units[i] = characterLevel[i] == 0 ? 0 : units[i]+(int)(baseUnits[i]*unitM1[i]*Mathf.Pow(baseUnitMultiplier,characterLevel[i]));
+
+	public void RecalculateItemMultipliers() {
+		for (int i = 0; i < upgradeController.characterAmount; i++) {
+			float multiplier = 1.0f;
+			foreach(Item item in itemController.inventory) {
+				if (item.effect == "partners" && i != 0)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect ==  "unitIndex" + i)
+						multiplier += item.effectValue*item.count;
+			}
+			unitItemM3[i] = multiplier;
+			RecalculateUnit(i);
+		}
+	}
+
+	public void RecalculateUnit(int i) {
+		units[i] = (int)(baseLevelUnits[i]*unitM1[i]*unitM2[i]*unitItemM3[i]);
+	}
+
+	public void LevelUpUnit(int i) {
+		baseLevelUnits[i] = characterLevel[i] == 0 ? 0 : baseLevelUnits[i]+(int)(baseUnits[i]*Mathf.Pow(baseUnitMultiplier,characterLevel[i]));
+		RecalculateUnit(i);
 	}
 
 	public int calculateHealth() {
@@ -175,7 +195,7 @@ public class controller : MonoBehaviour {
 		characterLevelText[i].text = preText+characterLevel[i];
 		characterUpgradeCost[i] = (int)(baseCharacterUpgradeCost[i]*Mathf.Pow(characterUpgradeCostMultiplier[i],characterLevel[i]));
 		levelUpButton[i].GetComponentInChildren<Text>().text = "Level Up: "+characterUpgradeCost[i]+"g";
-		RecalculateUnits(i);
+		LevelUpUnit(i);
 		if (characterLevel[i] >= 5) 
 			upgradeController.enableBoost1(i);
 		if (characterLevel[i] >= 10) 
@@ -200,14 +220,14 @@ public class controller : MonoBehaviour {
 		unitM1Button[i].GetComponentInChildren<Text>().text = m1UpgradeCost[i]+" diamonds";
 		unitM1[i] += .25f;
 		unitMultiplierText[i].text = " + "+(m1Level[i]-1)*25+"%"; 
-		RecalculateUnits(i);
+		RecalculateUnit(i);
 	}
 
 	public void buyAllPartnersM1Up() {
 		for (int i = 1; i < upgradeController.characterAmount; i++) {
 			m1Level[i]++;
 			unitM1[i] += .25f;
-			RecalculateUnits(i);
+			RecalculateUnit(i);
 		}
 		diamonds -= m1UpgradeCost[1];
 		diamondText.text = "Diamonds: "+diamonds;

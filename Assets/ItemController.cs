@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class ItemController : MonoBehaviour {
 
+	public controller controller;
 	public upgradeController uController;
 	public bool itemDrop = false;
 	public List<Item> inventory = new List<Item>();
@@ -60,10 +61,13 @@ public class ItemController : MonoBehaviour {
 			inventory.Add(item);
 		uController.enableItemButton();
 		refreshInventoryUI();
+		controller.RecalculateItemMultipliers();
 	}
 
 	public Item getCurrentBossItem() {
 		Item item = new Item("Hammer");
+		item.effect = "partners";
+		item.effectValue = 0.5f;
 		return item;
 	}
 }

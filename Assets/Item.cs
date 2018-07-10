@@ -7,6 +7,8 @@ public class Item {
 
 	public string name;
 	public int count;
+	public string effect;
+	public float effectValue;
 
 	public Item(string name) {
 		this.name = name;
