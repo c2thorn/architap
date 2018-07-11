@@ -9,6 +9,7 @@ public class Item {
 	public int count;
 	public string effect;
 	public float effectValue;
+	public int rarity;
 
 	public Item(string name) {
 		this.name = name;

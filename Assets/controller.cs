@@ -263,12 +263,14 @@ public class controller : MonoBehaviour {
 	}
 
 	public void levelNavigateDown() {
-		level--;
-		levelCount = levelMaxCount;
-		if (level == 1)
-			levelNavigateDownButton.gameObject.SetActive(false);
-		levelNavigateUpButton.gameObject.SetActive(true);
-		Destroy(GameObject.FindGameObjectWithTag("enemy"));
-		spawnNewEnemy();
+		if (!itemController.itemDrop) {
+			level--;
+			levelCount = levelMaxCount;
+			if (level == 1)
+				levelNavigateDownButton.gameObject.SetActive(false);
+			levelNavigateUpButton.gameObject.SetActive(true);
+			Destroy(GameObject.FindGameObjectWithTag("enemy"));
+			spawnNewEnemy();
+		}
 	}
 }

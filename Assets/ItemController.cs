@@ -65,9 +65,51 @@ public class ItemController : MonoBehaviour {
 	}
 
 	public Item getCurrentBossItem() {
-		Item item = new Item("Hammer");
-		item.effect = "partners";
-		item.effectValue = 0.5f;
-		return item;
+		float itemCategoryVal = Random.value;
+		if (itemCategoryVal <= .5f) {
+			float val = Random.value;
+			if (val <= .6f) {
+				Item item = new Item("Common Gloves");
+				item.effect = "partners";
+				item.effectValue = 0.15f;
+				item.rarity = 0;
+				return item;
+			} else if (val <= .9f) {
+				Item item = new Item("Rare Gloves");
+				item.effect = "partners";
+				item.effectValue = 0.25f;
+				item.rarity = 1;
+				return item;
+			} else {
+				Item item = new Item("Legendary Gloves");
+				item.effect = "partners";
+				item.effectValue = 0.5f;
+				item.rarity = 2;
+				return item;
+			}
+		} else {
+			float val = Random.value;
+			if (val <= .6f) {
+				Item item = new Item("Common Hammer");
+				item.effect = "unitIndex0";
+				item.effectValue = 0.15f;
+				item.rarity = 0;
+				return item;
+			} else if (val <= .9f) {
+				Item item = new Item("Rare Hammer");
+				item.effect = "unitIndex0";
+				item.effectValue = 0.25f;
+				item.rarity = 1;
+				return item;
+			} else {
+				Item item = new Item("Legendary Hammer");
+				item.effect = "unitIndex0";
+				item.effectValue = 0.5f;
+				item.rarity = 2;
+				return item;
+			}	
+		}
+	
+
 	}
 }

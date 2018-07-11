@@ -85,7 +85,7 @@ public class House : MonoBehaviour {
     IEnumerator startDying() {
         if (controller.boss) {
             GameObject chest = (GameObject) Instantiate(chestPrefab,transform.position+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
-            chest.GetComponentInChildren<chest>().item = itemController.getCurrentBossItem();
+            chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
         }
         else if (controller.level == 5 && controller.levelCount == 1) {
             //Guarantee first diamond
@@ -96,6 +96,8 @@ public class House : MonoBehaviour {
         }
 		rend.material.shader = finished;
         yield return new WaitForSeconds(1f);
+        while (itemController.itemDrop)
+            yield return new WaitForSeconds(1f);
         int goldIncrement = controller.enemyDied();
         createFloatText(new Vector3(1300f,450f,0f), "+"+goldIncrement+"g", Color.yellow);
         // yield return new WaitForSeconds(0.4f);

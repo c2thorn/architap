@@ -6,9 +6,24 @@ public class chest : MonoBehaviour {
 
  public ItemController itemController;
  public Animator animator;
+ public Light halo;
 
  public Item item;
 
+	public void SetItem(Item item) {
+		this.item = item;
+		switch (item.rarity) {
+			case 0:
+				halo.enabled = false;
+				break;
+			case 1:
+				halo.color = Color.cyan;
+				break;
+			case 2:
+				halo.color = Color.yellow;
+				break;
+		}
+	}
 	// Use this for initialization
 	void Start () {
 		itemController = GameObject.Find("ItemController").GetComponent<ItemController>();
@@ -19,6 +34,7 @@ public class chest : MonoBehaviour {
 		direction = direction.normalized * -60f;
 		GetComponent<Rigidbody2D>().AddForce(direction);
 		Physics2D.IgnoreLayerCollision(0,1,true);
+
 	}
 	
 	// Update is called once per frame
