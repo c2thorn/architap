@@ -44,6 +44,8 @@ public class ItemController : MonoBehaviour {
 				}
 				else if (obj.name == "Item Count") {
 					obj.GetComponent<Text>().text = inventory[i].count.ToString();
+				} else if (obj.name == "Item Description") {
+					obj.GetComponent<Text>().text = inventory[i].effect + " + " + inventory[i].effectValue*100 + "%";
 				}
 			}
 		}
