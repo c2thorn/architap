@@ -11,6 +11,7 @@ public class ItemController : MonoBehaviour {
 	public GameObject itemPanel;
 	public GameObject itemContent;
 	public GameObject itemSlotPrefab;
+	public GameObject itemModal;
 
 
 	// Use this for initialization
@@ -64,8 +65,15 @@ public class ItemController : MonoBehaviour {
 		}
 	}
 
-	public void showItemModal() {
-		
+	public void showItemModal(Item item) {
+		itemModal.SetActive(true);
+		GameObject itemSlot = GameObject.Find("Item Modal Slot");
+		setItemIcon(itemSlot,item);
+	}
+
+	public void closeItemModal() {
+		itemModal.SetActive(false);
+		itemDrop = false;
 	}
 
 	public void addItem(Item item) {
@@ -81,6 +89,7 @@ public class ItemController : MonoBehaviour {
 		uController.enableItemButton();
 		refreshInventoryUI();
 		controller.RecalculateItemMultipliers();
+		showItemModal(item);
 	}
 
 	public Item getCurrentBossItem() {

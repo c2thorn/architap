@@ -58,6 +58,10 @@ public class controller : MonoBehaviour {
 	public int instaGoldMultiplier = 200;
 	public Button levelNavigateUpButton;
 	public Button levelNavigateDownButton;
+	public int region = 0;
+	public int[,] regionLevels = new int[,] {{1,50},{50,120}};
+	public ArrayList completedBossLevels = new ArrayList();
+
 
 	void Start () {
 		Application.runInBackground = true;
@@ -99,12 +103,16 @@ public class controller : MonoBehaviour {
 	}
 
 	private void enemyLevelUp() {
-		level++;
-		// baseHealth++;
-		levelCount = 1;
-		highestLevel++;
-		instaGoldText.text = calculateMaxGold()+" gold!";
-		levelNavigateDownButton.gameObject.SetActive(true);
+		if (level == regionLevels[region,1]) {
+			levelCount = levelMaxCount;
+		} else {
+			level++;
+			// baseHealth++;
+			levelCount = 1;
+			highestLevel++;
+			instaGoldText.text = calculateMaxGold()+" gold!";
+			levelNavigateDownButton.gameObject.SetActive(true);
+		}
 	}
 
 	private int calculateGold() {
@@ -139,6 +147,8 @@ public class controller : MonoBehaviour {
 	}
 
 	public int calculateHealth() {
+		if (boss)
+			return (int)(baseHealth*Mathf.Pow(healthMultiplier,level)) * 5; 
 		return (int)(baseHealth*Mathf.Pow(healthMultiplier,level));
 	}
 	public int enemyDied () {
@@ -149,12 +159,13 @@ public class controller : MonoBehaviour {
 		if (level == highestLevel){
 			if (boss) {
 				boss = false;
+				completedBossLevels.Add(level);
 				enemyLevelUp();
 			}
 			else {
 				levelCount++;
 				if (levelCount > levelMaxCount) {
-					if (level%10 == 0) 
+					if (level%10 == 0 && !completedBossLevels.Contains(level)) 
 						boss = true;
 					else
 						enemyLevelUp();
