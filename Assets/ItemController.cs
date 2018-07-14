@@ -33,22 +33,39 @@ public class ItemController : MonoBehaviour {
 			float y = 425 - (i / 2) * 200f;
 			Vector3 pos = new Vector3(x,y,0f);
 			GameObject itemIcon = (GameObject) Instantiate(itemSlotPrefab,pos,Quaternion.Euler(0, 0, 0));
-			itemIcon.transform.SetParent(itemContent.transform, false);
 			itemIcon.GetComponent<RectTransform>().anchoredPosition = pos;
+			itemIcon.transform.SetParent(itemContent.transform, false);
+			setItemIcon(itemIcon,inventory[i]);
+		}
+	}
 
-			// itemIcon.GetComponent<RectTransform>().position = pos;
-			foreach (Transform child in itemIcon.transform) {
-				GameObject obj = child.gameObject;
-				if(obj.name == "Item Name") {
-					obj.GetComponent<Text>().text = inventory[i].name;
-				}
-				else if (obj.name == "Item Count") {
-					obj.GetComponent<Text>().text = inventory[i].count.ToString();
-				} else if (obj.name == "Item Description") {
-					obj.GetComponent<Text>().text = inventory[i].effect + " + " + inventory[i].effectValue*100 + "%";
-				}
+	public void setItemIcon(GameObject itemIcon, Item item) {
+		switch (item.rarity) {
+				case 0:
+					break;
+				case 1:
+					itemIcon.GetComponent<Image>().color =  Color.cyan;
+					break;
+				case 2:
+					itemIcon.GetComponent<Image>().color = Color.yellow;
+					break;
+			}
+		// itemIcon.GetComponent<RectTransform>().position = pos;
+		foreach (Transform child in itemIcon.transform) {
+			GameObject obj = child.gameObject;
+			if(obj.name == "Item Name") {
+				obj.GetComponent<Text>().text = item.name;
+			}
+			else if (obj.name == "Item Count") {
+				obj.GetComponent<Text>().text = item.count.ToString();
+			} else if (obj.name == "Item Description") {
+				obj.GetComponent<Text>().text = item.effect + " + " + item.effectValue*100 + "%";
 			}
 		}
+	}
+
+	public void showItemModal() {
+		
 	}
 
 	public void addItem(Item item) {
