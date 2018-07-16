@@ -12,8 +12,8 @@ public class enemy : MonoBehaviour {
 
     public GameObject diamondPrefab;
 
-    public int health = 0;
-    public int maxHealth = 5;
+    public double health = 0;
+    public double maxHealth = 5;
 
     private float nextActionTime = 0.0f;
 	public float p1Period = 0.1f;
@@ -83,7 +83,7 @@ public class enemy : MonoBehaviour {
             GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
         yield return new WaitForSeconds(0.6f);
-        int goldIncrement = controller.enemyDied();
+        double goldIncrement = controller.enemyDied();
         createFloatText(new Vector3(1300f,450f,0f), "+"+goldIncrement+"g", Color.yellow);
         yield return new WaitForSeconds(0.4f);
         Destroy(gameObject);

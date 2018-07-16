@@ -46,7 +46,7 @@ public class SimpleHealthBar : MonoBehaviour
 	/// <summary>
 	/// The stored max value that the user entered.
 	/// </summary>
-	float _maxValue = 0.0f;
+	double _maxValue = 0.0f;
 
 	/// <summary>
 	/// This float stores the target amount of fill. This value is current with Fill Constraints.
@@ -106,14 +106,14 @@ public class SimpleHealthBar : MonoBehaviour
 	/// </summary>
 	/// <param name="currentValue">The current value of the bar.</param>
 	/// <param name="maxValue">The maximum value of the bar.</param>
-	public void UpdateBar ( float currentValue, float maxValue )
+	public void UpdateBar ( double currentValue, double maxValue )
 	{
 		// If the bar image is left unassigned, then return.
 		if( barImage == null )
 			return;
 			
 		// Fix the value to be a percentage.
-		_currentFraction = currentValue / maxValue;
+		_currentFraction = (float)(currentValue / maxValue);
 
 		// If the value is greater than 1 or less than 0, then fix the values to being min/max.
 		if( _currentFraction < 0 || _currentFraction > 1 )

@@ -11,8 +11,8 @@ public class House : MonoBehaviour {
     public GameObject damageTextPrefab;
     public GameObject diamondPrefab;
     public GameObject chestPrefab;
-    public int health = 0;
-    public int maxHealth = 2;
+    public double health = 0;
+    public double maxHealth = 2;
 
     private float[] nextActionTime = new float[] {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	public float p1Period = 0.1f;
@@ -99,7 +99,7 @@ public class House : MonoBehaviour {
         yield return new WaitForSeconds(1f);
         while (itemController.itemDrop)
             yield return new WaitForSeconds(1f);
-        int goldIncrement = controller.enemyDied();
+        double goldIncrement = controller.enemyDied();
         createFloatText(new Vector3(0,-400,0f), "+"+goldIncrement+"g", Color.yellow, true);
         // yield return new WaitForSeconds(0.4f);
         Destroy(gameObject);
