@@ -59,9 +59,13 @@ public class controller : MonoBehaviour {
 	public Button levelNavigateUpButton;
 	public Button levelNavigateDownButton;
 	public int region = 0;
-	public int[,] regionLevels = new int[,] {{1,50},{50,120}};
+	public bool[] completedRegions = new bool[] {false,false,false,false};
+	public int[,] regionLevels = new int[,] {{1,50},{50,120},{110,200},{200,350}};
+	public int[] highestRegionLevels = new int[] {1,50,110,200};
 	public ArrayList completedBossLevels = new ArrayList();
-
+	public GameObject regionCompleteText;
+	public GameObject[] regionBackgrounds;
+	public GameObject[] regionButtons;
 
 	void Start () {
 		Application.runInBackground = true;
@@ -83,6 +87,8 @@ public class controller : MonoBehaviour {
 		instaGoldText.text = calculateMaxGold()+" gold!";
 		levelNavigateDownButton.gameObject.SetActive(false);
 		levelNavigateUpButton.gameObject.SetActive(false);
+		for (int i = 1; i < regionButtons.Length; i++)
+			regionButtons[i].SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -104,12 +110,16 @@ public class controller : MonoBehaviour {
 
 	private void enemyLevelUp() {
 		if (level == regionLevels[region,1]) {
+			if (!completedRegions[region]) {
+				completeRegion();
+			}
 			levelCount = levelMaxCount;
 		} else {
 			level++;
 			// baseHealth++;
 			levelCount = 1;
 			highestLevel++;
+			highestRegionLevels[region] = level;
 			instaGoldText.text = calculateMaxGold()+" gold!";
 			levelNavigateDownButton.gameObject.SetActive(true);
 		}
@@ -156,7 +166,7 @@ public class controller : MonoBehaviour {
 		if (level == 1 && levelCount == 1)
 			upgradeController.enableGoldButton();
 
-		if (level == highestLevel){
+		if (level == highestRegionLevels[region]){
 			if (boss) {
 				boss = false;
 				completedBossLevels.Add(level);
@@ -165,19 +175,19 @@ public class controller : MonoBehaviour {
 			else {
 				levelCount++;
 				if (levelCount > levelMaxCount) {
-					if (level%10 == 0 && !completedBossLevels.Contains(level)) 
+					if (level%10 == 0 && !completedBossLevels.Contains(level))
 						boss = true;
 					else
 						enemyLevelUp();
 				}
 			}
 		}
-		spawnNewEnemy();
+		spawnNewEnemy(false);
 		gold += goldIncrement;
 		return goldIncrement;
 	}
 
-	private void spawnNewEnemy() {
+	private void spawnNewEnemy(bool delay) {
 		int health, maxHealth, enemySelector;
 		if (boss) {
 			health = 0;
@@ -197,6 +207,8 @@ public class controller : MonoBehaviour {
 		newEnemy.GetComponent<House>().maxHealth = maxHealth; //redundant?
 		healthBar.UpdateBar( health, maxHealth );
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
+		if (delay)
+			newEnemy.GetComponent<House>().delay();
 	}
 
 	public void levelUp(int i) {
@@ -265,23 +277,52 @@ public class controller : MonoBehaviour {
 
 	public void levelNavigateUp() {
 		level++;
-		levelCount = level == highestLevel ? 1: levelMaxCount;
-		if (level == highestLevel)
+		levelCount = level == highestRegionLevels[region] ? 1: levelMaxCount;
+		if (level >= highestRegionLevels[region] || level == regionLevels[region,1])
 			levelNavigateUpButton.gameObject.SetActive(false);
 		levelNavigateDownButton.gameObject.SetActive(true);
 		Destroy(GameObject.FindGameObjectWithTag("enemy"));
-		spawnNewEnemy();
+		spawnNewEnemy(true);
 	}
 
 	public void levelNavigateDown() {
 		if (!itemController.itemDrop) {
 			level--;
 			levelCount = levelMaxCount;
-			if (level == 1)
+			boss = false;
+			if (level <= regionLevels[region,0])
 				levelNavigateDownButton.gameObject.SetActive(false);
 			levelNavigateUpButton.gameObject.SetActive(true);
 			Destroy(GameObject.FindGameObjectWithTag("enemy"));
-			spawnNewEnemy();
+			spawnNewEnemy(true);
 		}
+	}
+
+	public void changeRegion(int i) {
+		region = i;
+		regionCompleteText.SetActive(completedRegions[i]);
+		// level = regionLevels[i,completedRegions[i] ? 1 : 0];
+		level = highestRegionLevels[i];
+		if (completedRegions[i]) {
+			levelNavigateDownButton.gameObject.SetActive(true);
+			levelNavigateUpButton.gameObject.SetActive(false);
+		} else {
+			levelNavigateDownButton.gameObject.SetActive(level > regionLevels[i,0]);
+			levelNavigateUpButton.gameObject.SetActive(false);	
+		}
+		for(int j = 0; j < regionBackgrounds.Length; j++) {
+			regionBackgrounds[j].SetActive(j==i);
+		}
+		Destroy(GameObject.FindGameObjectWithTag("enemy"));
+		spawnNewEnemy(true);
+	}
+
+	public void completeRegion() {
+		upgradeController.enableMapButton();
+		upgradeController.mapTab();
+		completedRegions[region] = true;
+		regionCompleteText.SetActive(true);
+		if (regionButtons.Length > region+1)
+			regionButtons[region+1].SetActive(true);
 	}
 }

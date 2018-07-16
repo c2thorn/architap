@@ -7,9 +7,11 @@ public class upgradeController : MonoBehaviour {
 	public controller controller;
 	public Button diamondButton;
 	public Button itemButton;
+	public Button mapButton;
 	public GameObject goldPanel;
 	public GameObject diamondPanel;
 	public GameObject itemPanel;
+	public GameObject mapPanel;
 
 	public int characterAmount = 8;
 	public GameObject[] characterBoards;
@@ -27,7 +29,6 @@ public class upgradeController : MonoBehaviour {
 	public tabScroll tabScroll;
 	public GameObject tabsScrollView;
 
-
 	// Use this for initialization
 	void Start () {
 		for(int i = 0; i < characterAmount; i++) {
@@ -42,10 +43,12 @@ public class upgradeController : MonoBehaviour {
 		}
 		diamondButton.gameObject.SetActive(false);
 		itemButton.gameObject.SetActive(false);
+		mapButton.gameObject.SetActive(false);
 		if (controller.diamonds < 1)
 			diamondPanel.SetActive(false);
 		goldPanel.SetActive(false);
 		itemPanel.SetActive(false);
+		mapPanel.SetActive(false);
 		tabsScrollView.SetActive(false);
 	}
 	
@@ -117,17 +120,27 @@ public class upgradeController : MonoBehaviour {
 		goldPanel.SetActive(true);
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(false);
+		mapPanel.SetActive(false);
 	}
 	public void diamondTab() {
 		goldPanel.SetActive(false);
 		diamondPanel.SetActive(true);
 		itemPanel.SetActive(false);
+		mapPanel.SetActive(false);
 	}
 
 	public void itemTab() {
 		goldPanel.SetActive(false);
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(true);
+		mapPanel.SetActive(false);
+	}
+
+	public void mapTab() {
+		goldPanel.SetActive(false);
+		diamondPanel.SetActive(false);
+		itemPanel.SetActive(false);
+		mapPanel.SetActive(true);
 	}
 
 	public void enableGoldButton() {
@@ -146,5 +159,10 @@ public class upgradeController : MonoBehaviour {
 			itemButton.gameObject.SetActive(true);
 			tabScroll.enable();
 		}
+	}
+
+	public void enableMapButton() {
+		if (!mapButton.gameObject.active)
+			mapButton.gameObject.SetActive(true);
 	}
 }

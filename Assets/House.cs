@@ -21,6 +21,7 @@ public class House : MonoBehaviour {
 	public Shader unfinished;
 	public Shader finished;
 	MeshRenderer rend;
+    public bool invulnerable = false;
 
 	// Use this for initialization
 	void Start () {
@@ -37,7 +38,7 @@ public class House : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		transform.Rotate(0, Time.deltaTime+0.15f, 0);
-        if (health < maxHealth) {
+        if (health < maxHealth && !invulnerable) {
             if (!itemController.itemDrop){
                 partnerDamage();
                 bool hit = checkClick();
@@ -66,7 +67,7 @@ public class House : MonoBehaviour {
                 hit = true;
                 health += controller.units[0];
                 healthBar.UpdateBar( health, maxHealth );
-                createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red);
+                createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red, false);
             }
         }
 
@@ -99,17 +100,26 @@ public class House : MonoBehaviour {
         while (itemController.itemDrop)
             yield return new WaitForSeconds(1f);
         int goldIncrement = controller.enemyDied();
-        createFloatText(new Vector3(1300f,450f,0f), "+"+goldIncrement+"g", Color.yellow);
+        createFloatText(new Vector3(0,-400,0f), "+"+goldIncrement+"g", Color.yellow, true);
         // yield return new WaitForSeconds(0.4f);
         Destroy(gameObject);
     }
 
-    void createFloatText(Vector3 pos, string text, Color color) {
-        GameObject floatText = (GameObject) Instantiate(damageTextPrefab,pos,Quaternion.Euler(0, 0, 0));
+    IEnumerator delayDamage() {
+        invulnerable = true;
+        yield return new WaitForSeconds(.5f);
+        invulnerable = false;
+    }
+
+    public void delay() {
+        StartCoroutine(delayDamage());
+    }
+
+    void createFloatText(Vector3 pos, string text, Color color, bool goldPos) {
+        GameObject floatText = (GameObject) Instantiate(damageTextPrefab,pos,Quaternion.Euler(0, 0, 0),canvas.transform);
         floatText.GetComponent<Text>().text = text;
         floatText.GetComponent<Text>().color = color;
-        floatText.transform.SetParent(canvas.transform);
-        // floatText.transform.parent = canvas.transform;
-        floatText.transform.position = pos;
+        if (goldPos)
+            floatText.GetComponent<RectTransform>().anchoredPosition = pos;
     }
 }

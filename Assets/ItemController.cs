@@ -43,9 +43,10 @@ public class ItemController : MonoBehaviour {
 	public void setItemIcon(GameObject itemIcon, Item item) {
 		switch (item.rarity) {
 				case 0:
+					itemIcon.GetComponent<Image>().color = new Color(152,152,152,255);
 					break;
 				case 1:
-					itemIcon.GetComponent<Image>().color =  Color.cyan;
+					itemIcon.GetComponent<Image>().color = Color.cyan;
 					break;
 				case 2:
 					itemIcon.GetComponent<Image>().color = Color.yellow;
