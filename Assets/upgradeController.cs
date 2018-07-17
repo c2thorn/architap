@@ -26,8 +26,8 @@ public class upgradeController : MonoBehaviour {
 	public int[] boost1Price = new int[] {100, 250, 25000, 2500000, 2500000, 2500000, 2500000, 2500000};
 	public int[] boost2Price = new int[] {1000, 2500, 250000, 25000000, 25000000, 25000000, 25000000, 25000000};
 	public int[] boost3Price = new int[] {10000, 25000, 2500000, 250000000, 250000000, 250000000, 250000000, 250000000};
-	public tabScroll tabScroll;
-	public GameObject tabsScrollView;
+	public GameObject tabs;
+	public GameObject statsPanel;
 
 	// Use this for initialization
 	void Start () {
@@ -49,7 +49,8 @@ public class upgradeController : MonoBehaviour {
 		goldPanel.SetActive(false);
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
-		tabsScrollView.SetActive(false);
+		tabs.SetActive(false);
+		statsPanel.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -146,18 +147,19 @@ public class upgradeController : MonoBehaviour {
 	public void enableGoldButton() {
 		if (!goldPanel.active){
 			goldPanel.SetActive(true);
-			tabsScrollView.SetActive(true);
+			tabs.SetActive(true);
 		}
 	}
 
 	public void enableDiamondButton() {
-		if (!diamondButton.gameObject.active)
+		if (!diamondButton.gameObject.active){{}
 			diamondButton.gameObject.SetActive(true);
+			statsPanel.SetActive(true);
+		}
 	}
 	public void enableItemButton() {
 		if (!itemButton.gameObject.active) {
 			itemButton.gameObject.SetActive(true);
-			tabScroll.enable();
 		}
 	}
 

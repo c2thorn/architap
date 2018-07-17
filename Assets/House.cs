@@ -85,8 +85,8 @@ public class House : MonoBehaviour {
 
     IEnumerator startDying() {
         if (controller.boss) {
-            // GameObject chest = (GameObject) Instantiate(chestPrefab,transform.position+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
-            // chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
+            GameObject chest = (GameObject) Instantiate(chestPrefab,transform.position+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
+            chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
         }
         else if (controller.level == 5 && controller.levelCount == 1) {
             //Guarantee first diamond

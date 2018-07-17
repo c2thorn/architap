@@ -67,6 +67,7 @@ public class controller : MonoBehaviour {
 	public GameObject regionCompleteText;
 	public GameObject[] regionBackgrounds;
 	public GameObject[] regionButtons;
+	public Text partnerUnitText;
 
 	void Start () {
 		Application.runInBackground = true;
@@ -94,13 +95,17 @@ public class controller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		double sumUnits = 0;
 		for(int i = 0; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
-			if (characterLevel[i] > 0) 
+			if (characterLevel[i] > 0) {
 				unitText[i].text = "Units: "+NumberFormat.format(units[i]);
+				sumUnits += units[i];
+			}
 			if (i < unitM1Button.Length)
 				unitM1Button[i].interactable = diamonds >= m1UpgradeCost[i];
 		}
+		partnerUnitText.text = "Units: " + NumberFormat.format(sumUnits);
 		goldText.text = "Gold: "+NumberFormat.format(gold);
 		diamondText.text = "Diamonds: "+diamonds;
 		instaGoldButton.interactable = diamonds >= instaGoldPrice;
