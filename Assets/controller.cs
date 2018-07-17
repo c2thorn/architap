@@ -97,11 +97,11 @@ public class controller : MonoBehaviour {
 		for(int i = 0; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
 			if (characterLevel[i] > 0) 
-				unitText[i].text = "Units: "+units[i];
+				unitText[i].text = "Units: "+NumberFormat.format(units[i]);
 			if (i < unitM1Button.Length)
 				unitM1Button[i].interactable = diamonds >= m1UpgradeCost[i];
 		}
-		goldText.text = "Gold: "+gold;
+		goldText.text = "Gold: "+NumberFormat.format(gold);
 		diamondText.text = "Diamonds: "+diamonds;
 		instaGoldButton.interactable = diamonds >= instaGoldPrice;
 		// p1DamageM1Button.interactable = diamonds >= p1M1UpgradeCost;
@@ -219,7 +219,7 @@ public class controller : MonoBehaviour {
 		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
 		characterLevelText[i].text = preText+characterLevel[i];
 		characterUpgradeCost[i] = Math.Round(baseCharacterUpgradeCost[i]*Math.Pow(characterUpgradeCostMultiplier[i],characterLevel[i]));
-		levelUpButton[i].GetComponentInChildren<Text>().text = "Level Up: "+characterUpgradeCost[i]+"g";
+		levelUpButton[i].GetComponentInChildren<Text>().text = "Level Up: "+NumberFormat.format(characterUpgradeCost[i])+"g";
 		LevelUpUnit(i);
 		if (characterLevel[i] >= 5) 
 			upgradeController.enableBoost1(i);

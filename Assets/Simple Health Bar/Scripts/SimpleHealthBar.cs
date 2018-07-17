@@ -76,7 +76,7 @@ public class SimpleHealthBar : MonoBehaviour
 			}break;
 			case DisplayText.CurrentAndMaxValues:
 			{
-				barText.text = additionalText + ( GetCurrentFraction * _maxValue ).ToString( "F0" ) + " / " + _maxValue.ToString();
+				barText.text = additionalText + NumberFormat.format( GetCurrentFraction * _maxValue ) + " / " + NumberFormat.format(_maxValue);
 			}break;
 		}
 	}
