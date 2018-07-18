@@ -34,7 +34,7 @@ public class blueprint : MonoBehaviour {
 	}
 
 	IEnumerator startDying() {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(2f);
         // controller.getDiamond();
         Destroy(gameObject);
     }

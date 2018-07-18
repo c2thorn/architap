@@ -19,7 +19,7 @@ public class House : MonoBehaviour {
 
 	public Shader unfinished;
 	public Shader finished;
-	MeshRenderer rend;
+	protected MeshRenderer rend;
     public bool invulnerable = false;
 
 	// Use this for initialization
@@ -36,7 +36,7 @@ public class House : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.Rotate(0, Time.deltaTime+0.15f, 0);
+        rotate();
         if (health < maxHealth && !invulnerable) {
             if (!itemController.itemDrop){
                 partnerDamage();
@@ -44,6 +44,10 @@ public class House : MonoBehaviour {
                 hit = !checkDead() && hit;
             }
         }
+    }
+
+    protected virtual void rotate() {
+        transform.Rotate(0, Time.deltaTime+0.15f, 0);
     }
 
 	void partnerDamage() {
@@ -82,8 +86,8 @@ public class House : MonoBehaviour {
         return false;
     }
 
-    IEnumerator startDying() {
-        if (controller.boss) {
+    protected virtual IEnumerator startDying() {
+        if (controller.boss || controller.uniqueBoss) {
             controller.checkBossReward(transform.position);
         }
         else if (controller.level == 5 && controller.levelCount == 1) {
@@ -113,7 +117,7 @@ public class House : MonoBehaviour {
         StartCoroutine(delayDamage());
     }
 
-    void createFloatText(Vector3 pos, string text, Color color, bool goldPos) {
+    protected void createFloatText(Vector3 pos, string text, Color color, bool goldPos) {
         GameObject floatText = (GameObject) Instantiate(damageTextPrefab,pos,Quaternion.Euler(0, 0, 0),canvas.transform);
         floatText.GetComponent<Text>().text = text;
         floatText.GetComponent<Text>().color = color;

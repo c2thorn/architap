@@ -28,6 +28,7 @@ public class upgradeController : MonoBehaviour {
 	public int[] boost3Price = new int[] {10000, 25000, 2500000, 250000000, 250000000, 250000000, 250000000, 250000000};
 	public GameObject tabs;
 	public GameObject statsPanel;
+	public GameObject diamondCountText;
 
 	// Use this for initialization
 	void Start () {
@@ -51,6 +52,7 @@ public class upgradeController : MonoBehaviour {
 		mapPanel.SetActive(false);
 		tabs.SetActive(false);
 		statsPanel.SetActive(false);
+		diamondCountText.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -148,13 +150,14 @@ public class upgradeController : MonoBehaviour {
 		if (!goldPanel.active){
 			goldPanel.SetActive(true);
 			tabs.SetActive(true);
+			statsPanel.SetActive(true);
 		}
 	}
 
 	public void enableDiamondButton() {
 		if (!diamondButton.gameObject.active){{}
 			diamondButton.gameObject.SetActive(true);
-			statsPanel.SetActive(true);
+			diamondCountText.SetActive(true);
 		}
 	}
 	public void enableItemButton() {
