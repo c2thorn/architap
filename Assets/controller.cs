@@ -46,6 +46,7 @@ public class controller : MonoBehaviour {
 	public Text goldText = null;
 	public Text diamondText = null;
 	public bool boss = false;
+	public bool uniqueBoss = false;
 	public Text enemyDescriptionText;
 	public string[] enemyNouns;
 	public string[] enemyAdjectives;
@@ -68,6 +69,8 @@ public class controller : MonoBehaviour {
 	public GameObject[] regionBackgrounds;
 	public GameObject[] regionButtons;
 	public Text partnerUnitText;
+	public GameObject blueprintPrefab;
+    public GameObject chestPrefab;
 
 	void Start () {
 		Application.runInBackground = true;
@@ -331,5 +334,24 @@ public class controller : MonoBehaviour {
 		regionCompleteText.SetActive(true);
 		if (regionButtons.Length > region+1)
 			regionButtons[region+1].SetActive(true);
+	}
+
+	public void checkBossReward(Vector3 pos) {
+		if (uniqueBoss) {
+			GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
+			chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
+		} else {
+			GameObject blueprint = (GameObject) Instantiate(blueprintPrefab,pos+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+			unlockUniqueBoss();
+		}
+	}
+
+	public void unlockUniqueBoss() {
+		switch (level){
+			case 20:
+				break;
+			case 40:
+				break;
+		}
 	}
 }

@@ -10,7 +10,6 @@ public class House : MonoBehaviour {
     public Canvas canvas;
     public GameObject damageTextPrefab;
     public GameObject diamondPrefab;
-    public GameObject chestPrefab;
     public double health = 0;
     public double maxHealth = 2;
 
@@ -85,8 +84,7 @@ public class House : MonoBehaviour {
 
     IEnumerator startDying() {
         if (controller.boss) {
-            GameObject chest = (GameObject) Instantiate(chestPrefab,transform.position+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
-            chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
+            controller.checkBossReward(transform.position);
         }
         else if (controller.level == 5 && controller.levelCount == 1) {
             //Guarantee first diamond
