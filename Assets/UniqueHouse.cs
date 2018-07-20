@@ -12,7 +12,7 @@ public class UniqueHouse : House {
             controller.checkBossReward(transform.position);
         }
 		rend.material.shader = finished;
-        double goldIncrement = controller.enemyDied();
+        double goldIncrement = controller.enemyDied(false, false);
         createFloatText(new Vector3(0,-400,0f), "+"+goldIncrement+"g", Color.yellow, true);
         yield return new WaitForSeconds(1f);
     }

@@ -101,7 +101,7 @@ public class House : MonoBehaviour {
         yield return new WaitForSeconds(1f);
         while (itemController.itemDrop)
             yield return new WaitForSeconds(1f);
-        double goldIncrement = controller.enemyDied();
+        double goldIncrement = controller.enemyDied(true, true);
         createFloatText(new Vector3(0,-400,0f), "+"+goldIncrement+"g", Color.yellow, true);
         // yield return new WaitForSeconds(0.4f);
         Destroy(gameObject);

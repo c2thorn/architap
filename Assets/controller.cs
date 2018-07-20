@@ -123,18 +123,19 @@ public class controller : MonoBehaviour {
 		// p1DamageM1Text.text = "+ "+(p1Multiplier-1.0f)*100+"%";
 	}
 
-	private void enemyLevelUp() {
+	private void enemyLevelUp(bool advanceLevel) {
 		if (level == regionLevels[region,1]) {
 			if (!completedRegions[region]) {
 				completeRegion();
 			}
 			levelCount = levelMaxCount;
 		} else {
-			level++;
-			// baseHealth++;
-			levelCount = 1;
 			highestLevel++;
-			highestRegionLevels[region] = level;
+			highestRegionLevels[region] = level+1;
+			if (advanceLevel) {
+				level++;
+				levelCount = 1;
+			}
 			instaGoldText.text = calculateMaxGold()+" gold!";
 			levelNavigateDownButton.gameObject.SetActive(true);
 		}
@@ -176,7 +177,7 @@ public class controller : MonoBehaviour {
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5; 
 		return Math.Round(baseHealth*Math.Pow(healthMultiplier,level));
 	}
-	public double enemyDied () {
+	public double enemyDied (bool spawn, bool advanceLevel) {
 		double goldIncrement = boss ? calculateGold()*10 : calculateGold();
 		if (!uniqueBoss) {
 			if (level == 1 && levelCount == 1)
@@ -186,19 +187,20 @@ public class controller : MonoBehaviour {
 				if (boss) {
 					boss = false;
 					completedBossLevels.Add(level);
-					enemyLevelUp();
+					enemyLevelUp(advanceLevel);
 				}
 				else {
 					levelCount++;
 					if (levelCount > levelMaxCount) {
-						if (level%10 == 0 && !completedBossLevels.Contains(level))
+						if (level%10 == 0 && !completedBossLevels.Contains(level) && advanceLevel)
 							boss = true;
 						else
-							enemyLevelUp();
+							enemyLevelUp(advanceLevel);
 					}
 				}
 			}
-			spawnNewEnemy(false);
+			if (spawn)
+				spawnNewEnemy(false);
 		}
 		gold += goldIncrement;
 		return goldIncrement;
@@ -294,56 +296,71 @@ public class controller : MonoBehaviour {
 	}
 
 	public void levelNavigateUp() {
+		finishOffEnemy();
 		level++;
 		levelCount = level == highestRegionLevels[region] ? 1: levelMaxCount;
 		if (level >= highestRegionLevels[region] || level == regionLevels[region,1])
 			levelNavigateUpButton.gameObject.SetActive(false);
 		levelNavigateDownButton.gameObject.SetActive(true);
-		Destroy(GameObject.FindGameObjectWithTag("enemy"));
 		spawnNewEnemy(true);
 	}
 
 	public void levelNavigateDown() {
 		if (!itemController.itemDrop) {
+			finishOffEnemy();
 			level--;
 			levelCount = levelMaxCount;
 			boss = false;
 			if (level <= regionLevels[region,0])
 				levelNavigateDownButton.gameObject.SetActive(false);
 			levelNavigateUpButton.gameObject.SetActive(true);
-			Destroy(GameObject.FindGameObjectWithTag("enemy"));
 			spawnNewEnemy(true);
 		}
 	}
 
 	public void changeRegion(int i) {
-		region = i;
-		regionCompleteText.SetActive(completedRegions[i]);
-		// level = regionLevels[i,completedRegions[i] ? 1 : 0];
-		uniqueBoss = false;
-		boss=false;
-		level = highestRegionLevels[i];
-		if (completedRegions[i]) {
-			levelNavigateDownButton.gameObject.SetActive(true);
-			levelNavigateUpButton.gameObject.SetActive(false);
-		} else {
-			levelNavigateDownButton.gameObject.SetActive(level > regionLevels[i,0]);
-			levelNavigateUpButton.gameObject.SetActive(false);	
+		if (!itemController.itemDrop) {
+			finishOffEnemy();
+			region = i;
+			regionCompleteText.SetActive(completedRegions[i]);
+			// level = regionLevels[i,completedRegions[i] ? 1 : 0];
+			uniqueBoss = false;
+			boss=false;
+			level = highestRegionLevels[i];
+			levelCount = 1;
+			if (completedRegions[i]) {
+				levelNavigateDownButton.gameObject.SetActive(true);
+				levelNavigateUpButton.gameObject.SetActive(false);
+			} else {
+				levelNavigateDownButton.gameObject.SetActive(level > regionLevels[i,0]);
+				levelNavigateUpButton.gameObject.SetActive(false);	
+			}
+			for(int j = 0; j < regionBackgrounds.Length; j++) {
+				regionBackgrounds[j].SetActive(j==(i+1));
+			}
+			spawnNewEnemy(true);
 		}
-		for(int j = 0; j < regionBackgrounds.Length; j++) {
-			regionBackgrounds[j].SetActive(j==(i+1));
+	}
+
+	public void finishOffEnemy() {
+		GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
+		House house = enemy.GetComponent<House>();
+		if (house.health >= house.maxHealth){
+			enemyDied(false, false);
 		}
-		Destroy(GameObject.FindGameObjectWithTag("enemy"));
-		spawnNewEnemy(true);
+		Destroy(enemy);
 	}
 
 	public void goToUnique(int i) {
-		levelNavigateUpButton.gameObject.SetActive(false);
-		levelNavigateDownButton.gameObject.SetActive(false);
-		for(int j = 0; j < regionBackgrounds.Length; j++)
-			regionBackgrounds[j].SetActive(j==0);
-		Destroy(GameObject.FindGameObjectWithTag("enemy"));
-		spawnUnique(i);
+		if (!itemController.itemDrop) {
+			levelNavigateUpButton.gameObject.SetActive(false);
+			levelNavigateDownButton.gameObject.SetActive(false);
+			for(int j = 0; j < regionBackgrounds.Length; j++)
+				regionBackgrounds[j].SetActive(j==0);
+			finishOffEnemy();
+			levelCount = 1;
+			spawnUnique(i);
+		}
 	}
 
 	private void spawnUnique(int i) {
@@ -353,6 +370,24 @@ public class controller : MonoBehaviour {
 				break;
 			case 1:
 				level = 50;
+				break;
+			case 2:
+				level = 80;
+				break;
+			case 3:
+				level = 110;
+				break;
+			case 4:
+				level = 150;
+				break;
+			case 5:
+				level = 180;
+				break;
+			case 6:
+				level = 260;
+				break;
+			case 7:
+				level = 310;
 				break;
 			default:
 				level = 50;
@@ -364,7 +399,6 @@ public class controller : MonoBehaviour {
 		health = 0;
 		maxHealth = calculateHealth()*10;
 		levelText.text = "Level "+level+"\nUnique #"+(i+1)+"!";
-
 
 		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,-5f,-5f),Quaternion.Euler(-90,-125.2f, UnityEngine.Random.value*360f));
 		newUnique.GetComponent<House>().health = 0;
@@ -410,6 +444,24 @@ public class controller : MonoBehaviour {
 				break;
 			case 40:
 				uniqueBossButtons[1].interactable = true;
+				break;
+			case 70:
+				uniqueBossButtons[2].interactable = true;
+				break;
+			case 100:
+				uniqueBossButtons[3].interactable = true;
+				break;
+			case 140:
+				uniqueBossButtons[4].interactable = true;
+				break;
+			case 170:
+				uniqueBossButtons[5].interactable = true;
+				break;
+			case 250:
+				uniqueBossButtons[6].interactable = true;
+				break;
+			case 300:
+				uniqueBossButtons[7].interactable = true;
 				break;
 			default:
 				dropBlueprint = false;
