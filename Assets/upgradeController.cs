@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,16 +33,7 @@ public class upgradeController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		for(int i = 0; i < characterAmount; i++) {
-			boost1[i].gameObject.SetActive(false);
-			boost1[i].interactable = false;
-			boost2[i].gameObject.SetActive(false);
-			boost2[i].interactable = false;
-			boost3[i].gameObject.SetActive(false);
-			boost3[i].interactable = false;
-			if (i != 0)
-				characterBoards[i].SetActive(false);
-		}
+		restart();
 		diamondButton.gameObject.SetActive(false);
 		itemButton.gameObject.SetActive(false);
 		mapButton.gameObject.SetActive(false);
@@ -53,6 +45,19 @@ public class upgradeController : MonoBehaviour {
 		tabs.SetActive(false);
 		statsPanel.SetActive(false);
 		diamondCountText.SetActive(false);
+	}
+
+	public void restart() {
+		for(int i = 0; i < characterAmount; i++) {
+			boost1[i].gameObject.SetActive(false);
+			boost1[i].interactable = false;
+			boost2[i].gameObject.SetActive(false);
+			boost2[i].interactable = false;
+			boost3[i].gameObject.SetActive(false);
+			boost3[i].interactable = false;
+			if (i != 0)
+				characterBoards[i].SetActive(false);
+		}	
 	}
 	
 	// Update is called once per frame
@@ -124,6 +129,13 @@ public class upgradeController : MonoBehaviour {
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
+	}
+	public void resetScroll() {
+		goldPanel.GetComponentInChildren<Scrollbar>().value = 1;
+		diamondPanel.GetComponentInChildren<Scrollbar>().value = 1;
+		itemPanel.GetComponentInChildren<Scrollbar>().value = 1;
+		mapPanel.GetComponentInChildren<Scrollbar>().size = (float)Math.Round(mapPanel.GetComponentInChildren<Scrollbar>().size,1);
+		mapPanel.GetComponentInChildren<Scrollbar>().value = 0;
 	}
 	public void diamondTab() {
 		goldPanel.SetActive(false);

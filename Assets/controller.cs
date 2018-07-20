@@ -107,11 +107,12 @@ public class controller : MonoBehaviour {
 		for(int i = 0; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
 			if (characterLevel[i] > 0) {
-				unitText[i].text = "Units: "+NumberFormat.format(units[i]);
-				sumUnits += units[i];
+				unitText[i].text = "Units: "+NumberFormat.format(units[i]);				
 			}
 			if (i < unitM1Button.Length)
 				unitM1Button[i].interactable = diamonds >= m1UpgradeCost[i];
+			if (i != 0)
+				sumUnits += units[i];
 		}
 		partnerUnitText.text = "Units: " + NumberFormat.format(sumUnits);
 		goldText.text = "Gold: "+NumberFormat.format(gold);
@@ -419,5 +420,35 @@ public class controller : MonoBehaviour {
 			upgradeController.mapTab();
 		}
 		return dropBlueprint;
+	}
+
+	public void prestige() {
+		units[0] = 1;
+		baseLevelUnits[0] = 1;
+		characterLevel[0] = 1;
+		for(int i =1; i<units.Length;i++){
+			units[i] = 0;
+			baseLevelUnits[i] = 0;
+			characterLevel[i] = 0;
+		}
+		gold = 0;
+		level = 1;
+		highestLevel = 1;
+		levelCount = 1;
+		// characterUpgradeCost = new double[] {3,30,400,5000,60000,700000,8000000,90000000};
+		boss = false;
+		uniqueBoss = false;
+		for (int i = 0; i < completedRegions.Length;i++){
+			completedRegions[i] = false;
+			highestRegionLevels[i] = regionLevels[i,0];
+		}
+		for (int i = 0; i < uniqueBossButtons.Length;i++){
+			uniqueBossButtons[i].interactable = false;
+		}
+		changeRegion(0);
+		Start();
+		upgradeController.restart();
+		upgradeController.goldTab();
+		upgradeController.resetScroll();
 	}
 }
