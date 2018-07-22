@@ -74,6 +74,7 @@ public class controller : MonoBehaviour {
 	public Button[] uniqueBossButtons;
 	public GameObject[] uniqueBossPrefabs;
 	public string[] uniqueNouns;
+	public int[] uniqueBossLevels;
 
 	void Start () {
 		Application.runInBackground = true;
@@ -364,35 +365,7 @@ public class controller : MonoBehaviour {
 	}
 
 	private void spawnUnique(int i) {
-		switch(i){
-			case 0:
-				level = 30;
-				break;
-			case 1:
-				level = 50;
-				break;
-			case 2:
-				level = 80;
-				break;
-			case 3:
-				level = 110;
-				break;
-			case 4:
-				level = 150;
-				break;
-			case 5:
-				level = 180;
-				break;
-			case 6:
-				level = 260;
-				break;
-			case 7:
-				level = 310;
-				break;
-			default:
-				level = 50;
-				break;
-		}
+		level = uniqueBossLevels[i];
 		double health, maxHealth;
 		uniqueBoss = true;
 		boss=true;
@@ -421,13 +394,9 @@ public class controller : MonoBehaviour {
 		if (uniqueBoss) {
 			GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
 			chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
-			switch (level){
-				case 30:
-					uniqueBossButtons[0].interactable = false;
-					break;
-				case 50:
-					uniqueBossButtons[1].interactable = false;
-					break;
+			for (int i = 0;i< uniqueBossButtons.Length;i++) {
+				if (level == uniqueBossLevels[i])
+					uniqueBossButtons[i].interactable = false;
 			}
 		} else {
 			if(unlockUniqueBoss()){
@@ -437,35 +406,13 @@ public class controller : MonoBehaviour {
 	}
 
 	public bool unlockUniqueBoss() {
-		bool dropBlueprint = true;
-		switch (level){
-			case 20:
-				uniqueBossButtons[0].interactable = true;
+		bool dropBlueprint = false;
+		for (int i = 0;i< uniqueBossButtons.Length;i++) {
+			if (level == uniqueBossLevels[i]-10){
+				uniqueBossButtons[i].interactable = true;
+				dropBlueprint = true;
 				break;
-			case 40:
-				uniqueBossButtons[1].interactable = true;
-				break;
-			case 70:
-				uniqueBossButtons[2].interactable = true;
-				break;
-			case 100:
-				uniqueBossButtons[3].interactable = true;
-				break;
-			case 140:
-				uniqueBossButtons[4].interactable = true;
-				break;
-			case 170:
-				uniqueBossButtons[5].interactable = true;
-				break;
-			case 250:
-				uniqueBossButtons[6].interactable = true;
-				break;
-			case 300:
-				uniqueBossButtons[7].interactable = true;
-				break;
-			default:
-				dropBlueprint = false;
-				break;
+			}
 		}
 		if (dropBlueprint){
 			upgradeController.enableMapButton();
