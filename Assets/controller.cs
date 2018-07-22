@@ -168,8 +168,9 @@ public class controller : MonoBehaviour {
 		units[i] = Math.Round(baseLevelUnits[i]*unitM1[i]*unitM2[i]*unitItemM3[i]);
 	}
 
-	public void LevelUpUnit(int i) {
-		baseLevelUnits[i] = characterLevel[i] == 0 ? 0 : baseLevelUnits[i]+Math.Round(baseUnits[i]*Math.Pow(baseUnitMultiplier,characterLevel[i]));
+	public void LevelUpUnit(int i, int numLevels) {
+		for (int j = 0; j < numLevels; j++)
+			baseLevelUnits[i] = characterLevel[i] == 0 ? 0 : baseLevelUnits[i]+Math.Round(baseUnits[i]*Math.Pow(baseUnitMultiplier,characterLevel[i]));
 		RecalculateUnit(i);
 	}
 
@@ -233,13 +234,13 @@ public class controller : MonoBehaviour {
 	}
 
 	public void levelUp(int i) {
-		characterLevel[i]++;
+		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
+		characterLevel[i] += numLevels;
 		gold -= characterUpgradeCost[i];
 		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
 		characterLevelText[i].text = preText+characterLevel[i];
-		characterUpgradeCost[i] = Math.Round(baseCharacterUpgradeCost[i]*Math.Pow(characterUpgradeCostMultiplier[i],characterLevel[i]));
-		levelUpButton[i].GetComponentInChildren<Text>().text = "Level Up: "+NumberFormat.format(characterUpgradeCost[i])+"g";
-		LevelUpUnit(i);
+		RecalculateCharacterUpgradeCost(i);
+		LevelUpUnit(i,numLevels);
 		if (characterLevel[i] >= 5) 
 			upgradeController.enableBoost1(i);
 		if (characterLevel[i] >= 10) 
@@ -248,6 +249,14 @@ public class controller : MonoBehaviour {
 			upgradeController.enableBoost3(i);
 		upgradeController.enableBoard(i);
 	}
+
+	public void RecalculateCharacterUpgradeCost(int i) {
+		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
+		characterUpgradeCost[i] = Math.Round(baseCharacterUpgradeCost[i]*Math.Pow(characterUpgradeCostMultiplier[i],characterLevel[i])*numLevels);
+		string preText = numLevels == 1 ? (characterLevel[i] == 0 ? "Hire: ": "Level Up: ") : "x"+numLevels+": ";
+		levelUpButton[i].GetComponentInChildren<Text>().text = preText+NumberFormat.format(characterUpgradeCost[i])+"g";
+	}
+
 	public void getDiamond() {
 		diamonds++;
 		if (diamonds > 0){ 
@@ -383,7 +392,7 @@ public class controller : MonoBehaviour {
 
 	public void completeRegion() {
 		upgradeController.enableMapButton();
-		upgradeController.mapTab();
+		// upgradeController.mapTab();
 		completedRegions[region] = true;
 		regionCompleteText.SetActive(true);
 		if (regionButtons.Length > region+1)
@@ -403,6 +412,7 @@ public class controller : MonoBehaviour {
 				GameObject blueprint = (GameObject) Instantiate(blueprintPrefab,pos+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
 			}
 		}
+		upgradeController.enableMultiLevelUpButton();
 	}
 
 	public bool unlockUniqueBoss() {
@@ -416,7 +426,7 @@ public class controller : MonoBehaviour {
 		}
 		if (dropBlueprint){
 			upgradeController.enableMapButton();
-			upgradeController.mapTab();
+			// upgradeController.mapTab();
 		}
 		return dropBlueprint;
 	}

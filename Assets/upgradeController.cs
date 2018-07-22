@@ -9,6 +9,7 @@ public class upgradeController : MonoBehaviour {
 	public Button diamondButton;
 	public Button itemButton;
 	public Button mapButton;
+	public GameObject multiLevelButton;
 	public GameObject goldPanel;
 	public GameObject diamondPanel;
 	public GameObject itemPanel;
@@ -30,6 +31,8 @@ public class upgradeController : MonoBehaviour {
 	public GameObject tabs;
 	public GameObject statsPanel;
 	public GameObject diamondCountText;
+	public int[] multiLevelUpValues;
+	public int currentMultiLevelUpIndex;
 
 	// Use this for initialization
 	void Start () {
@@ -45,6 +48,9 @@ public class upgradeController : MonoBehaviour {
 		tabs.SetActive(false);
 		statsPanel.SetActive(false);
 		diamondCountText.SetActive(false);
+		multiLevelButton.SetActive(false);
+		currentMultiLevelUpIndex = 0;
+		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
 	}
 
 	public void restart() {
@@ -129,6 +135,7 @@ public class upgradeController : MonoBehaviour {
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
+		// goldButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 	public void resetScroll() {
 		goldPanel.GetComponentInChildren<Scrollbar>().value = 1;
@@ -142,6 +149,7 @@ public class upgradeController : MonoBehaviour {
 		diamondPanel.SetActive(true);
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
+		diamondButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 
 	public void itemTab() {
@@ -149,6 +157,7 @@ public class upgradeController : MonoBehaviour {
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(true);
 		mapPanel.SetActive(false);
+		itemButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 
 	public void mapTab() {
@@ -156,6 +165,7 @@ public class upgradeController : MonoBehaviour {
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(true);
+		mapButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 
 	public void enableGoldButton() {
@@ -170,16 +180,33 @@ public class upgradeController : MonoBehaviour {
 		if (!diamondButton.gameObject.active){{}
 			diamondButton.gameObject.SetActive(true);
 			diamondCountText.SetActive(true);
+			diamondButton.gameObject.GetComponent<tabButton>().startNotification();
 		}
 	}
 	public void enableItemButton() {
 		if (!itemButton.gameObject.active) {
 			itemButton.gameObject.SetActive(true);
 		}
+		itemButton.gameObject.GetComponent<tabButton>().startNotification();
 	}
 
 	public void enableMapButton() {
-		if (!mapButton.gameObject.active)
+		if (!mapButton.gameObject.active){
 			mapButton.gameObject.SetActive(true);
+		}
+		mapButton.gameObject.GetComponent<tabButton>().startNotification();
+	}
+
+	public void enableMultiLevelUpButton() {
+		multiLevelButton.SetActive(true);
+	}
+
+	public void changeMultiLevelUp() {
+		currentMultiLevelUpIndex++;
+		if (currentMultiLevelUpIndex == multiLevelUpValues.Length )
+			currentMultiLevelUpIndex = 0;
+		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
+		for (int i = 0; i < controller.levelUpButton.Length; i++)
+			controller.RecalculateCharacterUpgradeCost(i);
 	}
 }
