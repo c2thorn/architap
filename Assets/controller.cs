@@ -75,6 +75,7 @@ public class controller : MonoBehaviour {
 	public GameObject[] uniqueBossPrefabs;
 	public string[] uniqueNouns;
 	public int[] uniqueBossLevels;
+	public GameObject playerIndicator;
 
 	void Start () {
 		Application.runInBackground = true;

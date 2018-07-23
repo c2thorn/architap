@@ -187,7 +187,7 @@ public class upgradeController : MonoBehaviour {
 		if (!itemButton.gameObject.active) {
 			itemButton.gameObject.SetActive(true);
 		}
-		itemButton.gameObject.GetComponent<tabButton>().startNotification();
+		itemButton.GetComponent<tabButton>().startNotification();
 	}
 
 	public void enableMapButton() {
