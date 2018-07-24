@@ -76,6 +76,9 @@ public class controller : MonoBehaviour {
 	public string[] uniqueNouns;
 	public int[] uniqueBossLevels;
 	public GameObject playerIndicator;
+	public Vector3 playerIndicatorOffset = new Vector3(-20,0,0);
+	public Text bossTimeText;
+	public int bossTime = 30;
 
 	void Start () {
 		Application.runInBackground = true;
@@ -101,6 +104,8 @@ public class controller : MonoBehaviour {
 			regionButtons[i].SetActive(false);
 		foreach(Button button in uniqueBossButtons)
 			button.interactable=false;
+		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
+		bossTimeText.gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -182,6 +187,8 @@ public class controller : MonoBehaviour {
 	}
 	public double enemyDied (bool spawn, bool advanceLevel) {
 		double goldIncrement = boss ? calculateGold()*10 : calculateGold();
+		if (uniqueBoss || boss)
+			endBossTime();	
 		if (!uniqueBoss) {
 			if (level == 1 && levelCount == 1)
 				upgradeController.enableGoldButton();
@@ -217,6 +224,7 @@ public class controller : MonoBehaviour {
 			maxHealth = calculateHealth()*5;
 			levelText.text = "Level "+level+"\nBOSS FIGHT!";
 			enemySelector = 5;
+			startBossTime();
 		}
 		else {
 			health = 0;
@@ -290,17 +298,6 @@ public class controller : MonoBehaviour {
 		unitMultiplierText[1].text = " + "+(m1Level[1]-1)*25+"%"; 
 	}
 
-	// public void buyM1Up(int i) {
-	// 	m1Level[i]++;
-	// 	diamonds -= m1UpgradeCost[i];
-	// 	diamondText.text = "Diamonds: "+diamonds;
-	// 	m1UpgradeCost[i] = (int)(m1UpgradeBaseCost[i]*Mathf.Pow(m1UpgradeCostMultiplier[i],m1Level[i]));
-	// 	unitM1Button[i].GetComponentInChildren<Text>().text = m1UpgradeCost[i]+" diamonds";
-	// 	unitM1[i] += .25f;
-	// 	unitMultiplierText[i].text = " + "+(m1Level[i]-1)*25+"%"; 
-	// 	RecalculateUnits(i);
-	// }
-
 	public void buyInstaGold() {
 		gold += calculateMaxGold();
 		diamonds -= instaGoldPrice;
@@ -350,6 +347,7 @@ public class controller : MonoBehaviour {
 				regionBackgrounds[j].SetActive(j==(i+1));
 			}
 			spawnNewEnemy(true);
+			playerIndicator.transform.position = regionButtons[i].transform.position+playerIndicatorOffset;
 		}
 	}
 
@@ -359,6 +357,7 @@ public class controller : MonoBehaviour {
 		if (house.health >= house.maxHealth){
 			enemyDied(false, false);
 		}
+		endBossTime();
 		Destroy(enemy);
 	}
 
@@ -371,6 +370,7 @@ public class controller : MonoBehaviour {
 			finishOffEnemy();
 			levelCount = 1;
 			spawnUnique(i);
+			playerIndicator.transform.position = uniqueBossButtons[i].transform.position+playerIndicatorOffset;
 		}
 	}
 
@@ -389,6 +389,7 @@ public class controller : MonoBehaviour {
 		healthBar.UpdateBar( health, maxHealth );
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ uniqueNouns[i];
 		newUnique.GetComponent<House>().delay();
+		startBossTime();
 	}
 
 	public void completeRegion() {
@@ -461,4 +462,28 @@ public class controller : MonoBehaviour {
 		upgradeController.goldTab();
 		upgradeController.resetScroll();
 	}
+
+	public void startBossTime() {
+		bossTimeText.gameObject.SetActive(true);
+		bossTimeText.text = bossTime.ToString();
+		StartCoroutine(bossTimeCountdown());
+		Debug.Log("start");
+	}
+
+	public void endBossTime() {
+		bossTimeText.gameObject.SetActive(false);
+		StopCoroutine(bossTimeCountdown());
+	}
+
+	IEnumerator bossTimeCountdown() {
+		for (int i = bossTime;i>0;i--){
+			bossTimeText.text = i.ToString();
+			yield return new WaitForSeconds(1f);
+		}
+		if (uniqueBoss){
+			changeRegion(0);
+		} else {
+			levelNavigateDown();
+		}
+    }
 }
