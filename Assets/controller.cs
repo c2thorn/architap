@@ -79,6 +79,8 @@ public class controller : MonoBehaviour {
 	public Vector3 playerIndicatorOffset = new Vector3(-20,0,0);
 	public Text bossTimeText;
 	public int bossTime = 30;
+	public int bossStartTime = 30;
+	public bool bossTimeCountdownFlag = false;
 
 	void Start () {
 		Application.runInBackground = true;
@@ -106,6 +108,7 @@ public class controller : MonoBehaviour {
 			button.interactable=false;
 		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
 		bossTimeText.gameObject.SetActive(false);
+		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
 	}
 	
 	// Update is called once per frame
@@ -181,6 +184,8 @@ public class controller : MonoBehaviour {
 	}
 
 	public double calculateHealth() {
+		if (uniqueBoss)
+			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 10; 
 		if (boss)
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5; 
 		return Math.Round(baseHealth*Math.Pow(healthMultiplier,level));
@@ -217,26 +222,18 @@ public class controller : MonoBehaviour {
 	}
 
 	private void spawnNewEnemy(bool delay) {
-		double health, maxHealth;
 		int enemySelector;
 		if (boss) {
-			health = 0;
-			maxHealth = calculateHealth()*5;
 			levelText.text = "Level "+level+"\nBOSS FIGHT!";
 			enemySelector = 5;
 			startBossTime();
 		}
 		else {
-			health = 0;
-			maxHealth = calculateHealth();
 			levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
 			enemySelector = ((level-1)/2)%5;
 		}
 
 		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-5f,-5f),Quaternion.Euler(0, UnityEngine.Random.value*360f, 0));
-		newEnemy.GetComponent<House>().health = 0;
-		newEnemy.GetComponent<House>().maxHealth = maxHealth; //redundant?
-		healthBar.UpdateBar( health, maxHealth );
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
 		if (delay)
 			newEnemy.GetComponent<House>().delay();
@@ -376,17 +373,13 @@ public class controller : MonoBehaviour {
 
 	private void spawnUnique(int i) {
 		level = uniqueBossLevels[i];
-		double health, maxHealth;
 		uniqueBoss = true;
 		boss=true;
-		health = 0;
-		maxHealth = calculateHealth()*10;
+		// maxHealth = calculateHealth()*10;
 		levelText.text = "Level "+level+"\nUnique #"+(i+1)+"!";
 
 		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,-5f,-5f),Quaternion.Euler(-90,-125.2f, UnityEngine.Random.value*360f));
 		newUnique.GetComponent<House>().health = 0;
-		newUnique.GetComponent<House>().maxHealth = maxHealth; //redundant?
-		healthBar.UpdateBar( health, maxHealth );
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ uniqueNouns[i];
 		newUnique.GetComponent<House>().delay();
 		startBossTime();
@@ -464,26 +457,29 @@ public class controller : MonoBehaviour {
 	}
 
 	public void startBossTime() {
+		bossTime = bossStartTime;
 		bossTimeText.gameObject.SetActive(true);
 		bossTimeText.text = bossTime.ToString();
-		StartCoroutine(bossTimeCountdown());
-		Debug.Log("start");
+		bossTimeCountdownFlag = true;
 	}
 
 	public void endBossTime() {
 		bossTimeText.gameObject.SetActive(false);
-		StopCoroutine(bossTimeCountdown());
+		bossTimeCountdownFlag = false;
 	}
 
-	IEnumerator bossTimeCountdown() {
-		for (int i = bossTime;i>0;i--){
-			bossTimeText.text = i.ToString();
-			yield return new WaitForSeconds(1f);
-		}
-		if (uniqueBoss){
-			changeRegion(0);
-		} else {
-			levelNavigateDown();
+	void bossTimeCountdown() {
+		if (bossTimeCountdownFlag){
+			bossTime--;
+			bossTimeText.text = bossTime.ToString();
+			if (bossTime == 0) {
+				if (uniqueBoss){
+					changeRegion(0);
+				} else {
+					levelNavigateDown();
+				}
+				endBossTime();
+			}
 		}
     }
 }

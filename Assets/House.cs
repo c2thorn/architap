@@ -32,6 +32,7 @@ public class House : MonoBehaviour {
 		rend = GetComponent<MeshRenderer>();
 		rend.material.shader = unfinished;
         maxHealth = controller.calculateHealth();
+        healthBar.UpdateBar( health, maxHealth );
 	}
 	
 	// Update is called once per frame
