@@ -393,6 +393,7 @@ public class controller : MonoBehaviour {
 			levelCount = 1;
 			spawnUnique(i);
 			playerIndicator.transform.position = uniqueBossButtons[i].transform.position+playerIndicatorOffset;
+			regionCompleteText.SetActive(false);
 		}
 	}
 
