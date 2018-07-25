@@ -29,8 +29,8 @@ public class controller : MonoBehaviour {
 	public double[] m1UpgradeCost = new double[] {5, 8};
 	public double[] m1UpgradeBaseCost = new double[] {5, 8};
 	public double[] m1UpgradeCostMultiplier = new double[] {1.08, 1.09};
-	public double[] unitM2 = new double[] {1.0, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00};
-	public double[] unitItemM3 = new double[] {1.0, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00};
+	public double[] unitItemM2 = new double[] {1.0, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00};
+	public double[] unitAchievementM3 = new double[] {1.0, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00};
 	public int[] characterLevel = new int[] {1, 0, 0, 0, 0, 0, 0, 0};
 	public double[] characterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public double[] baseCharacterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
@@ -81,6 +81,8 @@ public class controller : MonoBehaviour {
 	public int bossTime = 30;
 	public int bossStartTime = 30;
 	public bool bossTimeCountdownFlag = false;
+	public double sumUnits = 0;
+	public achievementController achievementController;
 
 	void Start () {
 		Application.runInBackground = true;
@@ -109,11 +111,12 @@ public class controller : MonoBehaviour {
 		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
 		bossTimeText.gameObject.SetActive(false);
 		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
+		InvokeRepeating("checkUnitAchievement",Time.time,1.0f);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		double sumUnits = 0;
+		double tempSum = 0;
 		for(int i = 0; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
 			if (characterLevel[i] > 0) {
@@ -122,15 +125,18 @@ public class controller : MonoBehaviour {
 			if (i < unitM1Button.Length)
 				unitM1Button[i].interactable = diamonds >= m1UpgradeCost[i];
 			if (i != 0)
-				sumUnits += units[i];
+				tempSum += units[i];
 		}
+		sumUnits = tempSum;
 		partnerUnitText.text = "Units: " + NumberFormat.format(sumUnits);
 		goldText.text = "Gold: "+NumberFormat.format(gold);
 		diamondText.text = "Diamonds: "+diamonds;
 		instaGoldButton.interactable = diamonds >= instaGoldPrice;
-		// p1DamageM1Button.interactable = diamonds >= p1M1UpgradeCost;
-		// clickDamageMultiplierText.text = "+ "+(clickMultiplier1-1.0f)*100+"%";
-		// p1DamageM1Text.text = "+ "+(p1Multiplier-1.0f)*100+"%";
+	}
+
+	public void checkUnitAchievement() {
+		achievementController.checkAchievement("units",sumUnits);
+		achievementController.checkAchievement("unitIndex0",units[0]);
 	}
 
 	private void enemyLevelUp(bool advanceLevel) {
@@ -168,18 +174,37 @@ public class controller : MonoBehaviour {
 				else if (item.effect ==  "unitIndex" + i)
 						multiplier += item.effectValue*item.count;
 			}
-			unitItemM3[i] = multiplier;
+			unitItemM2[i] = multiplier;
+			RecalculateUnit(i);
+		}
+	}
+
+	public void RecalculateAchievementMultipliers() {
+		for (int i = 0; i < upgradeController.characterAmount; i++) {
+			double multiplier = 1.0;
+			foreach(achievement achievement in achievementController.achievements) {
+				if (achievement.completed) {
+					if (achievement.effect == "partners" && i != 0)
+							multiplier += achievement.effectValue;
+					else if (achievement.effect ==  "unitIndex" + i)
+							multiplier += achievement.effectValue;
+				}
+			}
+			unitAchievementM3[i] = multiplier;
 			RecalculateUnit(i);
 		}
 	}
 
 	public void RecalculateUnit(int i) {
-		units[i] = Math.Round(baseLevelUnits[i]*unitM1[i]*unitM2[i]*unitItemM3[i]);
+		units[i] = Math.Round(baseLevelUnits[i]*unitM1[i]*unitItemM2[i]*unitAchievementM3[i]);
 	}
 
 	public void LevelUpUnit(int i, int numLevels) {
-		for (int j = 0; j < numLevels; j++)
-			baseLevelUnits[i] = characterLevel[i] == 0 ? 0 : baseLevelUnits[i]+Math.Round(baseUnits[i]*Math.Pow(baseUnitMultiplier,characterLevel[i]));
+		for (int j = 0; j < numLevels; j++){
+			//TODO: exponential or fixed returns?
+			// baseLevelUnits[i] = characterLevel[i] == 0 ? 0 : baseLevelUnits[i]+Math.Round(baseUnits[i]*Math.Pow(baseUnitMultiplier,characterLevel[i]));
+			baseLevelUnits[i] = characterLevel[i] == 0 ? 0 : baseLevelUnits[i]+baseUnits[i];
+		}
 		RecalculateUnit(i);
 	}
 
@@ -392,6 +417,7 @@ public class controller : MonoBehaviour {
 		regionCompleteText.SetActive(true);
 		if (regionButtons.Length > region+1)
 			regionButtons[region+1].SetActive(true);
+		achievementController.checkAchievement("region",region);
 	}
 
 	public void checkBossReward(Vector3 pos) {
@@ -454,6 +480,7 @@ public class controller : MonoBehaviour {
 		upgradeController.restart();
 		upgradeController.goldTab();
 		upgradeController.resetScroll();
+		achievementController.checkAchievement("prestige",1);
 	}
 
 	public void startBossTime() {
