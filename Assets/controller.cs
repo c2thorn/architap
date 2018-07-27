@@ -10,6 +10,7 @@ public class controller : MonoBehaviour {
 	public double gold = 0;
 	public double diamonds = 0;
 	public float diamondChance = 0.05f;
+	public float coalChance = 0.1f;
 	public int level = 1;
 	public int highestLevel = 1;
 	public int levelCount = 1;
@@ -35,6 +36,8 @@ public class controller : MonoBehaviour {
 	public double[] characterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public double[] baseCharacterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public double[] characterUpgradeCostMultiplier = new double[] {1.07, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1};
+	public double prestigeCurrency = 0;
+	public double coal = 0;
 	public Text[] characterLevelText;
 	public Button[] levelUpButton;
 	public Text[] unitText;
@@ -45,6 +48,9 @@ public class controller : MonoBehaviour {
 	public Text levelText = null;
 	public Text goldText = null;
 	public Text diamondText = null;
+	public Text clickText;
+	public Text prestigeText;
+	public Text coalText;
 	public bool boss = false;
 	public bool uniqueBoss = false;
 	public Text enemyDescriptionText;
@@ -112,6 +118,8 @@ public class controller : MonoBehaviour {
 		bossTimeText.gameObject.SetActive(false);
 		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
 		InvokeRepeating("checkUnitAchievement",Time.time,1.0f);
+		prestigeText.gameObject.SetActive(false);
+		coalText.gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -128,10 +136,13 @@ public class controller : MonoBehaviour {
 				tempSum += units[i];
 		}
 		sumUnits = tempSum;
-		partnerUnitText.text = "Units: " + NumberFormat.format(sumUnits);
-		goldText.text = "Gold: "+NumberFormat.format(gold);
-		diamondText.text = "Diamonds: "+diamonds;
+		clickText.text = NumberFormat.format(units[0]);
+		partnerUnitText.text = NumberFormat.format(sumUnits);
+		goldText.text = NumberFormat.format(gold);
+		diamondText.text = NumberFormat.format(diamonds);
 		instaGoldButton.interactable = diamonds >= instaGoldPrice;
+		prestigeText.text = NumberFormat.format(prestigeCurrency);
+		coalText.text = NumberFormat.format(coal);
 	}
 
 	public void checkUnitAchievement() {
@@ -295,6 +306,11 @@ public class controller : MonoBehaviour {
 		}
 	}
 
+	public void getCoal() {
+		coal++;
+		coalText.gameObject.SetActive(true);
+	}
+
 	public void buyClickM1Up() {
 		int i = 0;
 		m1Level[i]++;
@@ -376,7 +392,7 @@ public class controller : MonoBehaviour {
 	public void finishOffEnemy() {
 		GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
 		House house = enemy.GetComponent<House>();
-		if (house.health >= house.maxHealth){
+		if (house.health >= house.maxHealth && !uniqueBoss){
 			enemyDied(false, false);
 		}
 		endBossTime();
@@ -454,6 +470,7 @@ public class controller : MonoBehaviour {
 	}
 
 	public void prestige() {
+		changeRegion(0);
 		units[0] = 1;
 		baseLevelUnits[0] = 1;
 		characterLevel[0] = 1;
@@ -476,12 +493,13 @@ public class controller : MonoBehaviour {
 		for (int i = 0; i < uniqueBossButtons.Length;i++){
 			uniqueBossButtons[i].interactable = false;
 		}
-		changeRegion(0);
 		Start();
 		upgradeController.restart();
 		upgradeController.goldTab();
 		upgradeController.resetScroll();
 		achievementController.checkAchievement("prestige",1);
+		prestigeCurrency++;
+		prestigeText.gameObject.SetActive(true);
 	}
 
 	public void startBossTime() {

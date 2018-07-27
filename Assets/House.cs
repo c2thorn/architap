@@ -10,6 +10,7 @@ public class House : MonoBehaviour {
     public Canvas canvas;
     public GameObject damageTextPrefab;
     public GameObject diamondPrefab;
+    public GameObject coalPrefab;
     public double health = 0;
     public double maxHealth = 2;
 
@@ -97,6 +98,8 @@ public class House : MonoBehaviour {
         }
         else if(controller.level >= 6 && Random.value <= controller.diamondChance) {
             GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+        } else if (controller.level >= 10 && Random.value <= controller.coalChance) {
+            GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
 		rend.material.shader = finished;
         yield return new WaitForSeconds(1f);
