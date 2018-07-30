@@ -128,4 +128,12 @@ public class House : MonoBehaviour {
         if (goldPos)
             floatText.GetComponent<RectTransform>().anchoredPosition = pos;
     }
+
+    public void stopDamage(){
+        invulnerable = true;
+    }
+
+    public void startDamage() {
+        invulnerable = false;
+    }
 }

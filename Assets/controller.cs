@@ -89,6 +89,13 @@ public class controller : MonoBehaviour {
 	public bool bossTimeCountdownFlag = false;
 	public double sumUnits = 0;
 	public achievementController achievementController;
+	public GameObject coalModal;
+	public Text coalConversionText;
+	public Text diamondConversionText;
+	public GameObject levelArea;
+	public Button[] shopButtons;
+	public GameObject[] shopBackgrounds;
+
 
 	void Start () {
 		Application.runInBackground = true;
@@ -96,7 +103,6 @@ public class controller : MonoBehaviour {
 		double maxHealth = calculateHealth();
 		healthBar.UpdateBar( health, maxHealth );
 		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
-
 		characterLevelText[0].text = "Hero Level: "+characterLevel[0];
 		levelUpButton[0].GetComponentInChildren<Text>().text = "Level Up: "+characterUpgradeCost[0]+"g";
 		unitText[0].text = "Units: "+units[0];
@@ -120,6 +126,7 @@ public class controller : MonoBehaviour {
 		InvokeRepeating("checkUnitAchievement",Time.time,1.0f);
 		prestigeText.gameObject.SetActive(false);
 		coalText.gameObject.SetActive(false);
+		closeCoalModal();
 	}
 	
 	// Update is called once per frame
@@ -391,12 +398,14 @@ public class controller : MonoBehaviour {
 
 	public void finishOffEnemy() {
 		GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
-		House house = enemy.GetComponent<House>();
-		if (house.health >= house.maxHealth && !uniqueBoss){
-			enemyDied(false, false);
+		if (enemy) {
+			House house = enemy.GetComponent<House>();
+			if (house.health >= house.maxHealth && !uniqueBoss){
+				enemyDied(false, false);
+			}
+			endBossTime();
+			Destroy(enemy);
 		}
-		endBossTime();
-		Destroy(enemy);
 	}
 
 	public void goToUnique(int i) {
@@ -528,4 +537,40 @@ public class controller : MonoBehaviour {
 			}
 		}
     }
+
+	public void goToShop(int i) {
+		if (!itemController.itemDrop) {
+			for(int j = 0; j < shopBackgrounds.Length; j++)
+				shopBackgrounds[j].SetActive(j==0);
+			finishOffEnemy(); 
+			playerIndicator.transform.position = shopButtons[i].transform.position+playerIndicatorOffset;
+			levelArea.SetActive(false);
+		}
+	}
+
+	public void convertCoal() {
+		diamonds += coal;
+		coal = 0;
+		closeCoalModal();
+	}
+
+	public void showCoalModal() {
+		coalConversionText.text = NumberFormat.format(coal);
+		diamondConversionText.text = NumberFormat.format(coal);
+		coalModal.SetActive(true);
+		finishOffEnemy();
+		// GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
+		// if (enemy) {
+		// 	enemy.GetComponent<House>().stopDamage();
+		// }
+	}
+
+	public void closeCoalModal() {
+		coalModal.SetActive(false);
+		changeRegion(region);
+		// GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
+		// if (enemy) {
+		// 	enemy.GetComponent<House>().startDamage();
+		// }
+	}
 }
