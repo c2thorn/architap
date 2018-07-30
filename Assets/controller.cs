@@ -410,11 +410,11 @@ public class controller : MonoBehaviour {
 
 	public void goToUnique(int i) {
 		if (!itemController.itemDrop) {
+			finishOffEnemy();
 			levelNavigateUpButton.gameObject.SetActive(false);
 			levelNavigateDownButton.gameObject.SetActive(false);
 			for(int j = 0; j < regionBackgrounds.Length; j++)
 				regionBackgrounds[j].SetActive(j==0);
-			finishOffEnemy();
 			levelCount = 1;
 			spawnUnique(i);
 			playerIndicator.transform.position = uniqueBossButtons[i].transform.position+playerIndicatorOffset;
