@@ -40,7 +40,7 @@ public class House : MonoBehaviour {
 	void Update () {
         rotate();
         if (health < maxHealth && !invulnerable) {
-            if (!itemController.itemDrop){
+            if (!itemController.itemDrop && !controller.modalOpen){
                 partnerDamage();
                 bool hit = checkClick();
                 hit = !checkDead() && hit;

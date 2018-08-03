@@ -95,6 +95,8 @@ public class controller : MonoBehaviour {
 	public GameObject levelArea;
 	public Button[] shopButtons;
 	public GameObject[] shopBackgrounds;
+	public GameObject shopPanel;
+	public bool modalOpen;
 
 
 	void Start () {
@@ -127,6 +129,8 @@ public class controller : MonoBehaviour {
 		prestigeText.gameObject.SetActive(false);
 		coalText.gameObject.SetActive(false);
 		closeCoalModal();
+		shopPanel.SetActive(false);
+		modalOpen = false;
 	}
 	
 	// Update is called once per frame
@@ -301,7 +305,10 @@ public class controller : MonoBehaviour {
 
 	public void RecalculateCharacterUpgradeCost(int i) {
 		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
-		characterUpgradeCost[i] = Math.Round(baseCharacterUpgradeCost[i]*Math.Pow(characterUpgradeCostMultiplier[i],characterLevel[i])*numLevels);
+		double sum = 0;
+		for (int j = 0; j < numLevels; j++)
+			sum += Math.Round(baseCharacterUpgradeCost[i]*Math.Pow(characterUpgradeCostMultiplier[i],characterLevel[i]+j));
+		characterUpgradeCost[i] = sum;
 		string preText = numLevels == 1 ? (characterLevel[i] == 0 ? "Hire: ": "Level Up: ") : "x"+numLevels+": ";
 		levelUpButton[i].GetComponentInChildren<Text>().text = preText+NumberFormat.format(characterUpgradeCost[i])+"g";
 	}
@@ -359,7 +366,7 @@ public class controller : MonoBehaviour {
 	}
 
 	public void levelNavigateDown() {
-		if (!itemController.itemDrop) {
+		if (!itemController.itemDrop && !modalOpen) {
 			finishOffEnemy();
 			level--;
 			levelCount = levelMaxCount;
@@ -372,7 +379,9 @@ public class controller : MonoBehaviour {
 	}
 
 	public void changeRegion(int i) {
-		if (!itemController.itemDrop) {
+		if (!itemController.itemDrop && !modalOpen) {
+			levelArea.SetActive(true);
+			shopPanel.SetActive(false);
 			finishOffEnemy();
 			region = i;
 			regionCompleteText.SetActive(completedRegions[i]);
@@ -391,6 +400,8 @@ public class controller : MonoBehaviour {
 			for(int j = 0; j < regionBackgrounds.Length; j++) {
 				regionBackgrounds[j].SetActive(j==(i+1));
 			}
+			for(int j = 0; j < shopBackgrounds.Length; j++)
+				shopBackgrounds[j].SetActive(false);
 			spawnNewEnemy(true);
 			playerIndicator.transform.position = regionButtons[i].transform.position+playerIndicatorOffset;
 		}
@@ -409,12 +420,16 @@ public class controller : MonoBehaviour {
 	}
 
 	public void goToUnique(int i) {
-		if (!itemController.itemDrop) {
+		if (!itemController.itemDrop && !modalOpen) {
+			levelArea.SetActive(true);
+			shopPanel.SetActive(false);
 			finishOffEnemy();
 			levelNavigateUpButton.gameObject.SetActive(false);
 			levelNavigateDownButton.gameObject.SetActive(false);
 			for(int j = 0; j < regionBackgrounds.Length; j++)
 				regionBackgrounds[j].SetActive(j==0);
+			for(int j = 0; j < shopBackgrounds.Length; j++)
+				shopBackgrounds[j].SetActive(false);
 			levelCount = 1;
 			spawnUnique(i);
 			playerIndicator.transform.position = uniqueBossButtons[i].transform.position+playerIndicatorOffset;
@@ -539,12 +554,15 @@ public class controller : MonoBehaviour {
     }
 
 	public void goToShop(int i) {
-		if (!itemController.itemDrop) {
+		if (!itemController.itemDrop && !modalOpen) {
+			for(int j = 0; j < regionBackgrounds.Length; j++)
+				regionBackgrounds[j].SetActive(false);
 			for(int j = 0; j < shopBackgrounds.Length; j++)
-				shopBackgrounds[j].SetActive(j==0);
+				shopBackgrounds[j].SetActive(j==i);
 			finishOffEnemy(); 
 			playerIndicator.transform.position = shopButtons[i].transform.position+playerIndicatorOffset;
 			levelArea.SetActive(false);
+			shopPanel.SetActive(true);
 		}
 	}
 
@@ -558,19 +576,11 @@ public class controller : MonoBehaviour {
 		coalConversionText.text = NumberFormat.format(coal);
 		diamondConversionText.text = NumberFormat.format(coal);
 		coalModal.SetActive(true);
-		finishOffEnemy();
-		// GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
-		// if (enemy) {
-		// 	enemy.GetComponent<House>().stopDamage();
-		// }
+		modalOpen = true;
 	}
 
 	public void closeCoalModal() {
 		coalModal.SetActive(false);
-		changeRegion(region);
-		// GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
-		// if (enemy) {
-		// 	enemy.GetComponent<House>().startDamage();
-		// }
+		modalOpen = false;
 	}
 }
