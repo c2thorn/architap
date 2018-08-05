@@ -5,110 +5,165 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class controller : MonoBehaviour {
+#region Variables
 
-	public double[] units = new double[] {1, 0, 0, 0, 0, 0, 0, 0};
+#region Currencies
 	public double gold = 0;
 	public double diamonds = 0;
+	public double prestigeCurrency = 0;
+	public double coal = 0;
 	public float diamondChance = 0.05f;
 	public float coalChance = 0.1f;
+#endregion
+#region Enemy Level
 	public int level = 1;
 	public int highestLevel = 1;
 	public int levelCount = 1;
 	public int levelMaxCount = 10;
+#endregion
+#region Gold
 	public double baseGoldDrop = 1;
 	public double baseGoldMultiplier = 1.07;
-	public double baseHealth = 5;
-	public double healthMultiplier = 1.12;
 	public double goldMultiplier1 = 1;
 	public double goldMultiplier2 = 1;
+#endregion
+#region Health
+	public double baseHealth = 5;
+	public double healthMultiplier = 1.12;
+    public SimpleHealthBar healthBar;
+#endregion
+#region Units
+	public double[] units = new double[] {1, 0, 0, 0, 0, 0, 0, 0};
 	public double baseUnitMultiplier = 1.04;
 	public double[] baseUnits = new double[] {1, 1, 10, 100, 1000, 10000, 100000, 1000000};
 	public double[] baseLevelUnits = new double[] {1, 0, 0, 0, 0, 0, 0, 0};
-	public float[] periods = new float[] {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
+	public double sumofAllUnits = 0;
+#endregion
+#region Multiplier 1
 	public double[] unitM1 = new double[] {1.1, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00};
 	public int[] m1Level = new int[] {1, 1, 1, 1, 1, 1, 1, 1};
 	public double[] m1UpgradeCost = new double[] {5, 8};
 	public double[] m1UpgradeBaseCost = new double[] {5, 8};
 	public double[] m1UpgradeCostMultiplier = new double[] {1.08, 1.09};
+#endregion
+#region Multiplier 2 (Item)
 	public double[] unitItemM2 = new double[] {1.0, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00};
+#endregion 
+#region Multiplier 3 (Achievement)
 	public double[] unitAchievementM3 = new double[] {1.0, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00};
+#endregion
+#region Characters
 	public int[] characterLevel = new int[] {1, 0, 0, 0, 0, 0, 0, 0};
 	public double[] characterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public double[] baseCharacterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public double[] characterUpgradeCostMultiplier = new double[] {1.07, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1};
-	public double prestigeCurrency = 0;
-	public double coal = 0;
-	public Text[] characterLevelText;
-	public Button[] levelUpButton;
+	public float[] periods = new float[] {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
+#endregion
+#region Prefabs
+	public GameObject[] enemyPrefabs;
+	public GameObject blueprintPrefab;
+    public GameObject chestPrefab;
+	public GameObject[] uniqueBossPrefabs;
+#endregion
+#region Flags
+	public bool boss = false;
+	public bool uniqueBoss = false;
+	public bool modalOpen;
+	public bool bossTimeCountdownFlag = false;
+#endregion
+#region Enemy Naming
+	public string[] enemyNouns;
+	public string[] enemyAdjectives;
+	public string[] uniqueNouns;
+#endregion
+#region Controllers
+	public upgradeController upgradeController;
+	public ItemController itemController;
+	public achievementController achievementController;
+	public SettingsController settingsController;
+#endregion
+#region InstaGold
+	public double instaGoldPrice = 20;
+	public double instaGoldMultiplier = 200;
+#endregion
+#region Region
+	public int region = 0;
+	public bool[] completedRegions = new bool[] {false,false,false,false};
+	public int[,] regionLevels = new int[,] {{1,50},{50,120},{110,200},{200,350}};
+	public int[] highestRegionLevels = new int[] {1,50,110,200};
+	public ArrayList completedBossLevels = new ArrayList();
+#endregion
+#region Map
+	public int[] uniqueBossLevels;
+	public GameObject playerIndicator;
+	public Vector3 playerIndicatorOffset = new Vector3(-20,0,0);
+#endregion
+#region Boss Time
+	public int bossTime = 30;
+	public int bossStartTime = 30;
+#endregion
+#region Text
 	public Text[] unitText;
 	public Text[] unitMultiplierText;
-	public Button[] unitM1Button;
-	public GameObject[] enemyPrefabs;
-    public SimpleHealthBar healthBar;
+	public Text[] characterLevelText;
+	public GameObject regionCompleteText;
 	public Text levelText = null;
 	public Text goldText = null;
 	public Text diamondText = null;
 	public Text clickText;
 	public Text prestigeText;
 	public Text coalText;
-	public bool boss = false;
-	public bool uniqueBoss = false;
-	public Text enemyDescriptionText;
-	public string[] enemyNouns;
-	public string[] enemyAdjectives;
-	public upgradeController upgradeController;
-	public ItemController itemController;
-
-	public GameObject goldPanel;
-	public Button instaGoldButton;
 	public Text instaGoldText;
-	public double instaGoldPrice = 20;
-	public double instaGoldMultiplier = 200;
-	public Button levelNavigateUpButton;
-	public Button levelNavigateDownButton;
-	public int region = 0;
-	public bool[] completedRegions = new bool[] {false,false,false,false};
-	public int[,] regionLevels = new int[,] {{1,50},{50,120},{110,200},{200,350}};
-	public int[] highestRegionLevels = new int[] {1,50,110,200};
-	public ArrayList completedBossLevels = new ArrayList();
-	public GameObject regionCompleteText;
-	public GameObject[] regionBackgrounds;
-	public GameObject[] regionButtons;
 	public Text partnerUnitText;
-	public GameObject blueprintPrefab;
-    public GameObject chestPrefab;
-	public Button[] uniqueBossButtons;
-	public GameObject[] uniqueBossPrefabs;
-	public string[] uniqueNouns;
-	public int[] uniqueBossLevels;
-	public GameObject playerIndicator;
-	public Vector3 playerIndicatorOffset = new Vector3(-20,0,0);
 	public Text bossTimeText;
-	public int bossTime = 30;
-	public int bossStartTime = 30;
-	public bool bossTimeCountdownFlag = false;
-	public double sumUnits = 0;
-	public achievementController achievementController;
-	public GameObject coalModal;
+	public Text enemyDescriptionText;
 	public Text coalConversionText;
 	public Text diamondConversionText;
-	public GameObject levelArea;
+#endregion
+#region Buttons
+	public Button levelNavigateUpButton;
+	public Button levelNavigateDownButton;
+	public Button[] levelUpButton;
+	public Button[] unitM1Button;
+	public Button instaGoldButton;
+	public GameObject[] regionButtons;
+	public Button[] uniqueBossButtons;
 	public Button[] shopButtons;
-	public GameObject[] shopBackgrounds;
+#endregion
+#region Panels
+	public GameObject goldPanel;
+	public GameObject levelArea;
+	public GameObject coalModal;
 	public GameObject shopPanel;
-	public bool modalOpen;
 
+#endregion
+#region Backgrounds
+	public GameObject[] regionBackgrounds;
+	public GameObject[] shopBackgrounds;
+#endregion
+#region Statistics
+	public double totalBuildings = 0;
+	public double totalPrestiges = 0;
+	public double totalClicks = 0;
+	public double totalGold = 0;
+	public double totalUnits = 0;
+	public double totalRegionsCompleted = 0;
+#endregion
 
+#endregion
+
+#region Start/Update
 	void Start () {
 		Application.runInBackground = true;
 		double health = 0;
 		double maxHealth = calculateHealth();
 		healthBar.UpdateBar( health, maxHealth );
+
+		//Screen text
 		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
 		characterLevelText[0].text = "Hero Level: "+characterLevel[0];
 		levelUpButton[0].GetComponentInChildren<Text>().text = "Level Up: "+characterUpgradeCost[0]+"g";
 		unitText[0].text = "Units: "+units[0];
-		
 		characterLevelText[1].text = "Partner";
 		for (int i = 1; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].GetComponentInChildren<Text>().text = "Hire: "+characterUpgradeCost[i]+"g";
@@ -116,25 +171,33 @@ public class controller : MonoBehaviour {
 		}
 		instaGoldButton.GetComponentInChildren<Text>().text = instaGoldPrice+" diamonds";
 		instaGoldText.text = calculateMaxGold()+" gold!";
+
+		//Deactivate certain objects
 		levelNavigateDownButton.gameObject.SetActive(false);
 		levelNavigateUpButton.gameObject.SetActive(false);
+		prestigeText.gameObject.SetActive(false);
+		coalText.gameObject.SetActive(false);
+		bossTimeText.gameObject.SetActive(false);
 		for (int i = 1; i < regionButtons.Length; i++)
 			regionButtons[i].SetActive(false);
 		foreach(Button button in uniqueBossButtons)
 			button.interactable=false;
-		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
-		bossTimeText.gameObject.SetActive(false);
-		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
-		InvokeRepeating("checkUnitAchievement",Time.time,1.0f);
-		prestigeText.gameObject.SetActive(false);
-		coalText.gameObject.SetActive(false);
 		closeCoalModal();
 		shopPanel.SetActive(false);
+
+		//Start repeating methods
+		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
+		InvokeRepeating("checkUnitAchievement",Time.time,1.0f);
+
+		//Set other variables
 		modalOpen = false;
+		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
+		totalBuildings = 0;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		//Sum total units
 		double tempSum = 0;
 		for(int i = 0; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
@@ -146,39 +209,22 @@ public class controller : MonoBehaviour {
 			if (i != 0)
 				tempSum += units[i];
 		}
-		sumUnits = tempSum;
+		sumofAllUnits = tempSum;
+
+		//Update Text
 		clickText.text = NumberFormat.format(units[0]);
-		partnerUnitText.text = NumberFormat.format(sumUnits);
+		partnerUnitText.text = NumberFormat.format(sumofAllUnits);
 		goldText.text = NumberFormat.format(gold);
 		diamondText.text = NumberFormat.format(diamonds);
-		instaGoldButton.interactable = diamonds >= instaGoldPrice;
 		prestigeText.text = NumberFormat.format(prestigeCurrency);
 		coalText.text = NumberFormat.format(coal);
-	}
 
-	public void checkUnitAchievement() {
-		achievementController.checkAchievement("units",sumUnits);
-		achievementController.checkAchievement("unitIndex0",units[0]);
+		//Update instagold price
+		instaGoldButton.interactable = diamonds >= instaGoldPrice;
 	}
+#endregion
 
-	private void enemyLevelUp(bool advanceLevel) {
-		if (level == regionLevels[region,1]) {
-			if (!completedRegions[region]) {
-				completeRegion();
-			}
-			levelCount = levelMaxCount;
-		} else {
-			highestLevel++;
-			highestRegionLevels[region] = level+1;
-			if (advanceLevel) {
-				level++;
-				levelCount = 1;
-			}
-			instaGoldText.text = calculateMaxGold()+" gold!";
-			levelNavigateDownButton.gameObject.SetActive(true);
-		}
-	}
-
+#region Calculations
 	private double calculateGold() {
 		return Math.Round(baseGoldDrop*Math.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
 	}
@@ -186,41 +232,25 @@ public class controller : MonoBehaviour {
 	private double calculateMaxGold() {
 		return Math.Round((baseGoldDrop*Math.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2))*instaGoldMultiplier;
 	}
-
-	public void RecalculateItemMultipliers() {
-		for (int i = 0; i < upgradeController.characterAmount; i++) {
-			double multiplier = 1.0;
-			foreach(Item item in itemController.inventory) {
-				if (item.effect == "partners" && i != 0)
-						multiplier += item.effectValue*item.count;
-				else if (item.effect ==  "unitIndex" + i)
-						multiplier += item.effectValue*item.count;
-			}
-			unitItemM2[i] = multiplier;
-			RecalculateUnit(i);
-		}
-	}
-
-	public void RecalculateAchievementMultipliers() {
-		for (int i = 0; i < upgradeController.characterAmount; i++) {
-			double multiplier = 1.0;
-			foreach(achievement achievement in achievementController.achievements) {
-				if (achievement.completed) {
-					if (achievement.effect == "partners" && i != 0)
-							multiplier += achievement.effectValue;
-					else if (achievement.effect ==  "unitIndex" + i)
-							multiplier += achievement.effectValue;
-				}
-			}
-			unitAchievementM3[i] = multiplier;
-			RecalculateUnit(i);
-		}
+	public double calculateHealth() {
+		if (uniqueBoss)
+			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 10; 
+		if (boss)
+			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5; 
+		return Math.Round(baseHealth*Math.Pow(healthMultiplier,level));
 	}
 
 	public void RecalculateUnit(int i) {
 		units[i] = Math.Round(baseLevelUnits[i]*unitM1[i]*unitItemM2[i]*unitAchievementM3[i]);
 	}
 
+	public void IncrementGold(double increment) {
+		gold += increment;
+		totalGold += increment;
+	}
+#endregion
+
+#region Level Up Units
 	public void LevelUpUnit(int i, int numLevels) {
 		for (int j = 0; j < numLevels; j++){
 			//TODO: exponential or fixed returns?
@@ -230,62 +260,7 @@ public class controller : MonoBehaviour {
 		RecalculateUnit(i);
 	}
 
-	public double calculateHealth() {
-		if (uniqueBoss)
-			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 10; 
-		if (boss)
-			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5; 
-		return Math.Round(baseHealth*Math.Pow(healthMultiplier,level));
-	}
-	public double enemyDied (bool spawn, bool advanceLevel) {
-		double goldIncrement = boss ? calculateGold()*10 : calculateGold();
-		if (uniqueBoss || boss)
-			endBossTime();	
-		if (!uniqueBoss) {
-			if (level == 1 && levelCount == 1)
-				upgradeController.enableGoldButton();
-
-			if (level == highestRegionLevels[region]){
-				if (boss) {
-					boss = false;
-					completedBossLevels.Add(level);
-					enemyLevelUp(advanceLevel);
-				}
-				else {
-					levelCount++;
-					if (levelCount > levelMaxCount) {
-						if (level%10 == 0 && !completedBossLevels.Contains(level) && advanceLevel)
-							boss = true;
-						else
-							enemyLevelUp(advanceLevel);
-					}
-				}
-			}
-			if (spawn)
-				spawnNewEnemy(false);
-		}
-		gold += goldIncrement;
-		return goldIncrement;
-	}
-
-	private void spawnNewEnemy(bool delay) {
-		int enemySelector;
-		if (boss) {
-			levelText.text = "Level "+level+"\nBOSS FIGHT!";
-			enemySelector = 5;
-			startBossTime();
-		}
-		else {
-			levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
-			enemySelector = ((level-1)/2)%5;
-		}
-
-		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-5f,-5f),Quaternion.Euler(0, UnityEngine.Random.value*360f, 0));
-		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
-		if (delay)
-			newEnemy.GetComponent<House>().delay();
-	}
-
+	//When you purchase a level up
 	public void levelUp(int i) {
 		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
 		characterLevel[i] += numLevels;
@@ -302,7 +277,9 @@ public class controller : MonoBehaviour {
 			upgradeController.enableBoost3(i);
 		upgradeController.enableBoard(i);
 	}
-
+#endregion
+	
+#region Upgrades/Purchases
 	public void RecalculateCharacterUpgradeCost(int i) {
 		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
 		double sum = 0;
@@ -312,19 +289,7 @@ public class controller : MonoBehaviour {
 		string preText = numLevels == 1 ? (characterLevel[i] == 0 ? "Hire: ": "Level Up: ") : "x"+numLevels+": ";
 		levelUpButton[i].GetComponentInChildren<Text>().text = preText+NumberFormat.format(characterUpgradeCost[i])+"g";
 	}
-
-	public void getDiamond() {
-		diamonds++;
-		if (diamonds > 0){ 
-			upgradeController.enableDiamondButton();
-		}
-	}
-
-	public void getCoal() {
-		coal++;
-		coalText.gameObject.SetActive(true);
-	}
-
+	
 	public void buyClickM1Up() {
 		int i = 0;
 		m1Level[i]++;
@@ -351,10 +316,214 @@ public class controller : MonoBehaviour {
 	}
 
 	public void buyInstaGold() {
-		gold += calculateMaxGold();
+		IncrementGold(calculateMaxGold());
 		diamonds -= instaGoldPrice;
 	}
+#endregion
 
+#region Items
+	public void RecalculateItemMultipliers() {
+		for (int i = 0; i < upgradeController.characterAmount; i++) {
+			double multiplier = 1.0;
+			foreach(Item item in itemController.inventory) {
+				if (item.effect == "partners" && i != 0)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect ==  "unitIndex" + i)
+						multiplier += item.effectValue*item.count;
+			}
+			unitItemM2[i] = multiplier;
+			RecalculateUnit(i);
+		}
+	}
+#endregion
+
+#region Achievements
+	public void RecalculateAchievementMultipliers() {
+		for (int i = 0; i < upgradeController.characterAmount; i++) {
+			double multiplier = 1.0;
+			foreach(achievement achievement in achievementController.achievements) {
+				if (achievement.completed) {
+					if (achievement.effect == "partners" && i != 0)
+							multiplier += achievement.effectValue;
+					else if (achievement.effect ==  "unitIndex" + i)
+							multiplier += achievement.effectValue;
+				}
+			}
+			unitAchievementM3[i] = multiplier;
+			RecalculateUnit(i);
+		}
+	}
+
+	public void checkUnitAchievement() {
+		achievementController.checkAchievement("units",sumofAllUnits);
+		achievementController.checkAchievement("unitIndex0",units[0]);
+	}
+#endregion
+
+#region Enemy
+	private void enemyLevelUp(bool advanceLevel) {
+		if (level == regionLevels[region,1]) {
+			if (!completedRegions[region]) {
+				completeRegion();
+			}
+			levelCount = levelMaxCount;
+		} else {
+			highestLevel++;
+			highestRegionLevels[region] = level+1;
+			if (advanceLevel) {
+				level++;
+				levelCount = 1;
+			}
+			instaGoldText.text = calculateMaxGold()+" gold!";
+			levelNavigateDownButton.gameObject.SetActive(true);
+		}
+	}
+
+	public double enemyDied (bool spawn, bool advanceLevel) {
+		double goldIncrement = boss ? calculateGold()*10 : calculateGold();
+		if (uniqueBoss || boss)
+			endBossTime();	
+		if (!uniqueBoss) {
+			if (level == 1 && levelCount == 1){
+				upgradeController.enableGoldButton();
+				settingsController.enableSettings();
+			}
+
+			if (level == highestRegionLevels[region]){
+				if (boss) {
+					boss = false;
+					completedBossLevels.Add(level);
+					enemyLevelUp(advanceLevel);
+				}
+				else {
+					levelCount++;
+					if (levelCount > levelMaxCount) {
+						if (level%10 == 0 && !completedBossLevels.Contains(level) && advanceLevel)
+							boss = true;
+						else
+							enemyLevelUp(advanceLevel);
+					}
+				}
+			}
+			if (spawn)
+				spawnNewEnemy(false);
+		}
+		totalBuildings++;
+		IncrementGold(goldIncrement);
+		return goldIncrement;
+	}
+
+	private void spawnNewEnemy(bool delay) {
+		int enemySelector;
+		if (boss) {
+			levelText.text = "Level "+level+"\nBOSS FIGHT!";
+			enemySelector = 5;
+			startBossTime();
+		}
+		else {
+			levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
+			enemySelector = ((level-1)/2)%5;
+		}
+
+		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-5f,-5f),Quaternion.Euler(0, UnityEngine.Random.value*360f, 0));
+		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
+		if (delay)
+			newEnemy.GetComponent<House>().delay();
+	}
+
+	//Remove the enemy and get the reward if the player navigates to a new stage
+	public void finishOffEnemy() {
+		GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
+		if (enemy) {
+			House house = enemy.GetComponent<House>();
+			if (house.health >= house.maxHealth && !uniqueBoss){
+				enemyDied(false, false);
+			}
+			endBossTime();
+			Destroy(enemy);
+		}
+	}
+
+#endregion
+
+#region Boss
+
+	public void startBossTime() {
+		bossTime = bossStartTime;
+		bossTimeText.gameObject.SetActive(true);
+		bossTimeText.text = bossTime.ToString();
+		bossTimeCountdownFlag = true;
+	}
+
+	public void endBossTime() {
+		bossTimeText.gameObject.SetActive(false);
+		bossTimeCountdownFlag = false;
+	}
+
+	void bossTimeCountdown() {
+		if (bossTimeCountdownFlag){
+			bossTime--;
+			bossTimeText.text = bossTime.ToString();
+			if (bossTime == 0) {
+				if (uniqueBoss){
+					changeRegion(0);
+				} else {
+					levelNavigateDown();
+				}
+				endBossTime();
+			}
+		}
+    }
+
+	public bool unlockUniqueBoss() {
+		bool dropBlueprint = false;
+		for (int i = 0;i< uniqueBossButtons.Length;i++) {
+			if (level == uniqueBossLevels[i]-10){
+				uniqueBossButtons[i].interactable = true;
+				dropBlueprint = true;
+				break;
+			}
+		}
+		if (dropBlueprint){
+			upgradeController.enableMapButton();
+			// upgradeController.mapTab();
+		}
+		return dropBlueprint;
+	}
+
+	private void spawnUnique(int i) {
+		level = uniqueBossLevels[i];
+		uniqueBoss = true;
+		boss=true;
+		// maxHealth = calculateHealth()*10;
+		levelText.text = "Level "+level+"\nUnique #"+(i+1)+"!";
+
+		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,-5f,-5f),Quaternion.Euler(-90,-125.2f, UnityEngine.Random.value*360f));
+		newUnique.GetComponent<House>().health = 0;
+		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ uniqueNouns[i];
+		newUnique.GetComponent<House>().delay();
+		startBossTime();
+	}
+
+	public void checkBossReward(Vector3 pos) {
+		if (uniqueBoss) {
+			GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
+			chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
+			for (int i = 0;i< uniqueBossButtons.Length;i++) {
+				if (level == uniqueBossLevels[i])
+					uniqueBossButtons[i].interactable = false;
+			}
+		} else {
+			if(unlockUniqueBoss()){
+				GameObject blueprint = (GameObject) Instantiate(blueprintPrefab,pos+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+			}
+		}
+		upgradeController.enableMultiLevelUpButton();
+	}
+
+#endregion
+
+#region Single Region Navigation
 	public void levelNavigateUp() {
 		finishOffEnemy();
 		level++;
@@ -377,6 +546,19 @@ public class controller : MonoBehaviour {
 			spawnNewEnemy(true);
 		}
 	}
+	public void completeRegion() {
+		upgradeController.enableMapButton();
+		completedRegions[region] = true;
+		regionCompleteText.SetActive(true);
+		if (regionButtons.Length > region+1)
+			regionButtons[region+1].SetActive(true);
+		achievementController.checkAchievement("region",region);
+		totalRegionsCompleted++;
+	}
+
+#endregion
+
+#region Map Navigation
 
 	public void changeRegion(int i) {
 		if (!itemController.itemDrop && !modalOpen) {
@@ -407,18 +589,6 @@ public class controller : MonoBehaviour {
 		}
 	}
 
-	public void finishOffEnemy() {
-		GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
-		if (enemy) {
-			House house = enemy.GetComponent<House>();
-			if (house.health >= house.maxHealth && !uniqueBoss){
-				enemyDied(false, false);
-			}
-			endBossTime();
-			Destroy(enemy);
-		}
-	}
-
 	public void goToUnique(int i) {
 		if (!itemController.itemDrop && !modalOpen) {
 			levelArea.SetActive(true);
@@ -436,61 +606,17 @@ public class controller : MonoBehaviour {
 			regionCompleteText.SetActive(false);
 		}
 	}
-
-	private void spawnUnique(int i) {
-		level = uniqueBossLevels[i];
-		uniqueBoss = true;
-		boss=true;
-		// maxHealth = calculateHealth()*10;
-		levelText.text = "Level "+level+"\nUnique #"+(i+1)+"!";
-
-		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,-5f,-5f),Quaternion.Euler(-90,-125.2f, UnityEngine.Random.value*360f));
-		newUnique.GetComponent<House>().health = 0;
-		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ uniqueNouns[i];
-		newUnique.GetComponent<House>().delay();
-		startBossTime();
-	}
-
-	public void completeRegion() {
-		upgradeController.enableMapButton();
-		// upgradeController.mapTab();
-		completedRegions[region] = true;
-		regionCompleteText.SetActive(true);
-		if (regionButtons.Length > region+1)
-			regionButtons[region+1].SetActive(true);
-		achievementController.checkAchievement("region",region);
-	}
-
-	public void checkBossReward(Vector3 pos) {
-		if (uniqueBoss) {
-			GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
-			chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
-			for (int i = 0;i< uniqueBossButtons.Length;i++) {
-				if (level == uniqueBossLevels[i])
-					uniqueBossButtons[i].interactable = false;
-			}
-		} else {
-			if(unlockUniqueBoss()){
-				GameObject blueprint = (GameObject) Instantiate(blueprintPrefab,pos+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
-			}
+	public void goToShop(int i) {
+		if (!itemController.itemDrop && !modalOpen) {
+			for(int j = 0; j < regionBackgrounds.Length; j++)
+				regionBackgrounds[j].SetActive(false);
+			for(int j = 0; j < shopBackgrounds.Length; j++)
+				shopBackgrounds[j].SetActive(j==i);
+			finishOffEnemy(); 
+			playerIndicator.transform.position = shopButtons[i].transform.position+playerIndicatorOffset;
+			levelArea.SetActive(false);
+			shopPanel.SetActive(true);
 		}
-		upgradeController.enableMultiLevelUpButton();
-	}
-
-	public bool unlockUniqueBoss() {
-		bool dropBlueprint = false;
-		for (int i = 0;i< uniqueBossButtons.Length;i++) {
-			if (level == uniqueBossLevels[i]-10){
-				uniqueBossButtons[i].interactable = true;
-				dropBlueprint = true;
-				break;
-			}
-		}
-		if (dropBlueprint){
-			upgradeController.enableMapButton();
-			// upgradeController.mapTab();
-		}
-		return dropBlueprint;
 	}
 
 	public void prestige() {
@@ -524,46 +650,24 @@ public class controller : MonoBehaviour {
 		achievementController.checkAchievement("prestige",1);
 		prestigeCurrency++;
 		prestigeText.gameObject.SetActive(true);
+		totalPrestiges++;
 	}
 
-	public void startBossTime() {
-		bossTime = bossStartTime;
-		bossTimeText.gameObject.SetActive(true);
-		bossTimeText.text = bossTime.ToString();
-		bossTimeCountdownFlag = true;
-	}
+#endregion
 
-	public void endBossTime() {
-		bossTimeText.gameObject.SetActive(false);
-		bossTimeCountdownFlag = false;
-	}
-
-	void bossTimeCountdown() {
-		if (bossTimeCountdownFlag){
-			bossTime--;
-			bossTimeText.text = bossTime.ToString();
-			if (bossTime == 0) {
-				if (uniqueBoss){
-					changeRegion(0);
-				} else {
-					levelNavigateDown();
-				}
-				endBossTime();
-			}
+#region Diamonds
+	public void getDiamond() {
+		diamonds++;
+		if (diamonds > 0){ 
+			upgradeController.enableDiamondButton();
 		}
-    }
+	}
+#endregion
 
-	public void goToShop(int i) {
-		if (!itemController.itemDrop && !modalOpen) {
-			for(int j = 0; j < regionBackgrounds.Length; j++)
-				regionBackgrounds[j].SetActive(false);
-			for(int j = 0; j < shopBackgrounds.Length; j++)
-				shopBackgrounds[j].SetActive(j==i);
-			finishOffEnemy(); 
-			playerIndicator.transform.position = shopButtons[i].transform.position+playerIndicatorOffset;
-			levelArea.SetActive(false);
-			shopPanel.SetActive(true);
-		}
+#region Coal
+	public void getCoal() {
+		coal++;
+		coalText.gameObject.SetActive(true);
 	}
 
 	public void convertCoal() {
@@ -583,4 +687,5 @@ public class controller : MonoBehaviour {
 		coalModal.SetActive(false);
 		modalOpen = false;
 	}
+#endregion
 }

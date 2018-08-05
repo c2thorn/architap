@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class House : MonoBehaviour {
     public controller controller = null;
@@ -53,12 +54,15 @@ public class House : MonoBehaviour {
     }
 
 	void partnerDamage() {
+        double sumDamage = 0;
         for (int i = 0; i < 7; i++){
             if (Time.time > nextActionTime[i] ) {
                 nextActionTime[i] = Time.time + controller.periods[i];
-                health += controller.units[i+1];
+                sumDamage += controller.units[i+1];
             }
-        }
+        }                
+        updateTotalUnits(sumDamage);
+        health += sumDamage;
         healthBar.UpdateBar( health, maxHealth );
 	}
 
@@ -70,13 +74,21 @@ public class House : MonoBehaviour {
 
             if (coll.OverlapPoint(wp)) {
                 hit = true;
+                updateTotalUnits(controller.units[0]);
                 health += controller.units[0];
                 healthBar.UpdateBar( health, maxHealth );
                 createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red, false);
+                controller.totalClicks++;
             }
         }
 
         return hit;
+    }
+
+    private void updateTotalUnits(double amount) {
+        double amountToIncrement = Math.Min(amount, maxHealth - health);
+        // Debug.Log(amountToIncrement);
+        controller.totalUnits += amountToIncrement;
     }
 
     bool checkDead() {
@@ -96,14 +108,14 @@ public class House : MonoBehaviour {
             //Guarantee first diamond
             GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
-        else if(controller.level >= 6 && Random.value <= controller.diamondChance) {
+        else if(controller.level >= 6 && UnityEngine.Random.value <= controller.diamondChance) {
             GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
-        } else if (controller.level >= 10 && Random.value <= controller.coalChance) {
+        } else if (controller.level >= 10 && UnityEngine.Random.value <= controller.coalChance) {
             GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
 		rend.material.shader = finished;
         yield return new WaitForSeconds(1f);
-        while (itemController.itemDrop)
+        while (itemController.itemDrop || controller.modalOpen)
             yield return new WaitForSeconds(1f);
         double goldIncrement = controller.enemyDied(true, true);
         createFloatText(new Vector3(0,-400,0f), "+"+goldIncrement+"g", Color.yellow, true);
