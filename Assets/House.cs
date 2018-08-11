@@ -15,7 +15,6 @@ public class House : MonoBehaviour {
     public double health = 0;
     public double maxHealth = 2;
 
-    private float[] nextActionTime = new float[] {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	public float p1Period = 0.1f;
 	private BoxCollider2D coll;
 
@@ -24,10 +23,13 @@ public class House : MonoBehaviour {
 	protected MeshRenderer rend;
     public bool invulnerable = false;
 
+    public BuildingController buildingController;
+
 	// Use this for initialization
 	void Start () {
         controller = GameObject.Find("controller").GetComponent<controller>();
         itemController = GameObject.Find("ItemController").GetComponent<ItemController>();
+        buildingController = GameObject.Find("Building Controller").GetComponent<BuildingController>();
         healthBar = GameObject.Find("healthBar").GetComponent<SimpleHealthBar>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 		coll = GameObject.Find("Click Area").GetComponent<BoxCollider2D>();
@@ -42,7 +44,6 @@ public class House : MonoBehaviour {
         rotate();
         if (health < maxHealth && !invulnerable) {
             if (!itemController.itemDrop && !controller.modalOpen){
-                partnerDamage();
                 bool hit = checkClick();
                 hit = !checkDead() && hit;
             }
@@ -53,17 +54,15 @@ public class House : MonoBehaviour {
         transform.Rotate(0, Time.deltaTime+0.15f, 0);
     }
 
-	void partnerDamage() {
-        double sumDamage = 0;
-        for (int i = 0; i < 7; i++){
-            if (Time.time > nextActionTime[i] ) {
-                nextActionTime[i] = Time.time + controller.periods[i];
-                sumDamage += controller.units[i+1];
+	public void partnerDamage(double sumDamage) {
+        if (health < maxHealth && !invulnerable) {
+            if (!itemController.itemDrop && !controller.modalOpen){
+                updateTotalUnits(sumDamage);
+                health += sumDamage;
+                healthBar.UpdateBar( health, maxHealth );
+                checkDead();
             }
-        }                
-        updateTotalUnits(sumDamage);
-        health += sumDamage;
-        healthBar.UpdateBar( health, maxHealth );
+        }
 	}
 
     bool checkClick() {

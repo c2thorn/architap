@@ -81,6 +81,7 @@ public class controller : MonoBehaviour {
 	public ItemController itemController;
 	public achievementController achievementController;
 	public SettingsController settingsController;
+	public SaveStateController saveStateController;
 #endregion
 #region InstaGold
 	public double instaGoldPrice = 20;
@@ -154,6 +155,7 @@ public class controller : MonoBehaviour {
 
 #region Start/Update
 	void Start () {
+		saveStateController.LoadData();
 		Application.runInBackground = true;
 		double health = 0;
 		double maxHealth = calculateHealth();
@@ -192,7 +194,7 @@ public class controller : MonoBehaviour {
 		//Set other variables
 		modalOpen = false;
 		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
-		totalBuildings = 0;
+		// totalBuildings = 0;
 	}
 	
 	// Update is called once per frame
@@ -221,6 +223,10 @@ public class controller : MonoBehaviour {
 
 		//Update instagold price
 		instaGoldButton.interactable = diamonds >= instaGoldPrice;
+	}
+
+	void OnApplicationQuit() {
+		saveStateController.SaveData();
 	}
 #endregion
 
