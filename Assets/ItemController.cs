@@ -98,47 +98,64 @@ public class ItemController : MonoBehaviour {
 		if (itemCategoryVal <= .5f) {
 			float val = Random.value;
 			if (val <= .6f) {
-				Item item = new Item("Common Gloves");
-				item.effect = "partners";
-				item.effectValue = 0.15f;
-				item.rarity = 0;
-				return item;
+				return createFromName("Common Gloves");
 			} else if (val <= .9f) {
-				Item item = new Item("Rare Gloves");
-				item.effect = "partners";
-				item.effectValue = 0.25f;
-				item.rarity = 1;
-				return item;
+				return createFromName("Rare Gloves");
 			} else {
-				Item item = new Item("Legendary Gloves");
-				item.effect = "partners";
-				item.effectValue = 0.5f;
-				item.rarity = 2;
-				return item;
+				return createFromName("Legendary Gloves");
 			}
 		} else {
 			float val = Random.value;
 			if (val <= .6f) {
-				Item item = new Item("Common Hammer");
-				item.effect = "unitIndex0";
-				item.effectValue = 0.15f;
-				item.rarity = 0;
-				return item;
+				return createFromName("Common Hammer");
 			} else if (val <= .9f) {
-				Item item = new Item("Rare Hammer");
-				item.effect = "unitIndex0";
-				item.effectValue = 0.25f;
-				item.rarity = 1;
-				return item;
+				return createFromName("Rare Hammer");
 			} else {
-				Item item = new Item("Legendary Hammer");
-				item.effect = "unitIndex0";
-				item.effectValue = 0.5f;
-				item.rarity = 2;
-				return item;
+				return createFromName("Legendary Hammer");
 			}	
 		}
 	
 
+	}
+
+	public Item createFromName(string name) {
+		if (name.Length == 0)
+			return null;
+		Item item = new Item(name);
+		switch (name) {
+			case "Common Gloves":
+				item.effect = "partners";
+				item.effectValue = 0.15f;
+				item.rarity = 0;
+				break;
+			case "Rare Gloves":
+				item.effect = "partners";
+				item.effectValue = 0.25f;
+				item.rarity = 1;
+				break;
+			case "Legendary Gloves":
+				item.effect = "partners";
+				item.effectValue = 0.5f;
+				item.rarity = 2;
+				break;
+			case "Common Hammer":
+				item.effect = "unitIndex0";
+				item.effectValue = 0.15f;
+				item.rarity = 0;
+				break;
+			case "Rare Hammer":
+				item.effect = "unitIndex0";
+				item.effectValue = 0.25f;
+				item.rarity = 1;
+				break;
+			case "Legendary Hammer":
+				item.effect = "unitIndex0";
+				item.effectValue = 0.5f;
+				item.rarity = 2;
+				break;
+			default:
+				return null;
+		}
+		return item;
 	}
 }
