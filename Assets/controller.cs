@@ -233,7 +233,7 @@ public class controller : MonoBehaviour {
 	}
 
 	void OnApplicationQuit() {
-		saveStateController.SaveData();
+		// saveStateController.SaveData();
 	}
 
 	public void SetUp() {
@@ -252,15 +252,15 @@ public class controller : MonoBehaviour {
 		if (level < regionLevels[region,1] && level < highestRegionLevels[region])
 			levelNavigateUpButton.gameObject.SetActive(true);
 		if (highestLevel > 5 || diamonds > 0)
-			upgradeController.enableDiamondButton();
+			upgradeController.enableDiamondButton(false);
 		if (itemController.inventory.Count > 0)
-			upgradeController.enableItemButton();
+			upgradeController.enableItemButton(false);
 		for (int i = 0; i < achievementController.achievements.Count; i++){
 			if (achievementController.achievements[i].completed)
-				upgradeController.enableAchievementsButton();
+				upgradeController.enableAchievementsButton(false);
 		}
 		if (highestLevel > 20)
-			upgradeController.enableMapButton();
+			upgradeController.enableMapButton(false);
 		for (int i = 0; i < uniqueBossLevels.Length; i++){
 			if (highestLevel > uniqueBossLevels[i] - 10 && !uniqueBossCompleted[i]) {
 				uniqueBossButtons[i].interactable = true;
@@ -292,11 +292,23 @@ public class controller : MonoBehaviour {
 			prestigeText.gameObject.SetActive(true);
 		}
 		setRegionBackground(region);
+
+		m1UpgradeCost[0] = Math.Round(m1UpgradeBaseCost[0]*Math.Pow(m1UpgradeCostMultiplier[0],m1Level[0]));
+		unitM1Button[0].GetComponentInChildren<Text>().text = m1UpgradeCost[0]+" diamonds";
+		unitMultiplierText[0].text = " + "+(m1Level[0]-1)*25+"%"; 
+
+
+		m1UpgradeCost[1] = Math.Round(m1UpgradeBaseCost[1]*Math.Pow(m1UpgradeCostMultiplier[1],m1Level[1]));
+		unitM1Button[1].GetComponentInChildren<Text>().text = m1UpgradeCost[1]+" diamonds";
+		unitMultiplierText[1].text = " + "+(m1Level[1]-1)*25+"%"; 
+
+		//Should be last
+		saveStateController.CheckIdleTime();
 	}
 #endregion
 
 #region Calculations
-	private double calculateGold() {
+	public double calculateGold() {
 		return Math.Round(baseGoldDrop*Math.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
 	}
 
@@ -338,6 +350,7 @@ public class controller : MonoBehaviour {
 		gold -= characterUpgradeCost[i];
 		RefreshCharacterBoard(i);
 		LevelUpUnit(i,numLevels);
+		saveStateController.SaveData();
 	}
 
 	public void RefreshCharacterBoard(int i) {
@@ -351,6 +364,12 @@ public class controller : MonoBehaviour {
 		if (characterLevel[i] >= 20) 
 			upgradeController.enableBoost3(i);
 		upgradeController.enableBoard(i);
+		if ( upgradeController.boostBought1[i])
+			upgradeController.SetBoostButtonToBought(upgradeController.boost1[i]);
+		if ( upgradeController.boostBought2[i])
+			upgradeController.SetBoostButtonToBought(upgradeController.boost2[i]);
+		if ( upgradeController.boostBought3[i])
+			upgradeController.SetBoostButtonToBought(upgradeController.boost3[i]);
 	}
 #endregion
 	
@@ -490,6 +509,7 @@ public class controller : MonoBehaviour {
 		}
 		totalBuildings++;
 		IncrementGold(goldIncrement);
+		saveStateController.SaveData();
 		return goldIncrement;
 	}
 
@@ -521,6 +541,10 @@ public class controller : MonoBehaviour {
 			}
 			endBossTime();
 			Destroy(enemy);
+		}
+		GameObject[] drops = GameObject.FindGameObjectsWithTag("currency_drop");
+		for (int i = 0; i < drops.Length; i++) {
+			Destroy(drops[i]);
 		}
 	}
 
@@ -565,7 +589,7 @@ public class controller : MonoBehaviour {
 			}
 		}
 		if (dropBlueprint){
-			upgradeController.enableMapButton();
+			upgradeController.enableMapButton(true);
 			// upgradeController.mapTab();
 		}
 		return dropBlueprint;
@@ -616,6 +640,7 @@ public class controller : MonoBehaviour {
 			levelNavigateUpButton.gameObject.SetActive(false);
 		levelNavigateDownButton.gameObject.SetActive(true);
 		spawnNewEnemy(true);
+		saveStateController.SaveData();
 	}
 
 	public void levelNavigateDown() {
@@ -629,9 +654,10 @@ public class controller : MonoBehaviour {
 			levelNavigateUpButton.gameObject.SetActive(true);
 			spawnNewEnemy(true);
 		}
+		saveStateController.SaveData();
 	}
 	public void completeRegion() {
-		upgradeController.enableMapButton();
+		upgradeController.enableMapButton(true);
 		completedRegions[region] = true;
 		regionCompleteText.SetActive(true);
 		if (regionButtons.Length > region+1)
@@ -665,6 +691,7 @@ public class controller : MonoBehaviour {
 			}
 			setRegionBackground(i);
 			spawnNewEnemy(true);
+			saveStateController.SaveData();
 		}
 	}
 
@@ -739,6 +766,7 @@ public class controller : MonoBehaviour {
 		prestigeCurrency++;
 		prestigeText.gameObject.SetActive(true);
 		totalPrestiges++;
+		saveStateController.SaveData();
 	}
 
 #endregion
@@ -747,20 +775,26 @@ public class controller : MonoBehaviour {
 	public void getDiamond() {
 		diamonds++;
 		if (diamonds > 0){ 
-			upgradeController.enableDiamondButton();
+			upgradeController.enableDiamondButton(true);
 		}
 	}
 #endregion
 
 #region Coal
 	public void getCoal() {
-		coal++;
+		IncrementCoal(1);
+	}
+
+	public void IncrementCoal(double increment) {
+		coal += increment;
 		coalText.gameObject.SetActive(true);
+		//TODO Total coal increment goes here if the stat exists
 	}
 
 	public void convertCoal() {
 		diamonds += coal;
 		coal = 0;
+		saveStateController.SaveData();
 		closeCoalModal();
 	}
 

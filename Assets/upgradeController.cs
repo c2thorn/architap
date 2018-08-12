@@ -107,9 +107,7 @@ public class upgradeController : MonoBehaviour {
 		controller.unitM1[i] += .25f;
 		controller.RecalculateUnit(i);
 		boost1[i].interactable = false;
-		Color newCol;
-		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			boost1[i].GetComponent<Image>().color = newCol;
+		SetBoostButtonToBought(boost1[i]);
 	}
 
 	public void buyBoost2(int i) {
@@ -118,9 +116,7 @@ public class upgradeController : MonoBehaviour {
 		controller.unitM1[i] += .5f;
 		controller.RecalculateUnit(i);
 		boost2[i].interactable = false;
-		Color newCol;
-		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			boost2[i].GetComponent<Image>().color = newCol;
+		SetBoostButtonToBought(boost2[i]);
 	}
 
 	public void buyBoost3(int i) {
@@ -129,9 +125,13 @@ public class upgradeController : MonoBehaviour {
 		controller.unitM1[i] += 1f;
 		controller.RecalculateUnit(i);
 		boost3[i].interactable = false;
+		SetBoostButtonToBought(boost3[i]);
+	}
+
+	public void SetBoostButtonToBought(Button button) {
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			boost3[i].GetComponent<Image>().color = newCol;
+			button.GetComponent<Image>().color = newCol;
 	}
 
 	public void goldTab() {
@@ -194,31 +194,35 @@ public class upgradeController : MonoBehaviour {
 		}
 	}
 
-	public void enableDiamondButton() {
+	public void enableDiamondButton(bool notify) {
 		if (!diamondButton.gameObject.active){{}
 			diamondButton.gameObject.SetActive(true);
 			diamondCountText.SetActive(true);
-			diamondButton.gameObject.GetComponent<tabButton>().startNotification();
+			if (notify)
+				diamondButton.gameObject.GetComponent<tabButton>().startNotification();
 		}
 	}
-	public void enableItemButton() {
+	public void enableItemButton(bool notify) {
 		if (!itemButton.gameObject.active) {
 			itemButton.gameObject.SetActive(true);
 		}
-		itemButton.GetComponent<tabButton>().startNotification();
+		if (notify)
+			itemButton.GetComponent<tabButton>().startNotification();
 	}
 
-	public void enableMapButton() {
+	public void enableMapButton(bool notify) {
 		if (!mapButton.gameObject.active){
 			mapButton.gameObject.SetActive(true);
 		}
-		mapButton.gameObject.GetComponent<tabButton>().startNotification();
+		if (notify)
+			mapButton.gameObject.GetComponent<tabButton>().startNotification();
 	}
-	public void enableAchievementsButton() {
+	public void enableAchievementsButton(bool notify) {
 		if (!achievementsButton.gameObject.active){
 			achievementsButton.gameObject.SetActive(true);
 		}
-		achievementsButton.gameObject.GetComponent<tabButton>().startNotification();
+		if (notify)
+			achievementsButton.gameObject.GetComponent<tabButton>().startNotification();
 	}
 
 	public void enableMultiLevelUpButton() {

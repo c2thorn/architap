@@ -78,7 +78,7 @@ public class ItemController : MonoBehaviour {
 	}
 
 	public void showItem(Item item) {
-		uController.enableItemButton();
+		uController.enableItemButton(true);
 		refreshInventoryUI();
 		controller.RecalculateItemMultipliers();
 		showItemModal(item);

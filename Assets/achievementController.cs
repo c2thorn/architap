@@ -11,6 +11,7 @@ public class achievementController : MonoBehaviour {
 	public GameObject achievementPanel;
 	public GameObject achievementContent;
 	public GameObject achievementPrefab;
+	public SaveStateController saveStateController;
 
 	// Use this for initialization
 	void Start () {
@@ -27,9 +28,10 @@ public class achievementController : MonoBehaviour {
 			if (achievements[i].requirement == requirement && !achievements[i].completed) {
 				if (requirementValue >= achievements[i].requirementValue) {
 					achievements[i].completed = true;
-					uController.enableAchievementsButton();
+					uController.enableAchievementsButton(true);
 					refreshAchievementsUI();
 					controller.RecalculateAchievementMultipliers();
+					saveStateController.SaveData();
 				}
 			}
 		}

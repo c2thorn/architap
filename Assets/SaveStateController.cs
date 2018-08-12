@@ -1,7 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEditor;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
+using System.Net;
+using UnityEngine.Networking;
 
 public class SaveStateController : MonoBehaviour {
 
@@ -12,6 +19,16 @@ public class SaveStateController : MonoBehaviour {
 	public upgradeController upgradeController;
 
 	public achievementController achievementController;
+
+	public Text autoSaveText;
+
+	public int countdownNumber;
+
+	public GameObject idleRewardModal;
+	public Text idleTimeText;
+	public Text idleBuildingText;
+	public Text idleGoldText;
+	public Text idleCoalText;
 
 	public void LoadData() {
 		controller.gold = LoadDouble("gold");
@@ -114,6 +131,9 @@ public class SaveStateController : MonoBehaviour {
 	}
 
 	public void SaveData() {
+		countdownNumber = 60;
+		autoSaveText.text = "Autosave in " + countdownNumber;
+
 		SaveDouble("gold", controller.gold);
 		SaveDouble("totalBuildings", controller.totalBuildings);
 
@@ -188,6 +208,8 @@ public class SaveStateController : MonoBehaviour {
 			achievement achievement = achievementController.achievements[i];
 			SaveBool("achievement "+achievementController.achievements[i].name, achievement.completed);
 		}
+
+		StartCoroutine(TrySaveDateTime());
 	}
 
 	public void SaveDouble(string name, double value) {
@@ -208,5 +230,173 @@ public class SaveStateController : MonoBehaviour {
 
 	public void DeleteAll() {
 		PlayerPrefs.DeleteAll();
+	}
+
+	void Start() {
+		InvokeRepeating("AutoSaveCountdown",Time.time,1.0f);
+		countdownNumber = 60;
+		idleRewardModal.SetActive(false);
+	}
+
+	private void AutoSaveCountdown() {
+		countdownNumber--;
+		if (countdownNumber <= 0) {
+			SaveData();
+			countdownNumber = 60;
+		}
+		autoSaveText.text = "Autosave in " + countdownNumber;
+	}
+
+	// public static DateTime GetNistTime()
+	// {
+	// 	try {
+	// 		var myHttpWebRequest = (HttpWebRequest)WebRequest.Create();
+	// 		var response = myHttpWebRequest.GetResponse();
+	// 		string todaysDates = response.Headers["date"];
+
+	// 	} catch (Exception e) {
+	// 		Debug.Log(e.StackTrace);
+	// 		return DateTime.MinValue;
+	// 	}
+	// 	return DateTime.MinValue;
+
+	// }
+
+	IEnumerator TrySaveDateTime()
+	{
+		//Make request
+		UnityWebRequest uwr = UnityWebRequest.Get("http://architap.io");
+		yield return uwr.SendWebRequest();
+		try {
+			if (uwr.isHttpError)
+			{
+				Debug.Log("Error While Sending: " + uwr.error);
+			}
+			else
+			{
+				// Debug.Log("Received: " + uwr.downloadHandler.text);
+				string todaysDates = uwr.GetResponseHeader("date");
+				DateTime nowTime =  DateTime.ParseExact(todaysDates, 
+										"ddd, dd MMM yyyy HH:mm:ss 'GMT'", 
+										CultureInfo.InvariantCulture.DateTimeFormat, 
+										DateTimeStyles.AssumeUniversal);
+				SaveString("lastSaveTime",nowTime.ToString());
+				Debug.Log("Saving date: " + nowTime.ToString());
+			} 
+		} catch (Exception e) {
+			Debug.Log("Saving Current Date failed.");
+			Debug.Log(e.StackTrace);
+		}
+	}
+
+	IEnumerator TryGetCurrentTime()
+	{
+		//Make request
+		UnityWebRequest uwr = UnityWebRequest.Get("http://architap.io");
+		yield return uwr.SendWebRequest();
+		try {
+			if (uwr.isHttpError)
+			{
+				Debug.Log("Error While Sending: " + uwr.error);
+			}
+			else
+			{
+				// Debug.Log("Received: " + uwr.downloadHandler.text);
+				string todaysDates = uwr.GetResponseHeader("date");
+				DateTime nowTime =  DateTime.ParseExact(todaysDates, 
+										"ddd, dd MMM yyyy HH:mm:ss 'GMT'", 
+										CultureInfo.InvariantCulture.DateTimeFormat, 
+										DateTimeStyles.AssumeUniversal);
+
+				string previousTimeString = LoadString("lastSaveTime");
+				TimeSpan idleTimeSpan = GetTimeDifference(previousTimeString, nowTime);
+				double idleSeconds = idleTimeSpan.TotalSeconds;
+
+				if (idleSeconds > 0) {
+					Debug.Log("Time Difference: "+idleTimeSpan);
+					Debug.Log("In Seconds: " + idleSeconds);
+					CalculateIdleReward(idleSeconds, idleTimeSpan);
+				}
+			} 
+		} catch (Exception e) {
+			Debug.Log("Loading Current Date failed.");
+			Debug.Log(e.StackTrace);
+		}
+	}
+
+	public TimeSpan GetTimeDifference(string previousTimeString, DateTime nowTime) {
+		try {
+			// Debug.Log("Loaded previous date string: "+previousTimeString);
+			DateTime previousTime = DateTime.Parse(previousTimeString);
+			Debug.Log("Previous date time: "+previousTime);
+			Debug.Log("Current date time: "+nowTime);
+			if (previousTime.Equals(DateTime.MinValue) || nowTime.Equals(DateTime.MinValue)) {
+				//Could not connect
+				Debug.Log("date time returned as min value. Probably could not connect to server.");
+			} else {
+				TimeSpan diff = nowTime.Subtract(previousTime);
+				return diff;
+			}
+		} catch (Exception e) {
+			Debug.Log(e.StackTrace);
+			//Could not connect or parse
+			Debug.Log("could not connect to server, or previous time is null");
+		}
+		return TimeSpan.MinValue;
+	}
+
+	public void CheckIdleTime() {
+		StartCoroutine(TryGetCurrentTime());
+	}
+
+	public void CalculateIdleReward(double idleSeconds, TimeSpan idleTimeSpan) {
+		double sumUnitsPerSecond = 0;
+		for (int i = 1; i < controller.units.Length; i ++) {
+			sumUnitsPerSecond += controller.units[i];
+		}
+
+		double idleHouseHealth = controller.calculateHealth();
+		Debug.Log("Idle House Health: " + idleHouseHealth);
+
+		double secondsToBuildSingleHouse = (idleHouseHealth/sumUnitsPerSecond) + 1;
+		Debug.Log("Seconds to build one house: " + secondsToBuildSingleHouse);
+
+		double housesBuilt = Math.Floor(idleSeconds/secondsToBuildSingleHouse);
+		Debug.Log("Houses Built: " + housesBuilt);
+
+		double goldEarned = housesBuilt*controller.calculateGold();
+		Debug.Log("Gold Earned: " + goldEarned);
+		controller.IncrementGold(goldEarned);
+
+		double coalFound = Math.Floor(housesBuilt*controller.coalChance);
+		if (controller.level < 10)
+			coalFound = 0;
+		else {
+			controller.IncrementCoal(coalFound);
+		}
+		Debug.Log("Coal Found: " + coalFound);
+
+		idleTimeText.text = idleTimeSpan.Days > 0 ? idleTimeSpan.Days + "d " : ""
+							+ (idleTimeSpan.Hours > 0 ? idleTimeSpan.Hours + "h " : "")
+							+ (idleTimeSpan.Minutes > 0 ? idleTimeSpan.Minutes + "m " : "")
+							+ (idleTimeSpan.Seconds > 0 ? idleTimeSpan.Seconds + "s " : "");
+		idleBuildingText.text = "You built "+NumberFormat.format(housesBuilt)+" buildings";
+		idleGoldText.text = NumberFormat.format(goldEarned);
+		idleGoldText.gameObject.SetActive(goldEarned > 0);
+		idleCoalText.text = NumberFormat.format(coalFound);
+		idleCoalText.gameObject.SetActive(coalFound > 0);
+
+		OpenIdleModal();
+		SaveData();
+	}
+
+	public void OpenIdleModal() {
+		idleRewardModal.SetActive(true);
+		controller.modalOpen = true;
+	}
+
+	public void CloseIdleModal() {
+		idleRewardModal.SetActive(false);
+		controller.modalOpen = false;
 	}
 }
