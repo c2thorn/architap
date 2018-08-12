@@ -243,6 +243,7 @@ public class controller : MonoBehaviour {
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 10; 
 		if (boss)
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5; 
+		Debug.Log(level);
 		return Math.Round(baseHealth*Math.Pow(healthMultiplier,level));
 	}
 
