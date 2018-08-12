@@ -63,6 +63,8 @@ public class SaveStateController : MonoBehaviour {
 				controller.highestRegionLevels[i] = LoadInt("highestRegionLevels"+i);
 		}
 		//TODO completedBossLevels?
+		for (int i = 0; i < controller.uniqueBossCompleted.Length; i++) 
+			controller.uniqueBossCompleted[i] = LoadBool("uniqueBossCompleted"+i);
 
 		if (LoadInt("bossStartTime") != 0)
 			controller.bossStartTime = LoadInt("bossStartTime");
@@ -93,11 +95,6 @@ public class SaveStateController : MonoBehaviour {
 			bool completed = LoadBool("achievement "+achievementController.achievements[i].name);
 			achievementController.achievements[i].completed = completed;
 		}
-
-		controller.RecalculateAchievementMultipliers();
-		for (int i = 0; i < controller.baseCharacterUpgradeCost.Length; i++)
-			controller.RecalculateCharacterUpgradeCost(i);
-		controller.RecalculateItemMultipliers();
 	}
 
 	public double LoadDouble(string name) {
@@ -125,7 +122,12 @@ public class SaveStateController : MonoBehaviour {
 		SaveDouble("prestigeCurrency",controller.prestigeCurrency);
 		SaveDouble("coal", controller.coal);
 
-		SaveInt("level", controller.level);
+		if (controller.uniqueBoss) {
+			SaveInt("level", controller.highestRegionLevels[controller.region]);
+		}
+		else{
+			SaveInt("level", controller.level);
+		}
 		SaveInt("highestLevel", controller.highestLevel);
 		SaveInt("levelCount", controller.levelCount);
 		SaveInt("levelMaxCount", controller.levelMaxCount);
@@ -156,6 +158,8 @@ public class SaveStateController : MonoBehaviour {
 		for (int i = 0; i < controller.highestRegionLevels.Length; i++) 
 			SaveInt("highestRegionLevels"+i, controller.highestRegionLevels[i]);
 		//TODO completedBossLevels?
+		for (int i = 0; i < controller.uniqueBossCompleted.Length; i++) 
+			SaveBool("uniqueBossCompleted"+i,controller.uniqueBossCompleted[i]);
 
 		SaveInt("bossStartTime", controller.bossStartTime);
 

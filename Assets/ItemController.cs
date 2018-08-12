@@ -77,7 +77,14 @@ public class ItemController : MonoBehaviour {
 		itemDrop = false;
 	}
 
-	public void addItem(Item item) {
+	public void showItem(Item item) {
+		uController.enableItemButton();
+		refreshInventoryUI();
+		controller.RecalculateItemMultipliers();
+		showItemModal(item);
+	}
+
+	public void addItemToInventory(Item item) {
 		bool found = false;
 		foreach (Item i in inventory) {
 			if (i.name.Equals(item.name)) {
@@ -87,10 +94,6 @@ public class ItemController : MonoBehaviour {
 		}
 		if (!found)
 			inventory.Add(item);
-		uController.enableItemButton();
-		refreshInventoryUI();
-		controller.RecalculateItemMultipliers();
-		showItemModal(item);
 	}
 
 	public Item getCurrentBossItem() {

@@ -15,6 +15,7 @@ public class diamond : MonoBehaviour {
 		GetComponent<Rigidbody2D>().AddForce(direction);
 		StartCoroutine(startDying());
 		Physics2D.IgnoreLayerCollision(0,1,true);
+		controller.getDiamond();
 	}
 	
 	// Update is called once per frame
@@ -35,7 +36,6 @@ public class diamond : MonoBehaviour {
 
 	IEnumerator startDying() {
         yield return new WaitForSeconds(1.5f);
-        controller.getDiamond();
         //createFloatText(new Vector3(950f,80f,0f), goldIncrement, Color.yellow);
         Destroy(gameObject);
     }

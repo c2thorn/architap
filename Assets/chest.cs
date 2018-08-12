@@ -53,7 +53,7 @@ public class chest : MonoBehaviour {
 	IEnumerator startDying() {
         yield return new WaitForSeconds(2f);
 		// itemController.itemDrop = false;
-		itemController.addItem(item);
+		itemController.showItem(item);
         Destroy(gameObject.transform.parent.gameObject);
     }
 }

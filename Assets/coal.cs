@@ -15,6 +15,7 @@ public class coal : MonoBehaviour {
 		GetComponent<Rigidbody2D>().AddForce(direction);
 		StartCoroutine(startDying());
 		Physics2D.IgnoreLayerCollision(0,1,true);
+		controller.getCoal();
 	}
 	
 	// Update is called once per frame
@@ -35,7 +36,6 @@ public class coal : MonoBehaviour {
 
 	IEnumerator startDying() {
         yield return new WaitForSeconds(1.5f);
-        controller.getCoal();
         Destroy(gameObject);
     }
 }

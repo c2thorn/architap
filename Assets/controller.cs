@@ -90,12 +90,13 @@ public class controller : MonoBehaviour {
 #region Region
 	public int region = 0;
 	public bool[] completedRegions = new bool[] {false,false,false,false};
-	public int[,] regionLevels = new int[,] {{1,50},{50,120},{110,200},{200,350}};
+	public int[,] regionLevels = new int[,] {{1,50},{51,120},{111,200},{201,350}};
 	public int[] highestRegionLevels = new int[] {1,50,110,200};
-	public ArrayList completedBossLevels = new ArrayList();
+	// public ArrayList completedBossLevels = new ArrayList();
 #endregion
 #region Map
 	public int[] uniqueBossLevels;
+	public bool[] uniqueBossCompleted = {false, false, false, false, false, false, false, false};
 	public GameObject playerIndicator;
 	public Vector3 playerIndicatorOffset = new Vector3(-20,0,0);
 #endregion
@@ -154,8 +155,11 @@ public class controller : MonoBehaviour {
 #endregion
 
 #region Start/Update
-	void Start () {
+	void Awake() {
 		saveStateController.LoadData();
+	}
+	void Start () {
+		// saveStateController.LoadData();
 		Application.runInBackground = true;
 		double health = 0;
 		double maxHealth = calculateHealth();
@@ -195,6 +199,9 @@ public class controller : MonoBehaviour {
 		modalOpen = false;
 		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
 		// totalBuildings = 0;
+		SetUp();
+		if (highestLevel < 2)
+			gold = 1000000;
 	}
 	
 	// Update is called once per frame
@@ -228,6 +235,64 @@ public class controller : MonoBehaviour {
 	void OnApplicationQuit() {
 		saveStateController.SaveData();
 	}
+
+	public void SetUp() {
+		RecalculateAchievementMultipliers();
+		for (int i = 0; i < baseCharacterUpgradeCost.Length; i++)
+			RecalculateCharacterUpgradeCost(i);
+		RecalculateItemMultipliers();
+		itemController.refreshInventoryUI();
+		achievementController.refreshAchievementsUI();
+		if (highestLevel > 1 || levelCount > 1) {
+			upgradeController.enableGoldButton();
+			settingsController.enableSettings();
+		}
+		if (level > regionLevels[region,0])
+			levelNavigateDownButton.gameObject.SetActive(true);
+		if (level < regionLevels[region,1] && level < highestRegionLevels[region])
+			levelNavigateUpButton.gameObject.SetActive(true);
+		if (highestLevel > 5 || diamonds > 0)
+			upgradeController.enableDiamondButton();
+		if (itemController.inventory.Count > 0)
+			upgradeController.enableItemButton();
+		for (int i = 0; i < achievementController.achievements.Count; i++){
+			if (achievementController.achievements[i].completed)
+				upgradeController.enableAchievementsButton();
+		}
+		if (highestLevel > 20)
+			upgradeController.enableMapButton();
+		for (int i = 0; i < uniqueBossLevels.Length; i++){
+			if (highestLevel > uniqueBossLevels[i] - 10 && !uniqueBossCompleted[i]) {
+				uniqueBossButtons[i].interactable = true;
+			}
+		}
+
+		if (highestLevel > 10) 
+			upgradeController.enableMultiLevelUpButton();
+		for (int i = 0;i < units.Length;i++){
+			if (characterLevel[i] > 0)
+				RefreshCharacterBoard(i);
+			else {
+				levelUpButton[i].GetComponentInChildren<Text>().text = "Hire: "+characterUpgradeCost[i]+"g";
+				unitText[i].text = "";
+			}
+		}
+		for (int i = 0; i < completedRegions.Length;i++) {
+			if (completedRegions[i]){
+				if (regionButtons.Length > i+1)
+					regionButtons[i+1].SetActive(true);
+				if (region == i)
+					regionCompleteText.SetActive(true);
+			}
+		}
+		if (coal > 0 || highestLevel > 20){
+			coalText.gameObject.SetActive(true);
+		}
+		if (totalPrestiges > 0){
+			prestigeText.gameObject.SetActive(true);
+		}
+		setRegionBackground(region);
+	}
 #endregion
 
 #region Calculations
@@ -243,7 +308,6 @@ public class controller : MonoBehaviour {
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 10; 
 		if (boss)
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5; 
-		Debug.Log(level);
 		return Math.Round(baseHealth*Math.Pow(healthMultiplier,level));
 	}
 
@@ -272,10 +336,14 @@ public class controller : MonoBehaviour {
 		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
 		characterLevel[i] += numLevels;
 		gold -= characterUpgradeCost[i];
+		RefreshCharacterBoard(i);
+		LevelUpUnit(i,numLevels);
+	}
+
+	public void RefreshCharacterBoard(int i) {
 		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
 		characterLevelText[i].text = preText+characterLevel[i];
 		RecalculateCharacterUpgradeCost(i);
-		LevelUpUnit(i,numLevels);
 		if (characterLevel[i] >= 5) 
 			upgradeController.enableBoost1(i);
 		if (characterLevel[i] >= 10) 
@@ -399,17 +467,22 @@ public class controller : MonoBehaviour {
 			if (level == highestRegionLevels[region]){
 				if (boss) {
 					boss = false;
-					completedBossLevels.Add(level);
+					// completedBossLevels.Add(level);
 					enemyLevelUp(advanceLevel);
 				}
 				else {
-					levelCount++;
-					if (levelCount > levelMaxCount) {
-						if (level%10 == 0 && !completedBossLevels.Contains(level) && advanceLevel)
+					if (levelCount >= levelMaxCount) {
+						if (level%10 == 0 
+						// && !completedBossLevels.Contains(level) 
+						&& advanceLevel 
+						&& highestLevel <= level
+						&& !completedRegions[region])
 							boss = true;
 						else
 							enemyLevelUp(advanceLevel);
-					}
+					} 
+					else
+						levelCount++;
 				}
 			}
 			if (spawn)
@@ -515,10 +588,14 @@ public class controller : MonoBehaviour {
 	public void checkBossReward(Vector3 pos) {
 		if (uniqueBoss) {
 			GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
-			chest.GetComponentInChildren<chest>().SetItem(itemController.getCurrentBossItem());
+			Item item = itemController.getCurrentBossItem();
+			itemController.addItemToInventory(item);
+			chest.GetComponentInChildren<chest>().SetItem(item);
 			for (int i = 0;i< uniqueBossButtons.Length;i++) {
-				if (level == uniqueBossLevels[i])
+				if (level == uniqueBossLevels[i]){
 					uniqueBossButtons[i].interactable = false;
+					uniqueBossCompleted[i] = true;
+				}
 			}
 		} else {
 			if(unlockUniqueBoss()){
@@ -586,14 +663,18 @@ public class controller : MonoBehaviour {
 				levelNavigateDownButton.gameObject.SetActive(level > regionLevels[i,0]);
 				levelNavigateUpButton.gameObject.SetActive(false);	
 			}
-			for(int j = 0; j < regionBackgrounds.Length; j++) {
-				regionBackgrounds[j].SetActive(j==(i+1));
-			}
-			for(int j = 0; j < shopBackgrounds.Length; j++)
-				shopBackgrounds[j].SetActive(false);
+			setRegionBackground(i);
 			spawnNewEnemy(true);
-			playerIndicator.transform.position = regionButtons[i].transform.position+playerIndicatorOffset;
 		}
+	}
+
+	public void setRegionBackground(int i) {
+		for(int j = 0; j < regionBackgrounds.Length; j++) {
+			regionBackgrounds[j].SetActive(j==(i+1));
+		}
+		for(int j = 0; j < shopBackgrounds.Length; j++)
+			shopBackgrounds[j].SetActive(false);
+		playerIndicator.transform.position = regionButtons[i].transform.position+playerIndicatorOffset;
 	}
 
 	public void goToUnique(int i) {
