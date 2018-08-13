@@ -11,9 +11,12 @@ public class controller : MonoBehaviour {
 	public double gold = 0;
 	public double diamonds = 0;
 	public double prestigeCurrency = 0;
+	public double unconvertedPrestigeCurrency = 0;
 	public double coal = 0;
 	public float diamondChance = 0.05f;
 	public float coalChance = 0.1f;
+	public float bonusEnemyChance = 0.05f;
+	public float prestigeCurrencyBase = 1.1f;
 #endregion
 #region Enemy Level
 	public int level = 1;
@@ -70,6 +73,7 @@ public class controller : MonoBehaviour {
 	public bool uniqueBoss = false;
 	public bool modalOpen;
 	public bool bossTimeCountdownFlag = false;
+	public bool bonusEnemy = false;
 #endregion
 #region Enemy Naming
 	public string[] enemyNouns;
@@ -131,6 +135,7 @@ public class controller : MonoBehaviour {
 	public GameObject[] regionButtons;
 	public Button[] uniqueBossButtons;
 	public Button[] shopButtons;
+	public Button prestigeButton;
 #endregion
 #region Panels
 	public GameObject goldPanel;
@@ -200,8 +205,8 @@ public class controller : MonoBehaviour {
 		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
 		// totalBuildings = 0;
 		SetUp();
-		if (highestLevel < 2)
-			gold = 1000000;
+		// if (highestLevel < 2)
+		// 	gold = 1000000;
 	}
 	
 	// Update is called once per frame
@@ -225,7 +230,7 @@ public class controller : MonoBehaviour {
 		partnerUnitText.text = NumberFormat.format(sumofAllUnits);
 		goldText.text = NumberFormat.format(gold);
 		diamondText.text = NumberFormat.format(diamonds);
-		prestigeText.text = NumberFormat.format(prestigeCurrency);
+		prestigeText.text = NumberFormat.format(prestigeCurrency) + " ("+NumberFormat.format(unconvertedPrestigeCurrency)+")";
 		coalText.text = NumberFormat.format(coal);
 
 		//Update instagold price
@@ -292,6 +297,7 @@ public class controller : MonoBehaviour {
 			prestigeText.gameObject.SetActive(true);
 		}
 		setRegionBackground(region);
+		regionCompleteText.SetActive(completedRegions[region]);
 
 		m1UpgradeCost[0] = Math.Round(m1UpgradeBaseCost[0]*Math.Pow(m1UpgradeCostMultiplier[0],m1Level[0]));
 		unitM1Button[0].GetComponentInChildren<Text>().text = m1UpgradeCost[0]+" diamonds";
@@ -301,6 +307,10 @@ public class controller : MonoBehaviour {
 		m1UpgradeCost[1] = Math.Round(m1UpgradeBaseCost[1]*Math.Pow(m1UpgradeCostMultiplier[1],m1Level[1]));
 		unitM1Button[1].GetComponentInChildren<Text>().text = m1UpgradeCost[1]+" diamonds";
 		unitMultiplierText[1].text = " + "+(m1Level[1]-1)*25+"%"; 
+
+		prestigeButton.gameObject.SetActive(completedRegions[1]);
+
+		bonusEnemy = false;
 
 		//Should be last
 		saveStateController.CheckIdleTime();
@@ -320,6 +330,8 @@ public class controller : MonoBehaviour {
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 10; 
 		if (boss)
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5; 
+		if (bonusEnemy)
+			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)* 1.5); 
 		return Math.Round(baseHealth*Math.Pow(healthMultiplier,level));
 	}
 
@@ -330,6 +342,17 @@ public class controller : MonoBehaviour {
 	public void IncrementGold(double increment) {
 		gold += increment;
 		totalGold += increment;
+	}
+
+	public void IncrementPrestigeCurrency(double increment) {
+		prestigeCurrency += increment;
+		//TODO total prestige currency as statistic
+	}
+
+	public double CalculateUnconvertedPrestigeCurrency() {
+		return Math.Round(
+			//prestigeCurrencyBase*
+			Math.Pow(prestigeCurrencyBase,(level-1)));
 	}
 #endregion
 
@@ -356,14 +379,16 @@ public class controller : MonoBehaviour {
 	public void RefreshCharacterBoard(int i) {
 		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
 		characterLevelText[i].text = preText+characterLevel[i];
-		RecalculateCharacterUpgradeCost(i);
+		if (i != 0 || characterLevel[i] > 1)
+			RecalculateCharacterUpgradeCost(i);
 		if (characterLevel[i] >= 5) 
 			upgradeController.enableBoost1(i);
 		if (characterLevel[i] >= 10) 
 			upgradeController.enableBoost2(i);
 		if (characterLevel[i] >= 20) 
 			upgradeController.enableBoost3(i);
-		upgradeController.enableBoard(i);
+		if ((i != 0 && characterLevel[i] > 0 ) || characterLevel[i] > 1)
+			upgradeController.enableBoard(i);
 		if ( upgradeController.boostBought1[i])
 			upgradeController.SetBoostButtonToBought(upgradeController.boost1[i]);
 		if ( upgradeController.boostBought2[i])
@@ -474,7 +499,8 @@ public class controller : MonoBehaviour {
 	}
 
 	public double enemyDied (bool spawn, bool advanceLevel) {
-		double goldIncrement = boss ? calculateGold()*10 : calculateGold();
+		double goldIncrement = boss ? calculateGold()*10 : bonusEnemy ? calculateGold()*5 : calculateGold();
+		bonusEnemy = false;
 		if (uniqueBoss || boss)
 			endBossTime();	
 		if (!uniqueBoss) {
@@ -488,6 +514,10 @@ public class controller : MonoBehaviour {
 					boss = false;
 					// completedBossLevels.Add(level);
 					enemyLevelUp(advanceLevel);
+					if ((level-1) % 20 == 0) {
+						unconvertedPrestigeCurrency += CalculateUnconvertedPrestigeCurrency();
+						prestigeText.gameObject.SetActive(true);
+					}
 				}
 				else {
 					if (levelCount >= levelMaxCount) {
@@ -523,6 +553,7 @@ public class controller : MonoBehaviour {
 		else {
 			levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
 			enemySelector = ((level-1)/2)%5;
+			bonusEnemy = UnityEngine.Random.value <= bonusEnemyChance;
 		}
 
 		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-5f,-5f),Quaternion.Euler(0, UnityEngine.Random.value*360f, 0));
@@ -663,6 +694,9 @@ public class controller : MonoBehaviour {
 		if (regionButtons.Length > region+1)
 			regionButtons[region+1].SetActive(true);
 		achievementController.checkAchievement("region",region);
+		if (region == 1) {
+			prestigeButton.gameObject.SetActive(true);
+		}
 		totalRegionsCompleted++;
 	}
 
@@ -763,7 +797,9 @@ public class controller : MonoBehaviour {
 		upgradeController.goldTab();
 		upgradeController.resetScroll();
 		achievementController.checkAchievement("prestige",1);
-		prestigeCurrency++;
+		// prestigeCurrency++;
+		IncrementPrestigeCurrency(unconvertedPrestigeCurrency);
+		unconvertedPrestigeCurrency = 0;
 		prestigeText.gameObject.SetActive(true);
 		totalPrestiges++;
 		saveStateController.SaveData();

@@ -34,6 +34,7 @@ public class SaveStateController : MonoBehaviour {
 		controller.gold = LoadDouble("gold");
 		controller.diamonds = LoadDouble("diamonds");
 		controller.prestigeCurrency = LoadDouble("prestigeCurrency");
+		controller.unconvertedPrestigeCurrency = LoadDouble("unconvertedPrestigeCurrency") != 0 ? LoadDouble("unconvertedPrestigeCurrency") : controller.unconvertedPrestigeCurrency;
 		controller.coal = LoadDouble("coal");
 
 		controller.level = LoadInt("level") != 0 ? LoadInt("level") : controller.level;
@@ -140,6 +141,7 @@ public class SaveStateController : MonoBehaviour {
 
 		SaveDouble("diamonds", controller.diamonds);
 		SaveDouble("prestigeCurrency",controller.prestigeCurrency);
+		SaveDouble("unconvertedPrestigeCurrency",controller.unconvertedPrestigeCurrency);
 		SaveDouble("coal", controller.coal);
 
 		if (controller.uniqueBoss) {
@@ -281,7 +283,7 @@ public class SaveStateController : MonoBehaviour {
 										CultureInfo.InvariantCulture.DateTimeFormat, 
 										DateTimeStyles.AssumeUniversal);
 				SaveString("lastSaveTime",nowTime.ToString());
-				Debug.Log("Saving date: " + nowTime.ToString());
+				// Debug.Log("Saving date: " + nowTime.ToString());
 			} 
 		} catch (Exception e) {
 			Debug.Log("Saving Current Date failed.");
@@ -338,7 +340,7 @@ public class SaveStateController : MonoBehaviour {
 				return diff;
 			}
 		} catch (Exception e) {
-			Debug.Log(e.StackTrace);
+			// Debug.Log(e.StackTrace);
 			//Could not connect or parse
 			Debug.Log("could not connect to server, or previous time is null");
 		}
@@ -369,7 +371,7 @@ public class SaveStateController : MonoBehaviour {
 		controller.IncrementGold(goldEarned);
 
 		double coalFound = Math.Floor(housesBuilt*controller.coalChance);
-		if (controller.level < 10)
+		if (controller.level < 10 || controller.totalPrestiges > 0)
 			coalFound = 0;
 		else {
 			controller.IncrementCoal(coalFound);
@@ -380,7 +382,9 @@ public class SaveStateController : MonoBehaviour {
 							+ (idleTimeSpan.Hours > 0 ? idleTimeSpan.Hours + "h " : "")
 							+ (idleTimeSpan.Minutes > 0 ? idleTimeSpan.Minutes + "m " : "")
 							+ (idleTimeSpan.Seconds > 0 ? idleTimeSpan.Seconds + "s " : "");
-		idleBuildingText.text = "You built "+NumberFormat.format(housesBuilt)+" buildings";
+		idleBuildingText.text = 
+								//"You built "+
+								NumberFormat.format(housesBuilt)+" buildings";
 		idleGoldText.text = NumberFormat.format(goldEarned);
 		idleGoldText.gameObject.SetActive(goldEarned > 0);
 		idleCoalText.text = NumberFormat.format(coalFound);

@@ -27,9 +27,9 @@ public class upgradeController : MonoBehaviour {
 	public Button[] boost2;
 	public Button[] boost3;
 
-	public int[] boost1Price = new int[] {100, 250, 25000, 2500000, 2500000, 2500000, 2500000, 2500000};
-	public int[] boost2Price = new int[] {1000, 2500, 250000, 25000000, 25000000, 25000000, 25000000, 25000000};
-	public int[] boost3Price = new int[] {10000, 25000, 2500000, 250000000, 250000000, 250000000, 250000000, 250000000};
+	public double[] boost1Price = new double[] {100, 250, 25000, 2500000, 2500000, 2500000, 2500000, 2500000};
+	public double[] boost2Price = new double[] {1000, 2500, 250000, 25000000, 25000000, 25000000, 25000000, 25000000};
+	public double[] boost3Price = new double[] {10000, 25000, 2500000, 250000000, 250000000, 250000000, 250000000, 250000000};
 	public GameObject tabs;
 	public GameObject statsPanel;
 	public GameObject diamondCountText;
@@ -61,10 +61,13 @@ public class upgradeController : MonoBehaviour {
 		for(int i = 0; i < characterAmount; i++) {
 			boost1[i].gameObject.SetActive(false);
 			boost1[i].interactable = false;
+			boost1[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[i]) + "g";
 			boost2[i].gameObject.SetActive(false);
 			boost2[i].interactable = false;
+			boost2[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[i]) + "g";
 			boost3[i].gameObject.SetActive(false);
 			boost3[i].interactable = false;
+			boost3[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[i]) + "g";
 			if (i != 0)
 				characterBoards[i].SetActive(false);
 		}	

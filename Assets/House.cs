@@ -24,6 +24,7 @@ public class House : MonoBehaviour {
     public bool invulnerable = false;
 
     public BuildingController buildingController;
+    public GameObject halo;
 
 	// Use this for initialization
 	void Start () {
@@ -37,6 +38,10 @@ public class House : MonoBehaviour {
 		rend.material.shader = unfinished;
         maxHealth = controller.calculateHealth();
         healthBar.UpdateBar( health, maxHealth );
+        if (!controller.uniqueBoss)
+            halo.SetActive(controller.bonusEnemy);
+        // if (controller.bonusEnemy) {
+        // }
 	}
 	
 	// Update is called once per frame
@@ -107,9 +112,9 @@ public class House : MonoBehaviour {
             //Guarantee first diamond
             GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
-        else if(controller.level >= 6 && UnityEngine.Random.value <= controller.diamondChance) {
+        else if((controller.level >= 6 || controller.totalPrestiges > 0) && UnityEngine.Random.value <= controller.diamondChance) {
             GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
-        } else if (controller.level >= 10 && UnityEngine.Random.value <= controller.coalChance) {
+        } else if ((controller.level >= 10  || controller.totalPrestiges > 0) && UnityEngine.Random.value <= controller.coalChance) {
             GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
 		rend.material.shader = finished;
