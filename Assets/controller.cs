@@ -276,7 +276,7 @@ public class controller : MonoBehaviour {
 			upgradeController.enableMultiLevelUpButton();
 		for (int i = 0;i < units.Length;i++){
 			if (characterLevel[i] > 0)
-				RefreshCharacterBoard(i);
+				upgradeController.RefreshCharacterBoard(i);
 			else {
 				levelUpButton[i].GetComponentInChildren<Text>().text = "Hire: "+characterUpgradeCost[i]+"g";
 				unitText[i].text = "";
@@ -371,31 +371,12 @@ public class controller : MonoBehaviour {
 		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
 		characterLevel[i] += numLevels;
 		gold -= characterUpgradeCost[i];
-		RefreshCharacterBoard(i);
+		upgradeController.RefreshCharacterBoard(i);
 		LevelUpUnit(i,numLevels);
 		saveStateController.SaveData();
 	}
 
-	public void RefreshCharacterBoard(int i) {
-		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
-		characterLevelText[i].text = preText+characterLevel[i];
-		if (i != 0 || characterLevel[i] > 1)
-			RecalculateCharacterUpgradeCost(i);
-		if (characterLevel[i] >= 5) 
-			upgradeController.enableBoost1(i);
-		if (characterLevel[i] >= 10) 
-			upgradeController.enableBoost2(i);
-		if (characterLevel[i] >= 20) 
-			upgradeController.enableBoost3(i);
-		if ((i != 0 && characterLevel[i] > 0 ) || characterLevel[i] > 1)
-			upgradeController.enableBoard(i);
-		if ( upgradeController.boostBought1[i])
-			upgradeController.SetBoostButtonToBought(upgradeController.boost1[i]);
-		if ( upgradeController.boostBought2[i])
-			upgradeController.SetBoostButtonToBought(upgradeController.boost2[i]);
-		if ( upgradeController.boostBought3[i])
-			upgradeController.SetBoostButtonToBought(upgradeController.boost3[i]);
-	}
+
 #endregion
 	
 #region Upgrades/Purchases
