@@ -195,7 +195,7 @@ public class SaveStateController : MonoBehaviour {
 		SaveInt("itemSize", itemController.inventory.Count);
 		for (int i = 0; i < itemController.inventory.Count; i++){
 			Item item = itemController.inventory[i];
-			SaveString("item"+i, item.name);
+			SaveString("item"+i, item.name+"$"+item.count);
 		} 
 
 		for (int i = 0; i < upgradeController.boostBought1.Length; i++) 

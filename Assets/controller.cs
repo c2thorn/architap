@@ -293,7 +293,7 @@ public class controller : MonoBehaviour {
 		if (coal > 0 || highestLevel > 20){
 			coalText.gameObject.SetActive(true);
 		}
-		if (totalPrestiges > 0){
+		if (prestigeCurrency > 0 || unconvertedPrestigeCurrency > 0){
 			prestigeText.gameObject.SetActive(true);
 		}
 		setRegionBackground(region);
@@ -480,7 +480,7 @@ public class controller : MonoBehaviour {
 	}
 
 	public double enemyDied (bool spawn, bool advanceLevel) {
-		double goldIncrement = boss ? calculateGold()*10 : bonusEnemy ? calculateGold()*5 : calculateGold();
+		double goldIncrement = boss ? calculateGold()*10 : bonusEnemy ? calculateGold()*7 : calculateGold();
 		bonusEnemy = false;
 		if (uniqueBoss || boss)
 			endBossTime();	

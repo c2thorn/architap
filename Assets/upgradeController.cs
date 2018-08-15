@@ -66,15 +66,15 @@ public class upgradeController : MonoBehaviour {
 			boostButtons1[i].gameObject.SetActive(false);
 			boostButtons1[i].interactable = false;
 			boostButtons1[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[i]) + "g";
-			boostButtons1[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "% Units";
+			boostButtons1[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "%";
 			boostButtons2[i].gameObject.SetActive(false);
 			boostButtons2[i].interactable = false;
 			boostButtons2[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[i]) + "g";
-			boostButtons2[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "% Units";
+			boostButtons2[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "%";
 			boostButtons3[i].gameObject.SetActive(false);
 			boostButtons3[i].interactable = false;
 			boostButtons3[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[i]) + "g";
-			boostButtons3[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "% Units";
+			boostButtons3[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 			if (i != 0)
 				characterBoards[i].SetActive(false);
 		}	

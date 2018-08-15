@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 public class ItemController : MonoBehaviour {
 
 	public controller controller;
@@ -97,9 +100,9 @@ public class ItemController : MonoBehaviour {
 	}
 
 	public Item getCurrentBossItem() {
-		float itemCategoryVal = Random.value;
+		float itemCategoryVal = UnityEngine.Random.value;
 		if (itemCategoryVal <= .5f) {
-			float val = Random.value;
+			float val = UnityEngine.Random.value;
 			if (val <= .6f) {
 				return createFromName("Common Gloves");
 			} else if (val <= .9f) {
@@ -108,7 +111,7 @@ public class ItemController : MonoBehaviour {
 				return createFromName("Legendary Gloves");
 			}
 		} else {
-			float val = Random.value;
+			float val = UnityEngine.Random.value;
 			if (val <= .6f) {
 				return createFromName("Common Hammer");
 			} else if (val <= .9f) {
@@ -121,44 +124,58 @@ public class ItemController : MonoBehaviour {
 
 	}
 
-	public Item createFromName(string name) {
-		if (name.Length == 0)
+	public Item createFromName(string input) {
+		try {
+			if (input.Length == 0)
+					return null;
+				string name = input;
+				int count = 1;
+				if (input.Contains("$")) {
+					name = input.Split('$')[0];
+					count = int.Parse(input.Split('$')[1]);
+				}
+
+				Item item = new Item(name);
+				item.count = count;
+				switch (name) {
+					case "Common Gloves":
+						item.effect = "partners";
+						item.effectValue = 0.15f;
+						item.rarity = 0;
+						break;
+					case "Rare Gloves":
+						item.effect = "partners";
+						item.effectValue = 0.25f;
+						item.rarity = 1;
+						break;
+					case "Legendary Gloves":
+						item.effect = "partners";
+						item.effectValue = 0.5f;
+						item.rarity = 2;
+						break;
+					case "Common Hammer":
+						item.effect = "unitIndex0";
+						item.effectValue = 0.15f;
+						item.rarity = 0;
+						break;
+					case "Rare Hammer":
+						item.effect = "unitIndex0";
+						item.effectValue = 0.25f;
+						item.rarity = 1;
+						break;
+					case "Legendary Hammer":
+						item.effect = "unitIndex0";
+						item.effectValue = 0.5f;
+						item.rarity = 2;
+						break;
+					default:
+						return null;
+				}
+				return item;
+		} catch (Exception e) {
+			Debug.LogError(e.StackTrace);
 			return null;
-		Item item = new Item(name);
-		switch (name) {
-			case "Common Gloves":
-				item.effect = "partners";
-				item.effectValue = 0.15f;
-				item.rarity = 0;
-				break;
-			case "Rare Gloves":
-				item.effect = "partners";
-				item.effectValue = 0.25f;
-				item.rarity = 1;
-				break;
-			case "Legendary Gloves":
-				item.effect = "partners";
-				item.effectValue = 0.5f;
-				item.rarity = 2;
-				break;
-			case "Common Hammer":
-				item.effect = "unitIndex0";
-				item.effectValue = 0.15f;
-				item.rarity = 0;
-				break;
-			case "Rare Hammer":
-				item.effect = "unitIndex0";
-				item.effectValue = 0.25f;
-				item.rarity = 1;
-				break;
-			case "Legendary Hammer":
-				item.effect = "unitIndex0";
-				item.effectValue = 0.5f;
-				item.rarity = 2;
-				break;
-			default:
-				return null;
 		}
-		return item;
+	
 	}
 }
