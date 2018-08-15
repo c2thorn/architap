@@ -113,6 +113,9 @@ public class SaveStateController : MonoBehaviour {
 			bool completed = LoadBool("achievement "+achievementController.achievements[i].name);
 			achievementController.achievements[i].completed = completed;
 		}
+
+		for (int i = 0; i < controller.characterGilds.Length; i++) 
+			controller.characterGilds[i] = LoadDouble("characterGild"+i);
 	}
 
 	public double LoadDouble(string name) {
@@ -211,6 +214,9 @@ public class SaveStateController : MonoBehaviour {
 			SaveBool("achievement "+achievementController.achievements[i].name, achievement.completed);
 		}
 
+		for (int i = 0; i < controller.characterGilds.Length; i++) 
+			SaveDouble("characterGild"+i,controller.characterGilds[i]);
+
 		StartCoroutine(TrySaveDateTime());
 	}
 
@@ -248,21 +254,6 @@ public class SaveStateController : MonoBehaviour {
 		}
 		autoSaveText.text = "Autosave in " + countdownNumber;
 	}
-
-	// public static DateTime GetNistTime()
-	// {
-	// 	try {
-	// 		var myHttpWebRequest = (HttpWebRequest)WebRequest.Create();
-	// 		var response = myHttpWebRequest.GetResponse();
-	// 		string todaysDates = response.Headers["date"];
-
-	// 	} catch (Exception e) {
-	// 		Debug.Log(e.StackTrace);
-	// 		return DateTime.MinValue;
-	// 	}
-	// 	return DateTime.MinValue;
-
-	// }
 
 	IEnumerator TrySaveDateTime()
 	{
@@ -358,25 +349,25 @@ public class SaveStateController : MonoBehaviour {
 		}
 
 		double idleHouseHealth = controller.calculateHealth();
-		Debug.Log("Idle House Health: " + idleHouseHealth);
+		// Debug.Log("Idle House Health: " + idleHouseHealth);
 
 		double secondsToBuildSingleHouse = (idleHouseHealth/sumUnitsPerSecond) + 1;
-		Debug.Log("Seconds to build one house: " + secondsToBuildSingleHouse);
+		// Debug.Log("Seconds to build one house: " + secondsToBuildSingleHouse);
 
 		double housesBuilt = Math.Floor(idleSeconds/secondsToBuildSingleHouse);
-		Debug.Log("Houses Built: " + housesBuilt);
+		// Debug.Log("Houses Built: " + housesBuilt);
 
 		double goldEarned = housesBuilt*controller.calculateGold();
-		Debug.Log("Gold Earned: " + goldEarned);
+		// Debug.Log("Gold Earned: " + goldEarned);
 		controller.IncrementGold(goldEarned);
 
-		double coalFound = Math.Floor(housesBuilt*controller.coalChance);
+		double coalFound = Math.Min(Math.Floor(housesBuilt*controller.coalChance), 20);
 		if (controller.level < 10 || controller.totalPrestiges > 0)
 			coalFound = 0;
 		else {
 			controller.IncrementCoal(coalFound);
 		}
-		Debug.Log("Coal Found: " + coalFound);
+		// Debug.Log("Coal Found: " + coalFound);
 
 		idleTimeText.text = idleTimeSpan.Days > 0 ? idleTimeSpan.Days + "d " : ""
 							+ (idleTimeSpan.Hours > 0 ? idleTimeSpan.Hours + "h " : "")

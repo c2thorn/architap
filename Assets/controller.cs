@@ -61,6 +61,7 @@ public class controller : MonoBehaviour {
 	public double[] baseCharacterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public double[] characterUpgradeCostMultiplier = new double[] {1.07, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1};
 	public float[] periods = new float[] {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
+	public double[] characterGilds = new double[] {0,0,0,0,0,0,0,0};
 #endregion
 #region Prefabs
 	public GameObject[] enemyPrefabs;
@@ -87,9 +88,13 @@ public class controller : MonoBehaviour {
 	public SettingsController settingsController;
 	public SaveStateController saveStateController;
 #endregion
-#region InstaGold
+#region Diamond Purchases
 	public double instaGoldPrice = 20;
 	public double instaGoldMultiplier = 200;
+	public double instantPrestigePrice = 50;
+	public double randomItemPrice = 10;
+	public double resetSkillCooldownsPrice = 2;
+	public double gildRandomHeroPrice = 15;
 #endregion
 #region Region
 	public int region = 0;
@@ -125,6 +130,7 @@ public class controller : MonoBehaviour {
 	public Text enemyDescriptionText;
 	public Text coalConversionText;
 	public Text diamondConversionText;
+	public Text instantPrestigeButtonText;
 #endregion
 #region Buttons
 	public Button levelNavigateUpButton;
@@ -132,6 +138,10 @@ public class controller : MonoBehaviour {
 	public Button[] levelUpButton;
 	public Button[] unitM1Button;
 	public Button instaGoldButton;
+	public Button randomItemButton;
+	public Button instantPrestigeButton;
+	public Button resetSkillCooldownsButton;
+	public Button gildRandomHeroButton;
 	public GameObject[] regionButtons;
 	public Button[] uniqueBossButtons;
 	public Button[] shopButtons;
@@ -233,8 +243,16 @@ public class controller : MonoBehaviour {
 		prestigeText.text = NumberFormat.format(prestigeCurrency) + " ("+NumberFormat.format(unconvertedPrestigeCurrency)+")";
 		coalText.text = NumberFormat.format(coal);
 
-		//Update instagold price
+		//Update diamond purchases price
 		instaGoldButton.interactable = diamonds >= instaGoldPrice;
+		randomItemButton.interactable = diamonds >= randomItemPrice;
+		//resetSkillCooldownsButton.interactable = diamonds >= resetSkillCooldownsPrice;
+		resetSkillCooldownsButton.interactable = false;
+		instantPrestigeButton.interactable = diamonds >= instantPrestigePrice && unconvertedPrestigeCurrency > 0;
+		instantPrestigeButtonText.text = "+"+NumberFormat.format(unconvertedPrestigeCurrency);
+		gildRandomHeroButton.interactable = diamonds >= gildRandomHeroPrice;
+		
+
 	}
 
 	void OnApplicationQuit() {
@@ -336,7 +354,7 @@ public class controller : MonoBehaviour {
 	}
 
 	public void RecalculateUnit(int i) {
-		units[i] = Math.Round(baseLevelUnits[i]*unitM1[i]*unitItemM2[i]*unitAchievementM3[i]);
+		units[i] = Math.Round(baseLevelUnits[i]*unitM1[i]*unitItemM2[i]*unitAchievementM3[i]*(characterGilds[i]+1));
 	}
 
 	public void IncrementGold(double increment) {
@@ -419,6 +437,36 @@ public class controller : MonoBehaviour {
 		IncrementGold(calculateMaxGold());
 		diamonds -= instaGoldPrice;
 	}
+
+	public void buyRandomItem() {
+		Item item = itemController.getRandomItem();
+		DropItem(new Vector3(0,-5,-5),item);
+		diamonds -= randomItemPrice;
+	}
+
+	public void buyInstantPrestige() {
+		prestigeCurrency += unconvertedPrestigeCurrency;
+		unconvertedPrestigeCurrency = 0;
+		diamonds -= instantPrestigePrice;
+	}
+
+	public void gildRandomCharacter() {
+		diamonds -= gildRandomHeroPrice;
+		List<int> heroIndices = new List<int>();
+		for (int i = 0;i < characterLevel.Length; i++) {
+			if (characterLevel[i] > 0)
+				heroIndices.Add(i);
+		}
+		System.Random rnd = new System.Random();
+		int index = rnd.Next(heroIndices.Count);
+		gildCharacter(index);
+	}
+
+	public void gildCharacter(int index) {
+		characterGilds[index]++;
+		upgradeController.RefreshCharacterBoard(index);
+		RecalculateUnit(index);
+	}
 #endregion
 
 #region Items
@@ -433,6 +481,18 @@ public class controller : MonoBehaviour {
 			}
 			unitItemM2[i] = multiplier;
 			RecalculateUnit(i);
+		}
+	}
+
+	public void DropItem(Vector3 pos, Item item) {
+		GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
+		itemController.addItemToInventory(item);
+		chest.GetComponentInChildren<chest>().SetItem(item);
+		for (int i = 0;i< uniqueBossButtons.Length;i++) {
+			if (level == uniqueBossLevels[i]){
+				uniqueBossButtons[i].interactable = false;
+				uniqueBossCompleted[i] = true;
+			}
 		}
 	}
 #endregion
@@ -623,16 +683,8 @@ public class controller : MonoBehaviour {
 
 	public void checkBossReward(Vector3 pos) {
 		if (uniqueBoss) {
-			GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
-			Item item = itemController.getCurrentBossItem();
-			itemController.addItemToInventory(item);
-			chest.GetComponentInChildren<chest>().SetItem(item);
-			for (int i = 0;i< uniqueBossButtons.Length;i++) {
-				if (level == uniqueBossLevels[i]){
-					uniqueBossButtons[i].interactable = false;
-					uniqueBossCompleted[i] = true;
-				}
-			}
+			Item item = itemController.getRandomItem();
+			DropItem(pos, item);
 		} else {
 			if(unlockUniqueBoss()){
 				GameObject blueprint = (GameObject) Instantiate(blueprintPrefab,pos+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));

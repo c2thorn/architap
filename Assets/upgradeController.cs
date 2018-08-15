@@ -39,7 +39,8 @@ public class upgradeController : MonoBehaviour {
 	public GameObject diamondCountText;
 	public int[] multiLevelUpValues;
 	public int currentMultiLevelUpIndex;
-
+	public Image[] characterPanels = new Image[]{};
+	public Color gildColor;
 	// Use this for initialization
 	void Start () {
 		restart();
@@ -59,6 +60,11 @@ public class upgradeController : MonoBehaviour {
 		multiLevelButton.SetActive(false);
 		currentMultiLevelUpIndex = 0;
 		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
+		for (int i = 0; i < characterPanels.Length; i++){ 
+			Text gildText = characterPanels[i].transform.Find("Gilds Text").GetComponent<Text>();
+			gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
+			gildText.gameObject.SetActive(controller.characterGilds[i] > 1);
+		}
 	}
 
 	public void restart() {
@@ -113,6 +119,13 @@ public class upgradeController : MonoBehaviour {
 			SetBoostButtonToBought(boostButtons2[i]);
 		if ( boostBought3[i])
 			SetBoostButtonToBought(boostButtons3[i]);
+
+		Text gildText = characterPanels[i].transform.Find("Gilds Text").GetComponent<Text>();
+		if (controller.characterGilds[i] > 0) 
+			characterPanels[i].color = gildColor;
+		
+		gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
+		gildText.gameObject.SetActive(controller.characterGilds[i] > 1);
 	}
 
 	public void enableBoard(int i) {		

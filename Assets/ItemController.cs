@@ -99,7 +99,7 @@ public class ItemController : MonoBehaviour {
 			inventory.Add(item);
 	}
 
-	public Item getCurrentBossItem() {
+	public Item getRandomItem() {
 		float itemCategoryVal = UnityEngine.Random.value;
 		if (itemCategoryVal <= .5f) {
 			float val = UnityEngine.Random.value;
