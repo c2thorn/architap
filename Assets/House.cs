@@ -117,8 +117,9 @@ public class House : MonoBehaviour {
         } else if ((controller.level >= 10  || controller.totalPrestiges > 0) && UnityEngine.Random.value <= controller.coalChance) {
             GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
-		rend.material.shader = finished;
-        yield return new WaitForSeconds(1f);
+        if (buildingController.buildingDeathWaitTime > 0.2f)
+		    rend.material.shader = finished;
+        yield return new WaitForSeconds(buildingController.buildingDeathWaitTime);
         while (itemController.itemDrop || controller.modalOpen)
             yield return new WaitForSeconds(1f);
         double goldIncrement = controller.enemyDied(true, true);

@@ -266,7 +266,7 @@ public class controller : MonoBehaviour {
 		RecalculateItemMultipliers();
 		itemController.refreshInventoryUI();
 		achievementController.refreshAchievementsUI();
-		if (highestLevel > 1 || levelCount > 1) {
+		if (highestLevel > 1 || levelCount > 1 || totalPrestiges > 0) {
 			upgradeController.enableGoldButton();
 			settingsController.enableSettings();
 		}
@@ -354,7 +354,12 @@ public class controller : MonoBehaviour {
 	}
 
 	public void RecalculateUnit(int i) {
-		units[i] = Math.Round(baseLevelUnits[i]*unitM1[i]*unitItemM2[i]*unitAchievementM3[i]*(characterGilds[i]+1));
+		units[i] = Math.Round(baseLevelUnits[i]
+								*unitM1[i]
+								*unitItemM2[i]
+								*unitAchievementM3[i]
+								*(characterGilds[i]+1)
+								*(1+(prestigeCurrency/100)));
 	}
 
 	public void IncrementGold(double increment) {
@@ -364,6 +369,12 @@ public class controller : MonoBehaviour {
 
 	public void IncrementPrestigeCurrency(double increment) {
 		prestigeCurrency += increment;
+		RecalculateItemMultipliers();
+		//TODO total prestige currency as statistic
+	}
+
+	public void IncrementDiamonds(double increment) {
+		diamonds += increment;
 		//TODO total prestige currency as statistic
 	}
 
@@ -439,13 +450,15 @@ public class controller : MonoBehaviour {
 	}
 
 	public void buyRandomItem() {
-		Item item = itemController.getRandomItem();
-		DropItem(new Vector3(0,-5,-5),item);
-		diamonds -= randomItemPrice;
+		if (!itemController.itemDrop || modalOpen) {
+			Item item = itemController.getRandomItem();
+			DropItem(new Vector3(0,-5,-5),item);
+			diamonds -= randomItemPrice;
+		}
 	}
 
 	public void buyInstantPrestige() {
-		prestigeCurrency += unconvertedPrestigeCurrency;
+		IncrementPrestigeCurrency(unconvertedPrestigeCurrency);
 		unconvertedPrestigeCurrency = 0;
 		diamonds -= instantPrestigePrice;
 	}
@@ -528,8 +541,10 @@ public class controller : MonoBehaviour {
 			}
 			levelCount = levelMaxCount;
 		} else {
-			highestLevel++;
 			highestRegionLevels[region] = level+1;
+			if (highestRegionLevels[region] > highestLevel)
+				highestLevel = highestRegionLevels[region];
+
 			if (advanceLevel) {
 				level++;
 				levelCount = 1;
@@ -827,6 +842,7 @@ public class controller : MonoBehaviour {
 		}
 		Start();
 		upgradeController.restart();
+		upgradeController.UndoBoosts();
 		upgradeController.goldTab();
 		upgradeController.resetScroll();
 		achievementController.checkAchievement("prestige",1);
@@ -842,7 +858,7 @@ public class controller : MonoBehaviour {
 
 #region Diamonds
 	public void getDiamond() {
-		diamonds++;
+		IncrementDiamonds(1);
 		if (diamonds > 0){ 
 			upgradeController.enableDiamondButton(true);
 		}
@@ -861,7 +877,7 @@ public class controller : MonoBehaviour {
 	}
 
 	public void convertCoal() {
-		diamonds += coal;
+		IncrementDiamonds(coal);
 		coal = 0;
 		saveStateController.SaveData();
 		closeCoalModal();

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SettingsController : MonoBehaviour {
 	public controller controller;
+	public upgradeController upgradeController;
 	public GameObject settingsPanel;
 	public GameObject statisticsPanel;
+	public GameObject debugPanel;
 	public GameObject settingsButton;
 	public Text totalBuildingsText;
 	public Text totalUnitsText;
@@ -14,6 +17,7 @@ public class SettingsController : MonoBehaviour {
 	public Text totalGoldText;
 	public Text totalRegionsText;
 	public Text totalPrestigesText;
+	public BuildingController buildingController;
 	// Use this for initialization
 	void Start () {
 		settingsPanel.SetActive(false);
@@ -34,18 +38,21 @@ public class SettingsController : MonoBehaviour {
 		controller.modalOpen = true;
 		settingsPanel.SetActive(true);
 		statisticsPanel.SetActive(false);
+		debugPanel.SetActive(false);
 	}
 
 	public void CloseSettings() {
 		controller.modalOpen = false;
 		settingsPanel.SetActive(false);
 		statisticsPanel.SetActive(false);
+		debugPanel.SetActive(false);
 	}
 
 	public void OpenStatistics() {
 		controller.modalOpen = true;
 		settingsPanel.SetActive(false);
 		statisticsPanel.SetActive(true);
+		debugPanel.SetActive(false);
 		updateStatisticsTexts();
 	}
 
@@ -57,5 +64,39 @@ public class SettingsController : MonoBehaviour {
 		totalRegionsText.text = "Regions Completed: " + NumberFormat.format(controller.totalRegionsCompleted);
 		totalPrestigesText.text = "Prestiges: " + NumberFormat.format(controller.totalPrestiges);
 
+	}
+
+	public void OpenDebug() {
+		controller.modalOpen = true;
+		settingsPanel.SetActive(false);
+		statisticsPanel.SetActive(false);
+		debugPanel.SetActive(true);
+	}
+
+	public void GoldDebug() {
+		controller.IncrementGold(1E100);
+	}
+
+	public void DiamondDebug() {
+		upgradeController.enableDiamondButton(true);
+		controller.IncrementDiamonds(1E50);
+	}
+
+	public void LevelCountDebug() {
+		controller.levelMaxCount = 1;
+	}
+
+	public void PrestigeButtonDebug() {
+		upgradeController.enableMapButton(true);
+		controller.prestigeButton.gameObject.SetActive(true);
+	}
+
+	public void BuildingDeathWaitTimeDebug() {
+		buildingController.buildingDeathWaitTime = .1f;
+	}
+
+	public void restartGameDebug() {
+		Scene scene = SceneManager.GetActiveScene(); 
+		SceneManager.LoadScene(scene.name);
 	}
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BuildingController : MonoBehaviour {
 	public controller controller;
+	public float buildingDeathWaitTime = 1f;
 
     public float[] nextActionTime = new float[] {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 

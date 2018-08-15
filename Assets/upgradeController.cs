@@ -41,6 +41,12 @@ public class upgradeController : MonoBehaviour {
 	public int currentMultiLevelUpIndex;
 	public Image[] characterPanels = new Image[]{};
 	public Color gildColor;
+	public GameObject toolTip;
+	public bool toolTipShowing = false;
+	public Vector3 toolTipOffset;
+	public ItemController itemController;
+	public achievementController achievementController;
+
 	// Use this for initialization
 	void Start () {
 		restart();
@@ -65,6 +71,8 @@ public class upgradeController : MonoBehaviour {
 			gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
 			gildText.gameObject.SetActive(controller.characterGilds[i] > 1);
 		}
+		toolTipShowing = false;
+		toolTip.SetActive(false);
 	}
 
 	public void restart() {
@@ -83,7 +91,28 @@ public class upgradeController : MonoBehaviour {
 			boostButtons3[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 			if (i != 0)
 				characterBoards[i].SetActive(false);
+			controller.RecalculateUnit(i);
 		}	
+	}
+
+	public void UndoBoosts() {
+		for(int i = 0; i < characterAmount; i++) {
+			if (boostBought1[i]) {
+				boostBought1[i] = false;
+				controller.unitM1[i] -= boostValues[0];
+				SetBoostButtonToNormal(boostButtons1[i]);
+			}
+			if (boostBought2[i]) {
+				boostBought2[i] = false;
+				controller.unitM1[i] -= boostValues[1];
+				SetBoostButtonToNormal(boostButtons2[i]);
+			}
+			if (boostBought3[i]) {
+				boostBought3[i] = false;
+				controller.unitM1[i] -= boostValues[2];
+				SetBoostButtonToNormal(boostButtons3[i]);
+			}
+		}
 	}
 	
 	// Update is called once per frame
@@ -176,6 +205,13 @@ public class upgradeController : MonoBehaviour {
 	public void SetBoostButtonToBought(Button button) {
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
+			button.GetComponent<Image>().color = newCol;
+	}
+
+	
+	public void SetBoostButtonToNormal(Button button) {
+		Color newCol;
+		if (ColorUtility.TryParseHtmlString("#FFFFFF", out newCol))
 			button.GetComponent<Image>().color = newCol;
 	}
 
@@ -281,5 +317,32 @@ public class upgradeController : MonoBehaviour {
 		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
 		for (int i = 0; i < controller.levelUpButton.Length; i++)
 			controller.RecalculateCharacterUpgradeCost(i);
+	}
+
+	public void showToolTip(int i) {
+		if (controller.characterLevel[i] > 0) {
+			if (toolTipShowing) {
+				toolTipShowing = false;
+				toolTip.SetActive(false);
+			} else {
+				if (!controller.modalOpen) {
+					toolTipShowing = true;
+					toolTip.SetActive(true);
+					toolTip.transform.position = Input.mousePosition + toolTipOffset;
+					Text text = toolTip.transform.Find("Text").GetComponent<Text>();
+					text.text = "Base " + NumberFormat.format(controller.baseLevelUnits[i]) 
+					+ " x" + Math.Round(controller.unitM1[i],2) + " Upgrades"
+					+ (itemController.inventory.Count > 0 ? " x" + Math.Round(controller.unitItemM2[i],2) + " Items" : "")
+					+ (achievementController.achievements.Count > 0 ? " x" + Math.Round(controller.unitAchievementM3[i],2) + " Achievements" : "")
+					+ (controller.characterGilds[i] > 0 ? " x" + Math.Round(controller.characterGilds[i]+1,2) + " Gilds" : "")
+					+ (controller.prestigeCurrency > 0 ? " x" + Math.Round(1+(controller.prestigeCurrency/100),2) + " Prestige" : "");
+				}
+			}
+		}
+	}
+
+	public void hideToolTip() {
+		toolTipShowing = false;
+		toolTip.SetActive(false);
 	}
 }
