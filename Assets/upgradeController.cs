@@ -16,6 +16,7 @@ public class upgradeController : MonoBehaviour {
 	public GameObject itemPanel;
 	public GameObject mapPanel;
 	public GameObject achievementsPanel;
+	public GameObject individualCharacterPanel;
 
 	public int characterAmount = 8;
 	public GameObject[] characterBoards;
@@ -23,9 +24,9 @@ public class upgradeController : MonoBehaviour {
 	public bool[] boostBought2 = new bool[] { false, false, false, false, false, false, false, false};
 	public bool[] boostBought3 = new bool[] { false, false, false, false, false, false, false, false};
 
-	public Button[] boostButtons1;
-	public Button[] boostButtons2;
-	public Button[] boostButtons3;
+	public Button boostButton1;
+	public Button boostButton2;
+	public Button boostButton3;
 
 	public double[] boost1Price = new double[] {100, 250, 25000, 2500000, 2500000, 2500000, 2500000, 2500000};
 	public double[] boost2Price = new double[] {1000, 2500, 250000, 25000000, 25000000, 25000000, 25000000, 25000000};
@@ -62,6 +63,7 @@ public class upgradeController : MonoBehaviour {
 		achievementsPanel.SetActive(false);
 		tabs.SetActive(false);
 		statsPanel.SetActive(false);
+		individualCharacterPanel.SetActive(false);
 		diamondCountText.SetActive(false);
 		multiLevelButton.SetActive(false);
 		currentMultiLevelUpIndex = 0;
@@ -77,18 +79,7 @@ public class upgradeController : MonoBehaviour {
 
 	public void restart() {
 		for(int i = 0; i < characterAmount; i++) {
-			boostButtons1[i].gameObject.SetActive(false);
-			boostButtons1[i].interactable = false;
-			boostButtons1[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[i]) + "g";
-			boostButtons1[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "%";
-			boostButtons2[i].gameObject.SetActive(false);
-			boostButtons2[i].interactable = false;
-			boostButtons2[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[i]) + "g";
-			boostButtons2[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "%";
-			boostButtons3[i].gameObject.SetActive(false);
-			boostButtons3[i].interactable = false;
-			boostButtons3[i].transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[i]) + "g";
-			boostButtons3[i].transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
+
 			if (i != 0)
 				characterBoards[i].SetActive(false);
 			controller.RecalculateUnit(i);
@@ -100,17 +91,19 @@ public class upgradeController : MonoBehaviour {
 			if (boostBought1[i]) {
 				boostBought1[i] = false;
 				controller.unitM1[i] -= boostValues[0];
-				SetBoostButtonToNormal(boostButtons1[i]);
+				characterBoards[i].get
+				GameObject boostObject = characterBoards[i].gameObject.Find("Boost 1");
+				SetBoostImageToNormal(boostButtons1[i]);
 			}
 			if (boostBought2[i]) {
 				boostBought2[i] = false;
 				controller.unitM1[i] -= boostValues[1];
-				SetBoostButtonToNormal(boostButtons2[i]);
+				SetBoostImageToNormal(boostButtons2[i]);
 			}
 			if (boostBought3[i]) {
 				boostBought3[i] = false;
 				controller.unitM1[i] -= boostValues[2];
-				SetBoostButtonToNormal(boostButtons3[i]);
+				SetBoostImageToNormal(boostButtons3[i]);
 			}
 		}
 	}
@@ -132,6 +125,7 @@ public class upgradeController : MonoBehaviour {
 		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
 		int characterLevel = controller.characterLevel[i];
 		controller.characterLevelText[i].text = preText+characterLevel;
+
 		if (i != 0 || characterLevel > 1)
 			controller.RecalculateCharacterUpgradeCost(i);
 		if (characterLevel >= boostLevelRequirements[0]) 
@@ -142,12 +136,49 @@ public class upgradeController : MonoBehaviour {
 			enableBoost3(i);
 		if ((i != 0 && characterLevel > 0 ) || characterLevel > 1)
 			enableBoard(i);
-		if ( boostBought1[i])
+		if ( boostBought1[i]){
+			Button 
 			SetBoostButtonToBought(boostButtons1[i]);
-		if ( boostBought2[i])
+		}
+		if ( boostBought2[i]){
 			SetBoostButtonToBought(boostButtons2[i]);
-		if ( boostBought3[i])
+		}
+		if ( boostBought3[i]){
 			SetBoostButtonToBought(boostButtons3[i]);
+		}
+
+		Text gildText = characterPanels[i].transform.Find("Gilds Text").GetComponent<Text>();
+		if (controller.characterGilds[i] > 0) 
+			characterPanels[i].color = gildColor;
+		
+		gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
+		gildText.gameObject.SetActive(controller.characterGilds[i] > 1);
+	}
+
+	public void RefreshCharacterPanel(int i) {
+		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
+		int characterLevel = controller.characterLevel[i];
+		controller.characterLevelText[i].text = preText+characterLevel;
+
+		if (i != 0 || characterLevel > 1)
+			controller.RecalculateCharacterUpgradeCost(i);
+		if (characterLevel >= boostLevelRequirements[0]) 
+			enableBoost1(i);
+		if (characterLevel >= boostLevelRequirements[1]) 
+			enableBoost2(i);
+		if (characterLevel >= boostLevelRequirements[2]) 
+			enableBoost3(i);
+		if ((i != 0 && characterLevel > 0 ) || characterLevel > 1)
+			enableBoard(i);
+		if ( boostBought1[i]){
+			SetBoostButtonToBought(boostButtons1[i]);
+		}
+		if ( boostBought2[i]){
+			SetBoostButtonToBought(boostButtons2[i]);
+		}
+		if ( boostBought3[i]){
+			SetBoostButtonToBought(boostButtons3[i]);
+		}
 
 		Text gildText = characterPanels[i].transform.Find("Gilds Text").GetComponent<Text>();
 		if (controller.characterGilds[i] > 0) 
@@ -202,17 +233,17 @@ public class upgradeController : MonoBehaviour {
 		SetBoostButtonToBought(boostButtons3[i]);
 	}
 
-	public void SetBoostButtonToBought(Button button) {
+	public void SetBoostImageToBought(Image image) {
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			button.GetComponent<Image>().color = newCol;
+			image.color = newCol;
 	}
 
 	
-	public void SetBoostButtonToNormal(Button button) {
+	public void SetBoostImageToNormal(Image image) {
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#FFFFFF", out newCol))
-			button.GetComponent<Image>().color = newCol;
+			image.color = newCol;
 	}
 
 	public void goldTab() {
@@ -221,6 +252,7 @@ public class upgradeController : MonoBehaviour {
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
+		individualCharacterPanel.SetActive(false);
 		// goldButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 	public void resetScroll() {
@@ -237,6 +269,7 @@ public class upgradeController : MonoBehaviour {
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
+		individualCharacterPanel.SetActive(false);
 		diamondButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 
@@ -246,6 +279,7 @@ public class upgradeController : MonoBehaviour {
 		itemPanel.SetActive(true);
 		mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
+		individualCharacterPanel.SetActive(false);
 		itemButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 
@@ -255,6 +289,7 @@ public class upgradeController : MonoBehaviour {
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(true);
 		achievementsPanel.SetActive(false);
+		individualCharacterPanel.SetActive(false);
 		mapButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 
@@ -264,7 +299,30 @@ public class upgradeController : MonoBehaviour {
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
 		achievementsPanel.SetActive(true);
+		individualCharacterPanel.SetActive(false);
 		achievementsButton.gameObject.GetComponent<tabButton>().stopNotification();
+	}
+
+	public void openCharacterPanel() {
+		goldPanel.SetActive(false);
+		diamondPanel.SetActive(false);
+		itemPanel.SetActive(false);
+		mapPanel.SetActive(false);
+		achievementsPanel.SetActive(false);
+		individualCharacterPanel.SetActive(true);
+
+		boostButton1.gameObject.SetActive(false);
+		boostButton1.interactable = false;
+		boostButton1.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[i]) + "g";
+		boostButton1.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "%";
+		boostButton2.gameObject.SetActive(false);
+		boostButton2.interactable = false;
+		boostButton2.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[i]) + "g";
+		boostButton2.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "%";
+		boostButton3.gameObject.SetActive(false);
+		boostButton3.interactable = false;
+		boostButton3.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[i]) + "g";
+		boostButton3.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 	}
 
 	public void enableGoldButton() {
