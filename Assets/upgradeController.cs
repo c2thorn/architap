@@ -28,6 +28,10 @@ public class upgradeController : MonoBehaviour {
 	public Button boostButton2;
 	public Button boostButton3;
 
+	public Text characterPanelLevelText;
+	public Text characterPanelGildsText;
+	public Text characterPanelHeroText;
+
 	public double[] boost1Price = new double[] {100, 250, 25000, 2500000, 2500000, 2500000, 2500000, 2500000};
 	public double[] boost2Price = new double[] {1000, 2500, 250000, 25000000, 25000000, 25000000, 25000000, 25000000};
 	public double[] boost3Price = new double[] {10000, 25000, 2500000, 250000000, 250000000, 250000000, 250000000, 250000000};
@@ -47,6 +51,7 @@ public class upgradeController : MonoBehaviour {
 	public Vector3 toolTipOffset;
 	public ItemController itemController;
 	public achievementController achievementController;
+	public int selectedCharacter;
 
 	// Use this for initialization
 	void Start () {
@@ -79,7 +84,19 @@ public class upgradeController : MonoBehaviour {
 
 	public void restart() {
 		for(int i = 0; i < characterAmount; i++) {
+			GameObject boostObject1 = characterBoards[i].transform.Find("Boost 1").gameObject;
+			GameObject boostObject2 = characterBoards[i].transform.Find("Boost 2").gameObject;
+			GameObject boostObject3 = characterBoards[i].transform.Find("Boost 3").gameObject;
 
+			boostObject1.gameObject.SetActive(false);
+			// boostObject1.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[i]) + "g";
+			// boostObject1.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "%";
+			boostObject2.gameObject.SetActive(false);
+			// boostObject2.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[i]) + "g";
+			// boostObject2.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "%";
+			boostObject3.gameObject.SetActive(false);
+			// boostObject3.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[i]) + "g";
+			// boostObject3.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 			if (i != 0)
 				characterBoards[i].SetActive(false);
 			controller.RecalculateUnit(i);
@@ -91,34 +108,31 @@ public class upgradeController : MonoBehaviour {
 			if (boostBought1[i]) {
 				boostBought1[i] = false;
 				controller.unitM1[i] -= boostValues[0];
-				characterBoards[i].get
-				GameObject boostObject = characterBoards[i].gameObject.Find("Boost 1");
-				SetBoostImageToNormal(boostButtons1[i]);
+				GameObject boostObject = characterBoards[i].transform.Find("Boost 1").gameObject;
+				SetBoostImageToNormal(boostObject.GetComponent<Image>());
 			}
 			if (boostBought2[i]) {
 				boostBought2[i] = false;
 				controller.unitM1[i] -= boostValues[1];
-				SetBoostImageToNormal(boostButtons2[i]);
+				GameObject boostObject = characterBoards[i].transform.Find("Boost 2").gameObject;
+				SetBoostImageToNormal(boostObject.GetComponent<Image>());
 			}
 			if (boostBought3[i]) {
 				boostBought3[i] = false;
 				controller.unitM1[i] -= boostValues[2];
-				SetBoostImageToNormal(boostButtons3[i]);
+				GameObject boostObject = characterBoards[i].transform.Find("Boost 3").gameObject;
+				SetBoostImageToNormal(boostObject.GetComponent<Image>());
 			}
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		for(int i = 0; i < characterAmount; i++) {
-			if (boostButtons1[i].gameObject.active && controller.gold >= boost1Price[i] && !boostBought1[i])
-				boostButtons1[i].interactable = true;
-			if (boostButtons2[i].gameObject.active && controller.gold >= boost2Price[i] && !boostBought2[i])
-				boostButtons2[i].interactable = true;
-			if (boostButtons3[i].gameObject.active && controller.gold >= boost3Price[i] && !boostBought3[i])
-				boostButtons3[i].interactable = true;
+		if (individualCharacterPanel.gameObject.activeSelf){
+			boostButton1.interactable = boostButton1.gameObject.active && controller.gold >= boost1Price[selectedCharacter] && !boostBought1[selectedCharacter];
+			boostButton2.interactable = boostButton2.gameObject.active && controller.gold >= boost2Price[selectedCharacter] && !boostBought2[selectedCharacter];
+			boostButton3.interactable = boostButton3.gameObject.active && controller.gold >= boost3Price[selectedCharacter] && !boostBought3[selectedCharacter];
 		}
-
 	}
 	
 	public void RefreshCharacterBoard(int i) {
@@ -137,14 +151,16 @@ public class upgradeController : MonoBehaviour {
 		if ((i != 0 && characterLevel > 0 ) || characterLevel > 1)
 			enableBoard(i);
 		if ( boostBought1[i]){
-			Button 
-			SetBoostButtonToBought(boostButtons1[i]);
+			GameObject boostObject = characterBoards[i].transform.Find("Boost 1").gameObject;
+			SetBoostImageToBought(boostObject.GetComponent<Image>());
 		}
 		if ( boostBought2[i]){
-			SetBoostButtonToBought(boostButtons2[i]);
+			GameObject boostObject = characterBoards[i].transform.Find("Boost 2").gameObject;
+			SetBoostImageToBought(boostObject.GetComponent<Image>());		
 		}
 		if ( boostBought3[i]){
-			SetBoostButtonToBought(boostButtons3[i]);
+			GameObject boostObject = characterBoards[i].transform.Find("Boost 3").gameObject;
+			SetBoostImageToBought(boostObject.GetComponent<Image>());		
 		}
 
 		Text gildText = characterPanels[i].transform.Find("Gilds Text").GetComponent<Text>();
@@ -152,40 +168,64 @@ public class upgradeController : MonoBehaviour {
 			characterPanels[i].color = gildColor;
 		
 		gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
-		gildText.gameObject.SetActive(controller.characterGilds[i] > 1);
+		gildText.gameObject.SetActive(controller.characterGilds[i] > 0);
 	}
 
-	public void RefreshCharacterPanel(int i) {
-		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
-		int characterLevel = controller.characterLevel[i];
-		controller.characterLevelText[i].text = preText+characterLevel;
+	public void RefreshCharacterPanel() {
+		characterPanelHeroText.text = selectedCharacter == 0 ? "Hero" : "Partner "+selectedCharacter;
+		boostButton1.gameObject.SetActive(false);
+		boostButton1.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[selectedCharacter]) + "g";
+		boostButton1.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "%";
+		boostButton2.gameObject.SetActive(false);
+		boostButton2.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[selectedCharacter]) + "g";
+		boostButton2.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "%";
+		boostButton3.gameObject.SetActive(false);
+		boostButton3.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]) + "g";
+		boostButton3.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 
-		if (i != 0 || characterLevel > 1)
-			controller.RecalculateCharacterUpgradeCost(i);
-		if (characterLevel >= boostLevelRequirements[0]) 
-			enableBoost1(i);
-		if (characterLevel >= boostLevelRequirements[1]) 
-			enableBoost2(i);
-		if (characterLevel >= boostLevelRequirements[2]) 
-			enableBoost3(i);
-		if ((i != 0 && characterLevel > 0 ) || characterLevel > 1)
-			enableBoard(i);
-		if ( boostBought1[i]){
-			SetBoostButtonToBought(boostButtons1[i]);
+		int characterLevel = controller.characterLevel[selectedCharacter];
+		characterPanelLevelText.text = "Level: "+characterLevel;
+
+		if (selectedCharacter != 0 || characterLevel > 1)
+			controller.RecalculateCharacterUpgradeCost(selectedCharacter);
+		if (characterLevel >= boostLevelRequirements[0]){
+			boostButton1.gameObject.SetActive(true);
+			boostButton1.interactable = false;
 		}
-		if ( boostBought2[i]){
-			SetBoostButtonToBought(boostButtons2[i]);
+		if (characterLevel >= boostLevelRequirements[1]) {
+			boostButton2.gameObject.SetActive(true);
+			boostButton2.interactable = false;
 		}
-		if ( boostBought3[i]){
-			SetBoostButtonToBought(boostButtons3[i]);
+		if (characterLevel >= boostLevelRequirements[2]){
+			boostButton3.gameObject.SetActive(true);
+			boostButton3.interactable = false;
+		} 
+		// if ((i != 0 && characterLevel > 0 ) || characterLevel > 1)
+		// 	enableBoard(i);
+		if ( boostBought1[selectedCharacter]){
+			SetBoostImageToBought(boostButton1.GetComponent<Image>());
+		}
+		else {
+			SetBoostImageToNormal(boostButton1.GetComponent<Image>());
+		}
+		if ( boostBought2[selectedCharacter]){
+			SetBoostImageToBought(boostButton2.GetComponent<Image>());		
+		}
+		else {
+			SetBoostImageToNormal(boostButton2.GetComponent<Image>());
+		}
+		if ( boostBought3[selectedCharacter]){
+			SetBoostImageToBought(boostButton3.GetComponent<Image>());		
+		}
+		else {
+			SetBoostImageToNormal(boostButton3.GetComponent<Image>());
 		}
 
-		Text gildText = characterPanels[i].transform.Find("Gilds Text").GetComponent<Text>();
-		if (controller.characterGilds[i] > 0) 
-			characterPanels[i].color = gildColor;
+		if (controller.characterGilds[selectedCharacter] > 0) 
+			individualCharacterPanel.GetComponent<Image>().color = gildColor;
 		
-		gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
-		gildText.gameObject.SetActive(controller.characterGilds[i] > 1);
+		characterPanelGildsText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[selectedCharacter]);
+		characterPanelGildsText.gameObject.SetActive(controller.characterGilds[selectedCharacter] > 1);
 	}
 
 	public void enableBoard(int i) {		
@@ -194,43 +234,55 @@ public class upgradeController : MonoBehaviour {
 	}
 
 	public void enableBoost1(int index) {
-		boostButtons1[index].gameObject.SetActive(true);
-		boostButtons1[index].interactable = false;
+		GameObject boostObject = characterBoards[index].transform.Find("Boost 1").gameObject;
+		boostObject.SetActive(true);
+		boostButton1.gameObject.SetActive(true);
+		boostButton1.interactable = false;
 	}
 	public void enableBoost2(int index) {
-		boostButtons2[index].gameObject.SetActive(true);
-		boostButtons2[index].interactable = false;
+		GameObject boostObject = characterBoards[index].transform.Find("Boost 2").gameObject;
+		boostObject.SetActive(true);
+		boostButton2.gameObject.SetActive(true);
+		boostButton2.interactable = false;
 	}
 	public void enableBoost3(int index) {
-		boostButtons3[index].gameObject.SetActive(true);
-		boostButtons3[index].interactable = false;
+		GameObject boostObject = characterBoards[index].transform.Find("Boost 3").gameObject;
+		boostObject.SetActive(true);
+		boostButton3.gameObject.SetActive(true);
+		boostButton3.interactable = false;
 	}
 
-	public void buyBoost1(int i) {
-		boostBought1[i] = true;
-		controller.gold -= boost1Price[i];
-		controller.unitM1[i] += boostValues[0];
-		controller.RecalculateUnit(i);
-		boostButtons1[i].interactable = false;
-		SetBoostButtonToBought(boostButtons1[i]);
+	public void buyBoost1() {
+		boostBought1[selectedCharacter] = true;
+		controller.gold -= boost1Price[selectedCharacter];
+		controller.unitM1[selectedCharacter] += boostValues[0];
+		controller.RecalculateUnit(selectedCharacter);
+		boostButton1.interactable = false;
+		SetBoostImageToBought(boostButton1.image);
+		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 1").gameObject;
+		SetBoostImageToBought(boostObject.GetComponent<Image>());
 	}
 
-	public void buyBoost2(int i) {
-		boostBought2[i] = true;
-		controller.gold -= boost2Price[i];
-		controller.unitM1[i] += boostValues[1];
-		controller.RecalculateUnit(i);
-		boostButtons2[i].interactable = false;
-		SetBoostButtonToBought(boostButtons2[i]);
+	public void buyBoost2() {
+		boostBought2[selectedCharacter] = true;
+		controller.gold -= boost2Price[selectedCharacter];
+		controller.unitM1[selectedCharacter] += boostValues[1];
+		controller.RecalculateUnit(selectedCharacter);
+		boostButton2.interactable = false;
+		SetBoostImageToBought(boostButton2.image);
+		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 2").gameObject;
+		SetBoostImageToBought(boostObject.GetComponent<Image>());
 	}
 
-	public void buyBoost3(int i) {
-		boostBought3[i] = true;
-		controller.gold -= boost3Price[i];
-		controller.unitM1[i] += boostValues[2];
-		controller.RecalculateUnit(i);
-		boostButtons3[i].interactable = false;
-		SetBoostButtonToBought(boostButtons3[i]);
+	public void buyBoost3() {
+		boostBought3[selectedCharacter] = true;
+		controller.gold -= boost3Price[selectedCharacter];
+		controller.unitM1[selectedCharacter] += boostValues[selectedCharacter];
+		controller.RecalculateUnit(selectedCharacter);
+		boostButton3.interactable = false;
+		SetBoostImageToBought(boostButton3.image);
+		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 3").gameObject;
+		SetBoostImageToBought(boostObject.GetComponent<Image>());
 	}
 
 	public void SetBoostImageToBought(Image image) {
@@ -303,26 +355,19 @@ public class upgradeController : MonoBehaviour {
 		achievementsButton.gameObject.GetComponent<tabButton>().stopNotification();
 	}
 
-	public void openCharacterPanel() {
-		goldPanel.SetActive(false);
-		diamondPanel.SetActive(false);
-		itemPanel.SetActive(false);
-		mapPanel.SetActive(false);
-		achievementsPanel.SetActive(false);
-		individualCharacterPanel.SetActive(true);
+	public void openCharacterPanel(int i) {
+		if (controller.characterLevel[i] > 0) {
+			goldPanel.SetActive(false);
+			diamondPanel.SetActive(false);
+			itemPanel.SetActive(false);
+			mapPanel.SetActive(false);
+			achievementsPanel.SetActive(false);
+			controller.individualLevelUpButton.interactable = controller.gold >= controller.characterUpgradeCost[i];
+			individualCharacterPanel.SetActive(true);
 
-		boostButton1.gameObject.SetActive(false);
-		boostButton1.interactable = false;
-		boostButton1.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[i]) + "g";
-		boostButton1.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "%";
-		boostButton2.gameObject.SetActive(false);
-		boostButton2.interactable = false;
-		boostButton2.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[i]) + "g";
-		boostButton2.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "%";
-		boostButton3.gameObject.SetActive(false);
-		boostButton3.interactable = false;
-		boostButton3.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[i]) + "g";
-		boostButton3.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
+			selectedCharacter = i;
+			RefreshCharacterPanel();
+		}
 	}
 
 	public void enableGoldButton() {
@@ -375,6 +420,13 @@ public class upgradeController : MonoBehaviour {
 		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
 		for (int i = 0; i < controller.levelUpButton.Length; i++)
 			controller.RecalculateCharacterUpgradeCost(i);
+	}
+
+	public void individualCharacterLevelUp() {
+		controller.levelUp(selectedCharacter);
+		// RefreshCharacterPanel();
+		int characterLevel = controller.characterLevel[selectedCharacter];
+		characterPanelLevelText.text = "Level: "+characterLevel;
 	}
 
 	public void showToolTip(int i) {

@@ -68,6 +68,7 @@ public class controller : MonoBehaviour {
 	public GameObject blueprintPrefab;
     public GameObject chestPrefab;
 	public GameObject[] uniqueBossPrefabs;
+	public GameObject prestigeDropPrefab;
 #endregion
 #region Flags
 	public bool boss = false;
@@ -131,11 +132,13 @@ public class controller : MonoBehaviour {
 	public Text coalConversionText;
 	public Text diamondConversionText;
 	public Text instantPrestigeButtonText;
+	public Text individualUnitText;
 #endregion
 #region Buttons
 	public Button levelNavigateUpButton;
 	public Button levelNavigateDownButton;
 	public Button[] levelUpButton;
+	public Button individualLevelUpButton;
 	public Button[] unitM1Button;
 	public Button instaGoldButton;
 	public Button randomItemButton;
@@ -225,6 +228,10 @@ public class controller : MonoBehaviour {
 		double tempSum = 0;
 		for(int i = 0; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
+			if (i == upgradeController.selectedCharacter && upgradeController.individualCharacterPanel.activeSelf){
+				individualUnitText.text = "Units: "+NumberFormat.format(units[i]);				
+				individualLevelUpButton.interactable = gold >= characterUpgradeCost[i];
+			}
 			if (characterLevel[i] > 0) {
 				unitText[i].text = "Units: "+NumberFormat.format(units[i]);				
 			}
@@ -417,6 +424,7 @@ public class controller : MonoBehaviour {
 		characterUpgradeCost[i] = sum;
 		string preText = numLevels == 1 ? (characterLevel[i] == 0 ? "Hire: ": "Level Up: ") : "x"+numLevels+": ";
 		levelUpButton[i].GetComponentInChildren<Text>().text = preText+NumberFormat.format(characterUpgradeCost[i])+"g";
+		individualLevelUpButton.GetComponentInChildren<Text>().text = preText+NumberFormat.format(characterUpgradeCost[i])+"g";
 	}
 	
 	public void buyClickM1Up() {
@@ -573,6 +581,10 @@ public class controller : MonoBehaviour {
 					if ((level-1) % 20 == 0) {
 						unconvertedPrestigeCurrency += CalculateUnconvertedPrestigeCurrency();
 						prestigeText.gameObject.SetActive(true);
+						GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
+						if (enemy)
+							Instantiate(prestigeDropPrefab,enemy.transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+
 					}
 				}
 				else {
