@@ -53,6 +53,8 @@ public class upgradeController : MonoBehaviour {
 	public achievementController achievementController;
 	public int selectedCharacter;
 
+	public UIClickAudio uiClickAudio;
+
 	// Use this for initialization
 	void Start () {
 		restart();
@@ -306,6 +308,7 @@ public class upgradeController : MonoBehaviour {
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		// goldButton.gameObject.GetComponent<tabButton>().stopNotification();
+		uiClickAudio.tabSound();
 	}
 	public void resetScroll() {
 		goldPanel.GetComponentInChildren<Scrollbar>().value = 1;
@@ -323,6 +326,7 @@ public class upgradeController : MonoBehaviour {
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		diamondButton.gameObject.GetComponent<tabButton>().stopNotification();
+		uiClickAudio.tabSound();
 	}
 
 	public void itemTab() {
@@ -333,6 +337,7 @@ public class upgradeController : MonoBehaviour {
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		itemButton.gameObject.GetComponent<tabButton>().stopNotification();
+		uiClickAudio.tabSound();
 	}
 
 	public void mapTab() {
@@ -343,6 +348,7 @@ public class upgradeController : MonoBehaviour {
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		mapButton.gameObject.GetComponent<tabButton>().stopNotification();
+		uiClickAudio.tabSound();
 	}
 
 	public void achievementsTab() {
@@ -353,6 +359,7 @@ public class upgradeController : MonoBehaviour {
 		achievementsPanel.SetActive(true);
 		individualCharacterPanel.SetActive(false);
 		achievementsButton.gameObject.GetComponent<tabButton>().stopNotification();
+		uiClickAudio.tabSound();
 	}
 
 	public void openCharacterPanel(int i) {
@@ -367,6 +374,7 @@ public class upgradeController : MonoBehaviour {
 
 			selectedCharacter = i;
 			RefreshCharacterPanel();
+			uiClickAudio.clickSound();
 		}
 	}
 
@@ -420,6 +428,7 @@ public class upgradeController : MonoBehaviour {
 		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
 		for (int i = 0; i < controller.levelUpButton.Length; i++)
 			controller.RecalculateCharacterUpgradeCost(i);
+		uiClickAudio.clickSound();
 	}
 
 	public void individualCharacterLevelUp() {

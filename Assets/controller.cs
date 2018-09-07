@@ -170,6 +170,10 @@ public class controller : MonoBehaviour {
 	public double totalRegionsCompleted = 0;
 #endregion
 
+#region Sounds
+	public CharacterAudio characterAudio;
+	public UIClickAudio uiclickAudio;
+#endregion
 #endregion
 
 #region Start/Update
@@ -410,6 +414,7 @@ public class controller : MonoBehaviour {
 		upgradeController.RefreshCharacterBoard(i);
 		LevelUpUnit(i,numLevels);
 		saveStateController.SaveData();
+		characterAudio.levelUpSound();
 	}
 
 
@@ -732,6 +737,7 @@ public class controller : MonoBehaviour {
 		levelNavigateDownButton.gameObject.SetActive(true);
 		spawnNewEnemy(true);
 		saveStateController.SaveData();
+		uiclickAudio.navigateSound();
 	}
 
 	public void levelNavigateDown() {
@@ -746,6 +752,7 @@ public class controller : MonoBehaviour {
 			spawnNewEnemy(true);
 		}
 		saveStateController.SaveData();
+		uiclickAudio.navigateSound();
 	}
 	public void completeRegion() {
 		upgradeController.enableMapButton(true);

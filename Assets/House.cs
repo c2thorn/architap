@@ -26,6 +26,9 @@ public class House : MonoBehaviour {
     public BuildingController buildingController;
     public GameObject halo;
 
+    public AudioClip[] clips;
+    public AudioSource audioSource;
+
 	// Use this for initialization
 	void Start () {
         controller = GameObject.Find("controller").GetComponent<controller>();
@@ -42,6 +45,8 @@ public class House : MonoBehaviour {
             halo.SetActive(controller.bonusEnemy);
         // if (controller.bonusEnemy) {
         // }
+        audioSource = gameObject.GetComponent<AudioSource>();
+
 	}
 	
 	// Update is called once per frame
@@ -77,6 +82,7 @@ public class House : MonoBehaviour {
             Vector3 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             if (coll.OverlapPoint(wp)) {
+                clickSound();
                 hit = true;
                 updateTotalUnits(controller.units[0]);
                 health += controller.units[0];
@@ -87,6 +93,12 @@ public class House : MonoBehaviour {
         }
 
         return hit;
+    }
+
+    private void clickSound() {
+        int index = UnityEngine.Random.Range(0, clips.Length);
+        audioSource.clip = clips[index];
+        audioSource.Play();
     }
 
     private void updateTotalUnits(double amount) {
