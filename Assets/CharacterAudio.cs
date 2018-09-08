@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterAudio : MonoBehaviour {
-
+	public SoundController soundController;
 	public AudioSource audioSource;
 	public AudioClip[] levelUpSounds;
 	// Use this for initialization
@@ -19,6 +19,7 @@ public class CharacterAudio : MonoBehaviour {
 	public void levelUpSound() {
 		int index = UnityEngine.Random.Range(0, levelUpSounds.Length);
         audioSource.clip = levelUpSounds[index];
-        audioSource.Play();
+		if (!soundController.soundMute)
+			audioSource.Play();
 	}
 }

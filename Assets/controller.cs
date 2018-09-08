@@ -611,7 +611,7 @@ public class controller : MonoBehaviour {
 				spawnNewEnemy(false);
 		}
 		totalBuildings++;
-		IncrementGold(goldIncrement);
+		// IncrementGold(goldIncrement);
 		saveStateController.SaveData();
 		return goldIncrement;
 	}
@@ -648,7 +648,13 @@ public class controller : MonoBehaviour {
 		}
 		GameObject[] drops = GameObject.FindGameObjectsWithTag("currency_drop");
 		for (int i = 0; i < drops.Length; i++) {
-			Destroy(drops[i]);
+			coin coin = drops[i].GetComponent<coin>();
+			if (coin){
+				coin.CashOut();
+			}
+			else {
+				Destroy(drops[i]);
+			}
 		}
 	}
 

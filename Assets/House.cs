@@ -12,6 +12,7 @@ public class House : MonoBehaviour {
     public GameObject damageTextPrefab;
     public GameObject diamondPrefab;
     public GameObject coalPrefab;
+    public GameObject coinPrefab;
     public double health = 0;
     public double maxHealth = 2;
 
@@ -26,8 +27,7 @@ public class House : MonoBehaviour {
     public BuildingController buildingController;
     public GameObject halo;
 
-    public AudioClip[] clips;
-    public AudioSource audioSource;
+    BuildingAudioSource buildingAudioSource;
 
 	// Use this for initialization
 	void Start () {
@@ -38,15 +38,19 @@ public class House : MonoBehaviour {
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 		coll = GameObject.Find("Click Area").GetComponent<BoxCollider2D>();
 		rend = GetComponent<MeshRenderer>();
-		rend.material.shader = unfinished;
+
         maxHealth = controller.calculateHealth();
         healthBar.UpdateBar( health, maxHealth );
         if (!controller.uniqueBoss)
             halo.SetActive(controller.bonusEnemy);
+
+        if (controller.sumofAllUnits < maxHealth)
+		    rend.material.shader = unfinished;
+        else
+            rend.material.shader = finished;
         // if (controller.bonusEnemy) {
         // }
-        audioSource = gameObject.GetComponent<AudioSource>();
-
+        buildingAudioSource = GameObject.Find("Building Audio Source").GetComponent<BuildingAudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -80,9 +84,8 @@ public class House : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0)) {
             Vector3 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
             if (coll.OverlapPoint(wp)) {
-                clickSound();
+                buildingAudioSource.clickSound();
                 hit = true;
                 updateTotalUnits(controller.units[0]);
                 health += controller.units[0];
@@ -95,11 +98,6 @@ public class House : MonoBehaviour {
         return hit;
     }
 
-    private void clickSound() {
-        int index = UnityEngine.Random.Range(0, clips.Length);
-        audioSource.clip = clips[index];
-        audioSource.Play();
-    }
 
     private void updateTotalUnits(double amount) {
         double amountToIncrement = Math.Min(amount, maxHealth - health);
@@ -117,6 +115,7 @@ public class House : MonoBehaviour {
     }
 
     protected virtual IEnumerator startDying() {
+        buildingAudioSource.PlayBuildingComplete(); 
         if (controller.boss || controller.uniqueBoss) {
             controller.checkBossReward(transform.position);
         }
@@ -135,9 +134,30 @@ public class House : MonoBehaviour {
         while (itemController.itemDrop || controller.modalOpen)
             yield return new WaitForSeconds(1f);
         double goldIncrement = controller.enemyDied(true, true);
-        createFloatText(new Vector3(0,-400,0f), "+"+goldIncrement+"g", Color.yellow, true);
-        // yield return new WaitForSeconds(0.4f);
+
+        DropCoins(goldIncrement);
+
         Destroy(gameObject);
+    }
+
+    public void DropCoins(double goldIncrement) {
+        int coins = (int)Math.Min(7,Math.Ceiling(goldIncrement/50));
+        var x = UnityEngine.Random.Range(-0.5f, 0.5f);
+        var y = UnityEngine.Random.Range(-0.5f, 0.5f);
+        double coinValue = Math.Max(1,Math.Ceiling(goldIncrement/coins));
+        GameObject coin = (GameObject) Instantiate(coinPrefab,transform.position+new Vector3(0+x,2f+y,-3f),Quaternion.Euler(0, 0, 0));
+        coin.GetComponent<coin>().value = coinValue;
+        
+        double remaining = goldIncrement - coinValue;
+
+        for (int i = 1; i < coins;i++){
+            var x2 = UnityEngine.Random.Range(-0.5f, 0.5f);
+            var y2 = UnityEngine.Random.Range(-0.5f, 0.5f);
+            double extraCoinValue = Math.Min(remaining,Math.Ceiling(goldIncrement/coins));
+            GameObject extraCoin = (GameObject) Instantiate(coinPrefab,transform.position+new Vector3(0+x2,2f+y2,-3f),Quaternion.Euler(0, 0, 0));
+            extraCoin.GetComponent<coin>().value = extraCoinValue;
+            remaining -= extraCoinValue;
+        }
     }
 
     IEnumerator delayDamage() {

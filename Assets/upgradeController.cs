@@ -439,6 +439,8 @@ public class upgradeController : MonoBehaviour {
 	}
 
 	public void showToolTip(int i) {
+		if (individualCharacterPanel.activeSelf)
+			i = selectedCharacter;
 		if (controller.characterLevel[i] > 0) {
 			if (toolTipShowing) {
 				toolTipShowing = false;

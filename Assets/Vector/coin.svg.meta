@@ -1,0 +1,45 @@
+fileFormatVersion: 2
+guid: 6e7b80b4075981145a03615e5e127193
+ScriptedImporter:
+  fileIDToRecycleName:
+    100000: gameObject/coin
+    400000: gameObject/coin/Transform
+    2800000: texAtlas
+    21200000: gameObject/coin/SpriteRenderer
+    21300000: sprite
+    100100000: gameObject
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: a57477913897c46af95d590f580878bd, type: 3}
+  SvgPixelsPerUnit: 100
+  GradientResolution: 128
+  Alignment: 0
+  CustomPivot: {x: 0, y: 0}
+  AdvancedMode: 0
+  PredefinedResolutionIndex: 1
+  TargetResolution: 1080
+  ResolutionMultiplier: 1
+  StepDistance: 10
+  SamplingStepDistance: 100
+  MaxCordDeviationEnabled: 0
+  MaxCordDeviation: 1
+  MaxTangentAngleEnabled: 0
+  MaxTangentAngle: 5
+  spriteData:
+    TessellationDetail: 0
+    SpriteRect:
+      name: 
+      originalName: 
+      pivot: {x: 0, y: 0}
+      alignment: 0
+      border: {x: 0, y: 0, z: 0, w: 0}
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+      spriteID: f61e04e36b4b8d94e93c75ec501838c4
+    PhysicsOutlines: []

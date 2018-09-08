@@ -9,6 +9,7 @@ public class tabButton : MonoBehaviour {
 	private Image myImage;
 	private Image borderImage;
 	private Color defaultBorderColor;
+	public UIClickAudio uiClickAudio;
 	// Use this for initialization
 	void Awake () {
 		notification = false;
@@ -17,6 +18,7 @@ public class tabButton : MonoBehaviour {
 		defaultColor = myImage.color;
 		defaultBorderColor = borderImage.color;
 		borderImage.color = Color.clear;
+		uiClickAudio = GameObject.Find("UI Click Audio Source").GetComponent<UIClickAudio>();
 	}
 	
 	// Update is called once per frame
@@ -29,6 +31,7 @@ public class tabButton : MonoBehaviour {
 
 	public void startNotification() {
 		notification = true;
+		uiClickAudio.PlayNotificationSound();
 	}
 
 	public void stopNotification() {
