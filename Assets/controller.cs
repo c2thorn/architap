@@ -179,6 +179,11 @@ public class controller : MonoBehaviour {
 #region Start/Update
 	void Awake() {
 		saveStateController.LoadData();
+
+		//Start repeating methods
+		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
+		InvokeRepeating("checkUnitAchievement",Time.time,1.0f);
+
 	}
 	void Start () {
 		// saveStateController.LoadData();
@@ -212,10 +217,6 @@ public class controller : MonoBehaviour {
 			button.interactable=false;
 		closeCoalModal();
 		shopPanel.SetActive(false);
-
-		//Start repeating methods
-		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
-		InvokeRepeating("checkUnitAchievement",Time.time,1.0f);
 
 		//Set other variables
 		modalOpen = false;
@@ -865,13 +866,13 @@ public class controller : MonoBehaviour {
 		for (int i = 0; i < uniqueBossButtons.Length;i++){
 			uniqueBossButtons[i].interactable = false;
 		}
+		//TODO change this
 		Start();
 		upgradeController.restart();
 		upgradeController.UndoBoosts();
 		upgradeController.goldTab();
 		upgradeController.resetScroll();
 		achievementController.checkAchievement("prestige",1);
-		// prestigeCurrency++;
 		IncrementPrestigeCurrency(unconvertedPrestigeCurrency);
 		unconvertedPrestigeCurrency = 0;
 		prestigeText.gameObject.SetActive(true);
