@@ -70,5 +70,6 @@ public class coin : MonoBehaviour {
         GameObject floatText = (GameObject) Instantiate(damageTextPrefab,pos,Quaternion.Euler(0, 0, 0),canvas.transform);
         floatText.GetComponent<Text>().text = text;
         floatText.GetComponent<Text>().color = color;
+        floatText.transform.SetAsFirstSibling();
     }
 }

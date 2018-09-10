@@ -172,6 +172,7 @@ public class House : MonoBehaviour {
 
     protected void createFloatText(Vector3 pos, string text, Color color, bool goldPos) {
         GameObject floatText = (GameObject) Instantiate(damageTextPrefab,pos,Quaternion.Euler(0, 0, 0),canvas.transform);
+        floatText.transform.SetAsFirstSibling();
         floatText.GetComponent<Text>().text = text;
         floatText.GetComponent<Text>().color = color;
         if (goldPos)
