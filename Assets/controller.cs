@@ -88,6 +88,7 @@ public class controller : MonoBehaviour {
 	public achievementController achievementController;
 	public SettingsController settingsController;
 	public SaveStateController saveStateController;
+	public TutorialController tutorialController;
 #endregion
 #region Diamond Purchases
 	public double instaGoldPrice = 20;
@@ -281,6 +282,9 @@ public class controller : MonoBehaviour {
 		if (highestLevel > 1 || levelCount > 1 || totalPrestiges > 0) {
 			upgradeController.enableGoldButton();
 			settingsController.enableSettings();
+			tutorialController.RemovePointer();
+		} else{
+			tutorialController.PointAtHouse();
 		}
 		if (level > regionLevels[region,0])
 			levelNavigateDownButton.gameObject.SetActive(true);

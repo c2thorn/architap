@@ -279,7 +279,8 @@ public class upgradeController : MonoBehaviour {
 	public void buyBoost3() {
 		boostBought3[selectedCharacter] = true;
 		controller.gold -= boost3Price[selectedCharacter];
-		controller.unitM1[selectedCharacter] += boostValues[selectedCharacter];
+		controller.unitM1[selectedCharacter] += boostValues[2];
+
 		controller.RecalculateUnit(selectedCharacter);
 		boostButton3.interactable = false;
 		SetBoostImageToBought(boostButton3.image);

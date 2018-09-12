@@ -29,6 +29,8 @@ public class House : MonoBehaviour {
 
     BuildingAudioSource buildingAudioSource;
 
+    public TutorialController tutorialController;
+
 	// Use this for initialization
 	void Start () {
         controller = GameObject.Find("controller").GetComponent<controller>();
@@ -38,6 +40,7 @@ public class House : MonoBehaviour {
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 		coll = GameObject.Find("Click Area").GetComponent<BoxCollider2D>();
 		rend = GetComponent<MeshRenderer>();
+        tutorialController = GameObject.Find("Tutorial Controller").GetComponent<TutorialController>();
 
         maxHealth = controller.calculateHealth();
         healthBar.UpdateBar( health, maxHealth );
@@ -92,6 +95,8 @@ public class House : MonoBehaviour {
                 healthBar.UpdateBar( health, maxHealth );
                 createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red, false);
                 controller.totalClicks++;
+                //TODO best way?
+                tutorialController.RemovePointer();
             }
         }
 
