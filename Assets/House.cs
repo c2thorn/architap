@@ -16,6 +16,8 @@ public class House : MonoBehaviour {
     public double health = 0;
     public double maxHealth = 2;
 
+    public GameObject dustParticle;
+
 	public float p1Period = 0.1f;
 	private BoxCollider2D coll;
 
@@ -90,10 +92,12 @@ public class House : MonoBehaviour {
             if (coll.OverlapPoint(wp)) {
                 buildingAudioSource.clickSound();
                 hit = true;
+                
                 updateTotalUnits(controller.units[0]);
                 health += controller.units[0];
                 healthBar.UpdateBar( health, maxHealth );
                 createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red, false);
+                createDust(wp);
                 controller.totalClicks++;
                 //TODO best way?
                 tutorialController.RemovePointer();
@@ -184,6 +188,11 @@ public class House : MonoBehaviour {
             floatText.GetComponent<RectTransform>().anchoredPosition = pos;
     }
 
+    protected void createDust(Vector3 pos){
+        //GameObject dust = (GameObject) Instantiate(dustParticle,pos+new Vector3(-0.5f,0,5),Quaternion.Euler(-90, 0, 0));
+        Vector3 posi = pos+new Vector3(UnityEngine.Random.Range(-2f,1.5f),UnityEngine.Random.Range(-2f,2f),5);
+        GameObject dust = (GameObject) Instantiate(dustParticle,posi,Quaternion.Euler(-90, 0, 0));
+    }
     public void stopDamage(){
         invulnerable = true;
     }
