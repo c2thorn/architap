@@ -52,8 +52,8 @@ public class upgradeController : MonoBehaviour {
 	public ItemController itemController;
 	public achievementController achievementController;
 	public int selectedCharacter;
-
 	public UIClickAudio uiClickAudio;
+	public Text percentageText;
 
 	// Use this for initialization
 	void Start () {
@@ -202,8 +202,14 @@ public class upgradeController : MonoBehaviour {
 			boostButton3.gameObject.SetActive(true);
 			boostButton3.interactable = false;
 		} 
-		// if ((i != 0 && characterLevel > 0 ) || characterLevel > 1)
-		// 	enableBoard(i);
+		if (selectedCharacter != 0) {
+			percentageText.gameObject.SetActive(true);
+			double percentage = Math.Round(controller.units[selectedCharacter]/controller.sumofAllUnits,4)*100;
+			percentageText.text = percentage + "% of UPS";
+		}
+		else{
+			percentageText.gameObject.SetActive(false);
+		}
 		if ( boostBought1[selectedCharacter]){
 			SetBoostImageToBought(boostButton1.GetComponent<Image>());
 		}
@@ -434,9 +440,9 @@ public class upgradeController : MonoBehaviour {
 
 	public void individualCharacterLevelUp() {
 		controller.levelUp(selectedCharacter);
-		// RefreshCharacterPanel();
-		int characterLevel = controller.characterLevel[selectedCharacter];
-		characterPanelLevelText.text = "Level: "+characterLevel;
+		RefreshCharacterPanel();
+		// int characterLevel = controller.characterLevel[selectedCharacter];
+		// characterPanelLevelText.text = "Level: "+characterLevel;
 	}
 
 	public void showToolTip(int i) {
