@@ -175,33 +175,24 @@ public class upgradeController : MonoBehaviour {
 
 	public void RefreshCharacterPanel() {
 		characterPanelHeroText.text = selectedCharacter == 0 ? "Hero" : "Partner "+selectedCharacter;
-		boostButton1.gameObject.SetActive(false);
 		boostButton1.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[selectedCharacter]) + "g";
 		boostButton1.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "%";
-		boostButton2.gameObject.SetActive(false);
 		boostButton2.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[selectedCharacter]) + "g";
 		boostButton2.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "%";
-		boostButton3.gameObject.SetActive(false);
 		boostButton3.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]) + "g";
 		boostButton3.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 
 		int characterLevel = controller.characterLevel[selectedCharacter];
 		characterPanelLevelText.text = "Level: "+characterLevel;
 
+		boostButton1.gameObject.SetActive(characterLevel >= boostLevelRequirements[0]);
+		boostButton2.gameObject.SetActive(characterLevel >= boostLevelRequirements[1]);
+		boostButton3.gameObject.SetActive(characterLevel >= boostLevelRequirements[2]);
+
+		Update();
+
 		if (selectedCharacter != 0 || characterLevel > 1)
 			controller.RecalculateCharacterUpgradeCost(selectedCharacter);
-		if (characterLevel >= boostLevelRequirements[0]){
-			boostButton1.gameObject.SetActive(true);
-			boostButton1.interactable = false;
-		}
-		if (characterLevel >= boostLevelRequirements[1]) {
-			boostButton2.gameObject.SetActive(true);
-			boostButton2.interactable = false;
-		}
-		if (characterLevel >= boostLevelRequirements[2]){
-			boostButton3.gameObject.SetActive(true);
-			boostButton3.interactable = false;
-		} 
 		if (selectedCharacter != 0) {
 			percentageText.gameObject.SetActive(true);
 			double percentage = Math.Round(controller.units[selectedCharacter]/controller.sumofAllUnits,4)*100;
@@ -297,14 +288,16 @@ public class upgradeController : MonoBehaviour {
 	public void SetBoostImageToBought(Image image) {
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
-			image.color = newCol;
+			if (image.color != newCol)
+				image.color = newCol;
 	}
 
 	
 	public void SetBoostImageToNormal(Image image) {
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#FFFFFF", out newCol))
-			image.color = newCol;
+			if (image.color != newCol)
+				image.color = newCol;
 	}
 
 	public void goldTab() {
@@ -440,6 +433,7 @@ public class upgradeController : MonoBehaviour {
 
 	public void individualCharacterLevelUp() {
 		controller.levelUp(selectedCharacter);
+		controller.RecalculateSumUnits();
 		RefreshCharacterPanel();
 		// int characterLevel = controller.characterLevel[selectedCharacter];
 		// characterPanelLevelText.text = "Level: "+characterLevel;

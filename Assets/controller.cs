@@ -230,23 +230,7 @@ public class controller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//Sum total units
-		double tempSum = 0;
-		for(int i = 0; i < upgradeController.characterAmount; i++) {
-			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
-			if (i == upgradeController.selectedCharacter && upgradeController.individualCharacterPanel.activeSelf){
-				individualUnitText.text = "Units: "+NumberFormat.format(units[i]);				
-				individualLevelUpButton.interactable = gold >= characterUpgradeCost[i];
-			}
-			if (characterLevel[i] > 0) {
-				unitText[i].text = "Units: "+NumberFormat.format(units[i]);				
-			}
-			if (i < unitM1Button.Length)
-				unitM1Button[i].interactable = diamonds >= m1UpgradeCost[i];
-			if (i != 0)
-				tempSum += units[i];
-		}
-		sumofAllUnits = tempSum;
+		RecalculateSumUnits();
 
 		//Update Text
 		clickText.text = NumberFormat.format(units[0]);
@@ -376,6 +360,26 @@ public class controller : MonoBehaviour {
 								*unitAchievementM3[i]
 								*(characterGilds[i]+1)
 								*(1+(prestigeCurrency/100)));
+	}
+
+	public void RecalculateSumUnits() {
+		//Sum total units
+		double tempSum = 0;
+		for(int i = 0; i < upgradeController.characterAmount; i++) {
+			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
+			if (i == upgradeController.selectedCharacter && upgradeController.individualCharacterPanel.activeSelf){
+				individualUnitText.text = "Units: "+NumberFormat.format(units[i]);				
+				individualLevelUpButton.interactable = gold >= characterUpgradeCost[i];
+			}
+			if (characterLevel[i] > 0) {
+				unitText[i].text = "Units: "+NumberFormat.format(units[i]);				
+			}
+			if (i < unitM1Button.Length)
+				unitM1Button[i].interactable = diamonds >= m1UpgradeCost[i];
+			if (i != 0)
+				tempSum += units[i];
+		}
+		sumofAllUnits = tempSum;
 	}
 
 	public void IncrementGold(double increment) {
