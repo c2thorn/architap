@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="414px" height="736px" viewBox="0 0 414 736" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 45.2 (43514) - http://www.bohemiancoding.com/sketch -->
+    <title>9EB3D20F-5A72-4A9F-8452-23B71B55A8B8</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <radialGradient cx="50%" cy="51.0460794%" fx="50%" fy="51.0460794%" r="37.3987566%" gradientTransform="translate(0.500000,0.510461),scale(0.711111,1.000000),scale(1.000000,0.767846),translate(-0.500000,-0.510461)" id="radialGradient-1">
+            <stop stop-color="#72C8FF" offset="0%"></stop>
+            <stop stop-color="#33688A" offset="100%"></stop>
+        </radialGradient>
+        <filter x="-12.9%" y="-18.1%" width="125.8%" height="136.3%" filterUnits="objectBoundingBox" id="filter-2">
+            <feGaussianBlur stdDeviation="50" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+    </defs>
+    <g id="App" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.983186141">
+        <g id="Default" fill="url(#radialGradient-1)">
+            <rect id="Rectangle" filter="url(#filter-2)" x="-374" y="-45" width="1162.94137" height="826.980532"></rect>
+        </g>
+    </g>
+</svg>

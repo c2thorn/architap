@@ -638,7 +638,7 @@ public class controller : MonoBehaviour {
 			bonusEnemy = UnityEngine.Random.value <= bonusEnemyChance;
 		}
 
-		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-5f,-5f),Quaternion.Euler(0, UnityEngine.Random.value*360f, 0));
+		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-0.75f,-5f),Quaternion.Euler(0,0, 0));
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
 		if (delay)
 			newEnemy.GetComponent<House>().delay();

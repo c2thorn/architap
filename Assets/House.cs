@@ -21,9 +21,9 @@ public class House : MonoBehaviour {
 	public float p1Period = 0.1f;
 	private BoxCollider2D coll;
 
-	public Shader unfinished;
-	public Shader finished;
-	protected MeshRenderer rend;
+	//public Shader unfinished;
+	//public Shader finished;
+	//protected MeshRenderer rend;
     public bool invulnerable = false;
 
     public BuildingController buildingController;
@@ -41,7 +41,7 @@ public class House : MonoBehaviour {
         healthBar = GameObject.Find("healthBar").GetComponent<SimpleHealthBar>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 		coll = GameObject.Find("Click Area").GetComponent<BoxCollider2D>();
-		rend = GetComponent<MeshRenderer>();
+	//	rend = GetComponent<MeshRenderer>();
         tutorialController = GameObject.Find("Tutorial Controller").GetComponent<TutorialController>();
 
         maxHealth = controller.calculateHealth();
@@ -49,10 +49,10 @@ public class House : MonoBehaviour {
         if (!controller.uniqueBoss)
             halo.SetActive(controller.bonusEnemy);
 
-        if (controller.sumofAllUnits < maxHealth)
-		    rend.material.shader = unfinished;
-        else
-            rend.material.shader = finished;
+       // if (controller.sumofAllUnits < maxHealth)
+	//	    rend.material.shader = unfinished;
+     //   else
+     //       rend.material.shader = finished;
         // if (controller.bonusEnemy) {
         // }
         buildingAudioSource = GameObject.Find("Building Audio Source").GetComponent<BuildingAudioSource>();
@@ -60,7 +60,7 @@ public class House : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        rotate();
+      //  rotate();
         if (health < maxHealth && !invulnerable) {
             if (!itemController.itemDrop && !controller.modalOpen){
                 bool hit = checkClick();
@@ -69,9 +69,9 @@ public class House : MonoBehaviour {
         }
     }
 
-    protected virtual void rotate() {
-        transform.Rotate(0, Time.deltaTime+0.15f, 0);
-    }
+    // protected virtual void rotate() {
+    //     transform.Rotate(0, Time.deltaTime+0.15f, 0);
+    // }
 
 	public void partnerDamage(double sumDamage) {
         if (health < maxHealth && !invulnerable) {
@@ -137,8 +137,8 @@ public class House : MonoBehaviour {
         } else if ((controller.level >= 10  || controller.totalPrestiges > 0) && UnityEngine.Random.value <= controller.coalChance) {
             GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
         }
-        if (buildingController.buildingDeathWaitTime > 0.2f)
-		    rend.material.shader = finished;
+    //    if (buildingController.buildingDeathWaitTime > 0.2f)
+	//	    rend.material.shader = finished;
         yield return new WaitForSeconds(buildingController.buildingDeathWaitTime);
         while (itemController.itemDrop || controller.modalOpen)
             yield return new WaitForSeconds(1f);

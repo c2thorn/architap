@@ -14,7 +14,7 @@ public class tabButton : MonoBehaviour {
 	void Awake () {
 		notification = false;
 		myImage = gameObject.GetComponent<Image>();
-		borderImage = gameObject.transform.Find("Image").GetComponent<Image>();
+		borderImage = gameObject.transform.Find("Border Image").GetComponent<Image>();
 		defaultColor = myImage.color;
 		defaultBorderColor = borderImage.color;
 		borderImage.color = Color.clear;
