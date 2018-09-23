@@ -130,12 +130,12 @@ public class House : MonoBehaviour {
         }
         else if (controller.level == 5 && controller.levelCount == 1) {
             //Guarantee first diamond
-            GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+            GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,0f,-3f),Quaternion.Euler(0, 0, 0));
         }
         else if((controller.level >= 6 || controller.totalPrestiges > 0) && UnityEngine.Random.value <= controller.diamondChance) {
-            GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+            GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,0f,-3f),Quaternion.Euler(0, 0, 0));
         } else if ((controller.level >= 10  || controller.totalPrestiges > 0) && UnityEngine.Random.value <= controller.coalChance) {
-            GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+            GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,0f,-3f),Quaternion.Euler(0, 0, 0));
         }
     //    if (buildingController.buildingDeathWaitTime > 0.2f)
 	//	    rend.material.shader = finished;
@@ -154,7 +154,7 @@ public class House : MonoBehaviour {
         var x = UnityEngine.Random.Range(-0.5f, 0.5f);
         var y = UnityEngine.Random.Range(-0.5f, 0.5f);
         double coinValue = Math.Max(1,Math.Ceiling(goldIncrement/coins));
-        GameObject coin = (GameObject) Instantiate(coinPrefab,transform.position+new Vector3(0+x,2f+y,-3f),Quaternion.Euler(0, 0, 0));
+        GameObject coin = (GameObject) Instantiate(coinPrefab,transform.position+new Vector3(0+x,0f+y,-3f),Quaternion.Euler(0, 0, 0));
         coin.GetComponent<coin>().value = coinValue;
         
         double remaining = goldIncrement - coinValue;
@@ -163,7 +163,7 @@ public class House : MonoBehaviour {
             var x2 = UnityEngine.Random.Range(-0.5f, 0.5f);
             var y2 = UnityEngine.Random.Range(-0.5f, 0.5f);
             double extraCoinValue = Math.Min(remaining,Math.Ceiling(goldIncrement/coins));
-            GameObject extraCoin = (GameObject) Instantiate(coinPrefab,transform.position+new Vector3(0+x2,2f+y2,-3f),Quaternion.Euler(0, 0, 0));
+            GameObject extraCoin = (GameObject) Instantiate(coinPrefab,transform.position+new Vector3(0+x2,0f+y2,-3f),Quaternion.Euler(0, 0, 0));
             extraCoin.GetComponent<coin>().value = extraCoinValue;
             remaining -= extraCoinValue;
         }

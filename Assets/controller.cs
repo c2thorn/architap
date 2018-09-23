@@ -121,6 +121,7 @@ public class controller : MonoBehaviour {
 	public Text[] characterLevelText;
 	public GameObject regionCompleteText;
 	public Text levelText = null;
+	public Text amountText;
 	public Text goldText = null;
 	public Text diamondText = null;
 	public Text clickText;
@@ -194,7 +195,8 @@ public class controller : MonoBehaviour {
 		healthBar.UpdateBar( health, maxHealth );
 
 		//Screen text
-		levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
+		levelText.text = "LEVEL "+level;
+		amountText.text = levelCount+" / "+levelMaxCount;
 		characterLevelText[0].text = "Hero Level: "+characterLevel[0];
 		levelUpButton[0].GetComponentInChildren<Text>().text = "Level Up: "+characterUpgradeCost[0]+"g";
 		unitText[0].text = "Units: "+units[0];
@@ -628,17 +630,19 @@ public class controller : MonoBehaviour {
 	private void spawnNewEnemy(bool delay) {
 		int enemySelector;
 		if (boss) {
-			levelText.text = "Level "+level+"\nBOSS FIGHT!";
+			levelText.text = "LEVEL "+level;
+			amountText.text = "BOSS FIGHT!";
 			enemySelector = 5;
 			startBossTime();
 		}
 		else {
-			levelText.text = "Level "+level+"\n"+levelCount+" / "+levelMaxCount;
+			levelText.text = "LEVEL "+level;
+			amountText.text = levelCount+" / "+levelMaxCount;
 			enemySelector = ((level-1)/2)%5;
 			bonusEnemy = UnityEngine.Random.value <= bonusEnemyChance;
 		}
 
-		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,-0.75f,-5f),Quaternion.Euler(0,0, 0));
+		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,0.3f,-5f),Quaternion.Euler(0,0, 0));
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
 		if (delay)
 			newEnemy.GetComponent<House>().delay();
@@ -719,7 +723,8 @@ public class controller : MonoBehaviour {
 		uniqueBoss = true;
 		boss=true;
 		// maxHealth = calculateHealth()*10;
-		levelText.text = "Level "+level+"\nUnique #"+(i+1)+"!";
+		levelText.text = "LEVEL "+level;
+		amountText.text = "Unique #"+(i+1)+"!";
 
 		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,-5f,-5f),Quaternion.Euler(-90,-125.2f, UnityEngine.Random.value*360f));
 		newUnique.GetComponent<House>().health = 0;
