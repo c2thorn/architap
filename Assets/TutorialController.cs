@@ -19,7 +19,7 @@ public class TutorialController : MonoBehaviour {
 
 	public void PointAtHouse() {
 		pointer.gameObject.SetActive(true);
-		pointer.transform.position = new Vector3(2,-1,-12);
+		pointer.transform.position = new Vector3(2,2,-12);
 		pointer.StartPointing();
 	}
 

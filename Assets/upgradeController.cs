@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class upgradeController : MonoBehaviour {
 	public controller controller;
+	public Button goldButton;
 	public Button diamondButton;
 	public Button itemButton;
 	public Button mapButton;
@@ -17,6 +18,9 @@ public class upgradeController : MonoBehaviour {
 	public GameObject mapPanel;
 	public GameObject achievementsPanel;
 	public GameObject individualCharacterPanel;
+	public GameObject navigationArea;
+	public GameObject panelArea;
+
 
 	public int characterAmount = 8;
 	public GameObject[] characterBoards;
@@ -41,6 +45,7 @@ public class upgradeController : MonoBehaviour {
 	public double[] boostValues = new double[] { 0.5, 1, 2};
 	public GameObject tabs;
 	public GameObject statsPanel;
+	public GameObject currencyPanel;
 	public GameObject diamondCountText;
 	public int[] multiLevelUpValues;
 	public int currentMultiLevelUpIndex;
@@ -58,6 +63,7 @@ public class upgradeController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		restart();
+		goldButton.gameObject.SetActive(false);
 		diamondButton.gameObject.SetActive(false);
 		itemButton.gameObject.SetActive(false);
 		mapButton.gameObject.SetActive(false);
@@ -68,8 +74,10 @@ public class upgradeController : MonoBehaviour {
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
-		tabs.SetActive(false);
 		statsPanel.SetActive(false);
+		currencyPanel.SetActive(false);
+		// navigationArea.SetActive(false);
+		panelArea.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		diamondCountText.SetActive(false);
 		multiLevelButton.SetActive(false);
@@ -380,9 +388,12 @@ public class upgradeController : MonoBehaviour {
 
 	public void enableGoldButton() {
 		if (!goldPanel.active){
+			// navigationArea.SetActive(true);
+			panelArea.SetActive(true);
 			goldPanel.SetActive(true);
-			tabs.SetActive(true);
 			statsPanel.SetActive(true);
+			currencyPanel.SetActive(true);
+			goldButton.gameObject.SetActive(true);
 		}
 	}
 
