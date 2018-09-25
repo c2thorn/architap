@@ -299,6 +299,7 @@ public class controller : MonoBehaviour {
 				upgradeController.RefreshCharacterBoard(i);
 			else {
 				levelUpButton[i].GetComponentInChildren<Text>().text = "Hire: "+characterUpgradeCost[i]+"g";
+				characterLevelText[i].text = "Partner " + i;
 				unitText[i].text = "";
 			}
 		}
@@ -726,7 +727,7 @@ public class controller : MonoBehaviour {
 		levelText.text = "LEVEL "+level;
 		amountText.text = "Unique #"+(i+1)+"!";
 
-		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,-5f,-5f),Quaternion.Euler(-90,-125.2f, UnityEngine.Random.value*360f));
+		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,0.3f,-5f),Quaternion.Euler(0,0,0));
 		newUnique.GetComponent<House>().health = 0;
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ uniqueNouns[i];
 		newUnique.GetComponent<House>().delay();
@@ -878,6 +879,9 @@ public class controller : MonoBehaviour {
 		}
 		for (int i = 0; i < uniqueBossButtons.Length;i++){
 			uniqueBossButtons[i].interactable = false;
+		}
+		for (int i = 0; i < uniqueBossCompleted.Length;i++) {
+			uniqueBossCompleted[i] = false;
 		}
 		//TODO change this
 		Start();

@@ -146,9 +146,9 @@ public class upgradeController : MonoBehaviour {
 	}
 	
 	public void RefreshCharacterBoard(int i) {
-		string preText = i == 0 ? "Hero Level: " : "Partner "+i+" Level: ";
+		string preText = i == 0 ? "Hero" : "Partner "+i;
 		int characterLevel = controller.characterLevel[i];
-		controller.characterLevelText[i].text = preText+characterLevel;
+		controller.characterLevelText[i].text = characterLevel > 0 ? preText + " Level: " +  characterLevel : preText;
 
 		if (i != 0 || characterLevel > 1)
 			controller.RecalculateCharacterUpgradeCost(i);
