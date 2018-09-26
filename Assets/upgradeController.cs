@@ -59,9 +59,11 @@ public class upgradeController : MonoBehaviour {
 	public int selectedCharacter;
 	public UIClickAudio uiClickAudio;
 	public Text percentageText;
+	public int currencyPanelIndex = 0;
 
 	// Use this for initialization
 	void Start () {
+		currencyPanelIndex = 0;
 		restart();
 		goldButton.gameObject.SetActive(false);
 		diamondButton.gameObject.SetActive(false);
@@ -394,6 +396,7 @@ public class upgradeController : MonoBehaviour {
 			statsPanel.SetActive(true);
 			currencyPanel.SetActive(true);
 			goldButton.gameObject.SetActive(true);
+			SetCurrencyPanelGold();
 		}
 	}
 
@@ -401,6 +404,7 @@ public class upgradeController : MonoBehaviour {
 		if (!diamondButton.gameObject.active){{}
 			diamondButton.gameObject.SetActive(true);
 			diamondCountText.SetActive(true);
+			SetCurrencyPanelDiamond();
 			if (notify)
 				diamondButton.gameObject.GetComponent<tabButton>().startNotification();
 		}
@@ -477,5 +481,37 @@ public class upgradeController : MonoBehaviour {
 	public void hideToolTip() {
 		toolTipShowing = false;
 		toolTip.SetActive(false);
+	}
+
+	public void SetCurrencyPanelGold() {
+		if (currencyPanelIndex < 1){
+			RectTransform rectTransform = currencyPanel.GetComponent<RectTransform>();
+			rectTransform.offsetMin = new Vector2(520f, rectTransform.offsetMin.y);
+			currencyPanelIndex = 1;
+		}
+	}
+
+	public void SetCurrencyPanelDiamond() {
+		if (currencyPanelIndex < 2){
+			RectTransform rectTransform = currencyPanel.GetComponent<RectTransform>();
+			rectTransform.offsetMin = new Vector2(370f, rectTransform.offsetMin.y);
+			currencyPanelIndex = 2;
+		}
+	}
+
+	public void SetCurrencyPanelCoal() {
+		if (currencyPanelIndex < 3){
+			RectTransform rectTransform = currencyPanel.GetComponent<RectTransform>();
+			rectTransform.offsetMin = new Vector2(220f, rectTransform.offsetMin.y);
+			currencyPanelIndex = 3;
+		}
+	}
+
+	public void SetCurrencyPanelPrestige() {
+		if (currencyPanelIndex < 4){
+			RectTransform rectTransform = currencyPanel.GetComponent<RectTransform>();
+			rectTransform.offsetMin = new Vector2(-2f, rectTransform.offsetMin.y);
+			currencyPanelIndex = 4;
+		}
 	}
 }

@@ -26,7 +26,7 @@ public class BuildingController : MonoBehaviour {
 			}
 		}
 		GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
-		if (enemy) {
+		if (enemy && sumDamage > 0) {
 			House house = enemy.GetComponent<House>();
 			house.partnerDamage(sumDamage);
 		}

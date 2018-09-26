@@ -33,6 +33,10 @@ public class House : MonoBehaviour {
 
     public TutorialController tutorialController;
 
+    public GameObject maskObject;
+
+    private float rectHeight;
+
 	// Use this for initialization
 	void Start () {
         controller = GameObject.Find("controller").GetComponent<controller>();
@@ -56,6 +60,8 @@ public class House : MonoBehaviour {
         // if (controller.bonusEnemy) {
         // }
         buildingAudioSource = GameObject.Find("Building Audio Source").GetComponent<BuildingAudioSource>();
+        maskObject = transform.Find("Sprite Mask").gameObject;
+        rectHeight = GetComponent<RectTransform>().rect.height;
 	}
 	
 	// Update is called once per frame
@@ -76,8 +82,8 @@ public class House : MonoBehaviour {
 	public void partnerDamage(double sumDamage) {
         if (health < maxHealth && !invulnerable) {
             if (!itemController.itemDrop && !controller.modalOpen){
-                updateTotalUnits(sumDamage);
                 health += sumDamage;
+                updateTotalUnits(sumDamage);
                 healthBar.UpdateBar( health, maxHealth );
                 checkDead();
             }
@@ -93,8 +99,8 @@ public class House : MonoBehaviour {
                 buildingAudioSource.clickSound();
                 hit = true;
                 
-                updateTotalUnits(controller.units[0]);
                 health += controller.units[0];
+                updateTotalUnits(controller.units[0]);
                 healthBar.UpdateBar( health, maxHealth );
                 createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red, false);
                 createDust(wp);
@@ -110,9 +116,16 @@ public class House : MonoBehaviour {
 
     private void updateTotalUnits(double amount) {
         double amountToIncrement = Math.Min(amount, maxHealth - health);
-        // Debug.Log(amountToIncrement);
         controller.totalUnits += amountToIncrement;
+        updateMaskPercentage();
     }
+
+    public void updateMaskPercentage() {
+        double percentage = Math.Min(1,health/maxHealth);
+        maskObject.transform.localPosition = new Vector3(0,(float)percentage*rectHeight,-.16f);
+    }
+
+
 
     bool checkDead() {
         if (health >= maxHealth) {

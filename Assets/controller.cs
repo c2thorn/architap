@@ -313,9 +313,11 @@ public class controller : MonoBehaviour {
 		}
 		if (coal > 0 || highestLevel > 20){
 			coalText.gameObject.SetActive(true);
+			upgradeController.SetCurrencyPanelCoal();
 		}
 		if (prestigeCurrency > 0 || unconvertedPrestigeCurrency > 0){
 			prestigeText.gameObject.SetActive(true);
+			upgradeController.SetCurrencyPanelPrestige();
 		}
 		setRegionBackground(region);
 		regionCompleteText.SetActive(completedRegions[region]);
@@ -598,6 +600,7 @@ public class controller : MonoBehaviour {
 					if ((level-1) % 20 == 0) {
 						unconvertedPrestigeCurrency += CalculateUnconvertedPrestigeCurrency();
 						prestigeText.gameObject.SetActive(true);
+						upgradeController.SetCurrencyPanelPrestige();
 						GameObject enemy = GameObject.FindGameObjectWithTag("enemy");
 						if (enemy)
 							Instantiate(prestigeDropPrefab,enemy.transform.position+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
@@ -893,6 +896,7 @@ public class controller : MonoBehaviour {
 		IncrementPrestigeCurrency(unconvertedPrestigeCurrency);
 		unconvertedPrestigeCurrency = 0;
 		prestigeText.gameObject.SetActive(true);
+		upgradeController.SetCurrencyPanelPrestige();
 		totalPrestiges++;
 		saveStateController.SaveData();
 	}
@@ -916,6 +920,7 @@ public class controller : MonoBehaviour {
 	public void IncrementCoal(double increment) {
 		coal += increment;
 		coalText.gameObject.SetActive(true);
+		upgradeController.SetCurrencyPanelCoal();
 		//TODO Total coal increment goes here if the stat exists
 	}
 
