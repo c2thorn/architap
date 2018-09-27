@@ -6,6 +6,13 @@ public class BuildingController : MonoBehaviour {
 	public controller controller;
 	public float buildingDeathWaitTime = 1f;
 
+	[System.Serializable]
+	public class LevelBuildingList
+	{
+		public BuildingPreview[] buildings;
+	}
+ 	public LevelBuildingList[] levelBuildingLists;
+
     public float[] nextActionTime = new float[] {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 
 	// Use this for initialization
