@@ -89,6 +89,7 @@ public class controller : MonoBehaviour {
 	public SettingsController settingsController;
 	public SaveStateController saveStateController;
 	public TutorialController tutorialController;
+	public BuildingController buildingController;
 #endregion
 #region Diamond Purchases
 	public double instaGoldPrice = 20;
@@ -319,7 +320,8 @@ public class controller : MonoBehaviour {
 			prestigeText.gameObject.SetActive(true);
 			upgradeController.SetCurrencyPanelPrestige();
 		}
-		setRegionBackground(region);
+		// setRegionBackground(region);
+		SetUpRegion(region);
 		regionCompleteText.SetActive(completedRegions[region]);
 
 		m1UpgradeCost[0] = Math.Round(m1UpgradeBaseCost[0]*Math.Pow(m1UpgradeCostMultiplier[0],m1Level[0]));
@@ -575,6 +577,8 @@ public class controller : MonoBehaviour {
 			if (advanceLevel) {
 				level++;
 				levelCount = 1;
+				buildingController.centerOnButton();
+				buildingController.RefreshBuildingPreviews();
 			}
 			instaGoldText.text = calculateMaxGold()+" gold!";
 			levelNavigateDownButton.gameObject.SetActive(true);
@@ -778,6 +782,22 @@ public class controller : MonoBehaviour {
 		saveStateController.SaveData();
 		uiclickAudio.navigateSound();
 	}
+
+	public bool levelJump(int i) {
+		if (!itemController.itemDrop && !modalOpen && i <= highestRegionLevels[region]) {
+			finishOffEnemy();
+			level = i;
+			levelCount = level == highestRegionLevels[region] ? 1: levelMaxCount;
+			boss = false;
+			spawnNewEnemy(true);
+			
+			saveStateController.SaveData();
+			uiclickAudio.navigateSound();
+			return true;
+		}
+		return false;
+	}
+
 	public void completeRegion() {
 		upgradeController.enableMapButton(true);
 		completedRegions[region] = true;
@@ -814,10 +834,15 @@ public class controller : MonoBehaviour {
 				levelNavigateDownButton.gameObject.SetActive(level > regionLevels[i,0]);
 				levelNavigateUpButton.gameObject.SetActive(false);	
 			}
-			setRegionBackground(i);
+			SetUpRegion(i);
 			spawnNewEnemy(true);
 			saveStateController.SaveData();
 		}
+	}
+
+	public void SetUpRegion(int i) {
+		setRegionBackground(i);
+		buildingController.CreateBuildingNavigation();
 	}
 
 	public void setRegionBackground(int i) {

@@ -1,19 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BuildingController : MonoBehaviour {
 	public controller controller;
 	public float buildingDeathWaitTime = 1f;
 
-	[System.Serializable]
+	 	[System.Serializable]
 	public class LevelBuildingList
 	{
-		public BuildingPreview[] buildings;
+		public GameObject[] buildings;
 	}
  	public LevelBuildingList[] levelBuildingLists;
 
+	public GameObject previewList;
+
+	public GameObject previewButtonPrefab;
+
     public float[] nextActionTime = new float[] {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
+
+	public RectTransform contentRect;
+	public ScrollRect scrollRect;
+	public GameObject buildingButtonConnectorPrefab;
+	public GameObject selectedPanel;
+	public float buttonDistance = 200f;
+	public RectTransform canvasRect;
+
 
 	// Use this for initialization
 	void Start () {
@@ -36,6 +49,98 @@ public class BuildingController : MonoBehaviour {
 		if (enemy && sumDamage > 0) {
 			House house = enemy.GetComponent<House>();
 			house.partnerDamage(sumDamage);
+		}
+	}
+
+	public void CreateBuildingNavigation() {
+		GameObject[] oldButtons = GameObject.FindGameObjectsWithTag("preview_button");
+		for (int i = 0; i < oldButtons.Length; i++) {
+			Destroy(oldButtons[i]);
+		}
+
+		int region = controller.region;
+		int levelRange = controller.regionLevels[region,1]-controller.regionLevels[region,0]+1;
+		int minLevel = controller.regionLevels[region,0];
+
+		int highestLevelAttained = controller.highestRegionLevels[controller.region];
+
+		for (int i = 0; i < levelRange; i++) {
+			int buildingIndex = i%levelBuildingLists[region].buildings.Length;
+			Sprite buildingSprite = levelBuildingLists[region].buildings[buildingIndex].GetComponent<SpriteRenderer>().sprite;
+
+			GameObject previewButton = (GameObject) Instantiate(previewButtonPrefab,new Vector3(0,0,0),Quaternion.Euler(0, 0, 0),previewList.transform);
+			previewButton.GetComponent<SVGImage>().sprite = buildingSprite;
+			RectTransform rect = previewButton.GetComponent<RectTransform>();
+			rect.anchoredPosition = new Vector2(i*buttonDistance + 75,0);
+			previewButton.transform.GetComponentInChildren<Text>().text = ""+(i+minLevel);
+			previewButton.GetComponent<BuildingPreview>().index = i+minLevel;
+
+			DeterminePreviewColor(previewButton,highestLevelAttained);
+
+			if( i+1 < levelRange ){
+				GameObject connectorBar = (GameObject) Instantiate(buildingButtonConnectorPrefab,new Vector3(0,0,0),Quaternion.Euler(0, 0, 0),previewList.transform);
+				connectorBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(i*buttonDistance + 175f,-5f);
+			}
+
+		}
+		contentRect.sizeDelta = new Vector2(((levelRange+0)*buttonDistance+(75f)),contentRect.sizeDelta.y);
+		centerOnButton();
+
+	}
+
+	public void centerOnButton() {
+		int region = controller.region;
+		int levelRange = controller.regionLevels[region,1]-controller.regionLevels[region,0]+1;
+
+		float canvasRatio = (canvasRect.rect.width/675f);
+
+
+		float scrollPosition = (((float)controller.level-2)*canvasRatio)/((float)(levelRange-3)*canvasRatio);
+		
+
+		// scrollRect.horizontalNormalizedPosition = Mathf.Min(1,Mathf.Max(0,scrollPosition));
+		// Debug.Log(controller.level + ", " + scrollPosition);
+		selectedPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2((controller.level-1)*buttonDistance + 75,0);
+		StopCoroutine(ScrollTowards(scrollPosition));
+		StartCoroutine(ScrollTowards(scrollPosition));
+	}
+
+	IEnumerator ScrollTowards(float scrollPosition) {
+		float timeLimit = .55f;
+		float finalPosition = Mathf.Min(1,Mathf.Max(0,scrollPosition));
+
+		float difference = finalPosition - scrollRect.horizontalNormalizedPosition;
+		if (difference > 0.25f)
+			scrollRect.horizontalNormalizedPosition += difference*0.90f;
+		while (timeLimit > 0f){
+			scrollRect.horizontalNormalizedPosition = Mathf.Lerp(scrollRect.horizontalNormalizedPosition, 
+				finalPosition, 0.10f);
+			timeLimit -= 0.01f;
+			yield return null;	
+		}
+
+	}
+
+	public void ChangeLevel(int level) {
+		if (controller.levelJump(level)) {
+			centerOnButton();
+		}
+	}
+
+	public void RefreshBuildingPreviews() {
+		GameObject[] previews = GameObject.FindGameObjectsWithTag("preview_button");
+
+		int highestLevel = controller.highestRegionLevels[controller.region];
+		foreach(GameObject preview in previews) {
+			DeterminePreviewColor(preview, highestLevel);
+		}
+	}
+
+	public void DeterminePreviewColor(GameObject preview, int highestLevel) {
+		BuildingPreview buildingPreview = preview.GetComponent<BuildingPreview>();
+		if (buildingPreview) {
+			SVGImage svgImage = preview.GetComponent<SVGImage>();
+			svgImage.color = buildingPreview.index <= highestLevel ? Color.white : new Color(0,0,0,0.7f); 
 		}
 	}
 }
