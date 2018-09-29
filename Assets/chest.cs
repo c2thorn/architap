@@ -5,7 +5,6 @@ using UnityEngine;
 public class chest : MonoBehaviour {
 
  public ItemController itemController;
- public Animator animator;
  public Light halo;
 
  public Item item;
@@ -34,7 +33,6 @@ public class chest : MonoBehaviour {
 		direction = direction.normalized * -60f;
 		GetComponent<Rigidbody2D>().AddForce(direction);
 		Physics2D.IgnoreLayerCollision(0,1,true);
-
 	}
 	
 	// Update is called once per frame
@@ -44,16 +42,21 @@ public class chest : MonoBehaviour {
             BoxCollider2D coll = GetComponent<BoxCollider2D>();
 
             if (coll.OverlapPoint(wp)) {
-				animator.SetBool("open",true);
-				StartCoroutine(startDying());
+				// StartCoroutine(startDying());
+				GetItem();
 			}
         }
 	}
 
-	IEnumerator startDying() {
-        yield return new WaitForSeconds(2f);
-		// itemController.itemDrop = false;
+	// IEnumerator startDying() {
+    //     yield return new WaitForSeconds(2f);
+	// 	// itemController.itemDrop = false;
+	// 	itemController.showItem(item);
+    //     Destroy(gameObject.transform.parent.gameObject);
+    // }
+
+	public void GetItem(){
 		itemController.showItem(item);
-        Destroy(gameObject.transform.parent.gameObject);
-    }
+        Destroy(gameObject);
+	}
 }

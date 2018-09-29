@@ -141,7 +141,8 @@ public class House : MonoBehaviour {
         if (controller.boss || controller.uniqueBoss) {
             controller.checkBossReward(transform.position);
         }
-        else if (controller.level == 5 && controller.levelCount == 1) {
+        else if (controller.level == 5 && controller.levelCount == 1) { 
+            //TODO: Can trigger multiple times
             //Guarantee first diamond
             GameObject diamond = (GameObject) Instantiate(diamondPrefab,transform.position+new Vector3(0,0f,-3f),Quaternion.Euler(0, 0, 0));
         }

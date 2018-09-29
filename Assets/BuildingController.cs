@@ -92,15 +92,17 @@ public class BuildingController : MonoBehaviour {
 		int region = controller.region;
 		int levelRange = controller.regionLevels[region,1]-controller.regionLevels[region,0]+1;
 
+		int currentIndex = controller.level - controller.regionLevels[region,0]+1;
+
 		float canvasRatio = (canvasRect.rect.width/675f);
 
 
-		float scrollPosition = (((float)controller.level-2)*canvasRatio)/((float)(levelRange-3)*canvasRatio);
+		float scrollPosition = (((float)currentIndex-2)*canvasRatio)/((float)(levelRange-3)*canvasRatio);
 		
 
 		// scrollRect.horizontalNormalizedPosition = Mathf.Min(1,Mathf.Max(0,scrollPosition));
 		// Debug.Log(controller.level + ", " + scrollPosition);
-		selectedPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2((controller.level-1)*buttonDistance + 75,0);
+		selectedPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2((currentIndex-1)*buttonDistance + 75,0);
 		StopCoroutine(ScrollTowards(scrollPosition));
 		StartCoroutine(ScrollTowards(scrollPosition));
 	}
@@ -142,5 +144,13 @@ public class BuildingController : MonoBehaviour {
 			SVGImage svgImage = preview.GetComponent<SVGImage>();
 			svgImage.color = buildingPreview.index <= highestLevel ? Color.white : new Color(0,0,0,0.7f); 
 		}
+	}
+
+	public void HideNavigationScrollView() {
+		scrollRect.gameObject.SetActive(false);
+	}
+
+	public void ShowNavigationScrollView() {
+		scrollRect.gameObject.SetActive(true);
 	}
 }

@@ -527,7 +527,7 @@ public class controller : MonoBehaviour {
 	}
 
 	public void DropItem(Vector3 pos, Item item) {
-		GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,5f,-10f),Quaternion.Euler(-90, 152, 0));
+		GameObject chest = (GameObject) Instantiate(chestPrefab,pos+new Vector3(0,2.5f,-10f),Quaternion.Euler(0, 0, 0));
 		itemController.addItemToInventory(item);
 		chest.GetComponentInChildren<chest>().SetItem(item);
 		for (int i = 0;i< uniqueBossButtons.Length;i++) {
@@ -836,6 +836,7 @@ public class controller : MonoBehaviour {
 			}
 			SetUpRegion(i);
 			spawnNewEnemy(true);
+			buildingController.ShowNavigationScrollView();
 			saveStateController.SaveData();
 		}
 	}
@@ -869,6 +870,7 @@ public class controller : MonoBehaviour {
 			spawnUnique(i);
 			playerIndicator.transform.position = uniqueBossButtons[i].transform.position+playerIndicatorOffset;
 			regionCompleteText.SetActive(false);
+			buildingController.HideNavigationScrollView();
 		}
 	}
 	public void goToShop(int i) {
@@ -881,6 +883,7 @@ public class controller : MonoBehaviour {
 			playerIndicator.transform.position = shopButtons[i].transform.position+playerIndicatorOffset;
 			levelArea.SetActive(false);
 			shopPanel.SetActive(true);
+			buildingController.HideNavigationScrollView();
 		}
 	}
 
