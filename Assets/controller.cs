@@ -182,6 +182,7 @@ public class controller : MonoBehaviour {
 #region Start/Update
 	void Awake() {
 		saveStateController.LoadData();
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
 		//Start repeating methods
 		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
