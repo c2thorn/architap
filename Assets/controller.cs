@@ -117,9 +117,8 @@ public class controller : MonoBehaviour {
 	public int bossStartTime = 30;
 #endregion
 #region Text
-	public Text[] unitText;
+	public Text[] characterUnitLevelText;
 	public Text[] unitMultiplierText;
-	public Text[] characterLevelText;
 	public GameObject regionCompleteText;
 	public Text levelText = null;
 	public Text amountText;
@@ -199,13 +198,13 @@ public class controller : MonoBehaviour {
 		//Screen text
 		levelText.text = "LEVEL "+level;
 		amountText.text = levelCount+" / "+levelMaxCount;
-		characterLevelText[0].text = "Hero Level: "+characterLevel[0];
-		levelUpButton[0].GetComponentInChildren<Text>().text = "Level Up: "+characterUpgradeCost[0]+"g";
-		unitText[0].text = "Units: "+units[0];
-		characterLevelText[1].text = "Partner";
+		levelUpButton[0].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[0]);
+		characterUnitLevelText[0].text = "LEVEL: "+characterLevel[0]+" UNITS: "+units[0];
+		// characterLevelText[1].text = "Partner";
 		for (int i = 1; i < upgradeController.characterAmount; i++) {
-			levelUpButton[i].GetComponentInChildren<Text>().text = "Hire: "+characterUpgradeCost[i]+"g";
-			unitText[i].text = "";
+			levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
+			levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
+			characterUnitLevelText[i].text = "";
 		}
 		instaGoldButton.GetComponentInChildren<Text>().text = instaGoldPrice+" diamonds";
 		instaGoldText.text = calculateMaxGold()+" gold!";
@@ -293,16 +292,16 @@ public class controller : MonoBehaviour {
 				uniqueBossButtons[i].interactable = true;
 			}
 		}
-
 		if (highestLevel > 10) 
 			upgradeController.enableMultiLevelUpButton();
+
 		for (int i = 0;i < units.Length;i++){
 			if (characterLevel[i] > 0)
 				upgradeController.RefreshCharacterBoard(i);
 			else {
-				levelUpButton[i].GetComponentInChildren<Text>().text = "Hire: "+characterUpgradeCost[i]+"g";
-				characterLevelText[i].text = "Partner " + i;
-				unitText[i].text = "";
+				levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
+				levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
+				characterUnitLevelText[i].text = "";
 			}
 		}
 		for (int i = 0; i < completedRegions.Length;i++) {
@@ -380,7 +379,7 @@ public class controller : MonoBehaviour {
 				individualLevelUpButton.interactable = gold >= characterUpgradeCost[i];
 			}
 			if (characterLevel[i] > 0) {
-				unitText[i].text = "Units: "+NumberFormat.format(units[i]);				
+				characterUnitLevelText[i].text = "LEVEL: "+characterLevel[i]+" UNITS: "+NumberFormat.format(units[i]);
 			}
 			if (i < unitM1Button.Length)
 				unitM1Button[i].interactable = diamonds >= m1UpgradeCost[i];
@@ -444,9 +443,9 @@ public class controller : MonoBehaviour {
 		for (int j = 0; j < numLevels; j++)
 			sum += Math.Round(baseCharacterUpgradeCost[i]*Math.Pow(characterUpgradeCostMultiplier[i],characterLevel[i]+j));
 		characterUpgradeCost[i] = sum;
-		string preText = numLevels == 1 ? (characterLevel[i] == 0 ? "Hire: ": "Level Up: ") : "x"+numLevels+": ";
-		levelUpButton[i].GetComponentInChildren<Text>().text = preText+NumberFormat.format(characterUpgradeCost[i])+"g";
-		individualLevelUpButton.GetComponentInChildren<Text>().text = preText+NumberFormat.format(characterUpgradeCost[i])+"g";
+		levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = characterLevel[i] > 0 ? "LEVEL UP" : "HIRE";
+		levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
+		individualLevelUpButton.GetComponentInChildren<Text>().text = NumberFormat.format(characterUpgradeCost[i])+"g";
 	}
 	
 	public void buyClickM1Up() {

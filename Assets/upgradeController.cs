@@ -49,7 +49,6 @@ public class upgradeController : MonoBehaviour {
 	public GameObject diamondCountText;
 	public int[] multiLevelUpValues;
 	public int currentMultiLevelUpIndex;
-	public Image[] characterPanels = new Image[]{};
 	public Color gildColor;
 	public GameObject toolTip;
 	public bool toolTipShowing = false;
@@ -85,8 +84,8 @@ public class upgradeController : MonoBehaviour {
 		multiLevelButton.SetActive(false);
 		currentMultiLevelUpIndex = 0;
 		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
-		for (int i = 0; i < characterPanels.Length; i++){ 
-			Text gildText = characterPanels[i].transform.Find("Gilds Text").GetComponent<Text>();
+		for (int i = 0; i < characterBoards.Length; i++){ 
+			Text gildText = characterBoards[i].transform.Find("Gilds Text").GetComponent<Text>();
 			gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
 			gildText.gameObject.SetActive(controller.characterGilds[i] > 1);
 		}
@@ -121,19 +120,19 @@ public class upgradeController : MonoBehaviour {
 				boostBought1[i] = false;
 				controller.unitM1[i] -= boostValues[0];
 				GameObject boostObject = characterBoards[i].transform.Find("Boost 1").gameObject;
-				SetBoostImageToNormal(boostObject.GetComponent<Image>());
+				SetBoostImageToNormal(boostObject.GetComponent<SVGImage>());
 			}
 			if (boostBought2[i]) {
 				boostBought2[i] = false;
 				controller.unitM1[i] -= boostValues[1];
 				GameObject boostObject = characterBoards[i].transform.Find("Boost 2").gameObject;
-				SetBoostImageToNormal(boostObject.GetComponent<Image>());
+				SetBoostImageToNormal(boostObject.GetComponent<SVGImage>());
 			}
 			if (boostBought3[i]) {
 				boostBought3[i] = false;
 				controller.unitM1[i] -= boostValues[2];
 				GameObject boostObject = characterBoards[i].transform.Find("Boost 3").gameObject;
-				SetBoostImageToNormal(boostObject.GetComponent<Image>());
+				SetBoostImageToNormal(boostObject.GetComponent<SVGImage>());
 			}
 		}
 	}
@@ -148,9 +147,9 @@ public class upgradeController : MonoBehaviour {
 	}
 	
 	public void RefreshCharacterBoard(int i) {
-		string preText = i == 0 ? "Hero" : "Partner "+i;
 		int characterLevel = controller.characterLevel[i];
-		controller.characterLevelText[i].text = characterLevel > 0 ? preText + " Level: " +  characterLevel : preText;
+		controller.characterUnitLevelText[i].text = characterLevel > 0 ? "LEVEL: " + characterLevel + 
+		" UNITS: "+NumberFormat.format(controller.units[i]): "";
 
 		if (i != 0 || characterLevel > 1)
 			controller.RecalculateCharacterUpgradeCost(i);
@@ -164,20 +163,20 @@ public class upgradeController : MonoBehaviour {
 			enableBoard(i);
 		if ( boostBought1[i]){
 			GameObject boostObject = characterBoards[i].transform.Find("Boost 1").gameObject;
-			SetBoostImageToBought(boostObject.GetComponent<Image>());
+			SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
 		}
 		if ( boostBought2[i]){
 			GameObject boostObject = characterBoards[i].transform.Find("Boost 2").gameObject;
-			SetBoostImageToBought(boostObject.GetComponent<Image>());		
+			SetBoostImageToBought(boostObject.GetComponent<SVGImage>());		
 		}
 		if ( boostBought3[i]){
 			GameObject boostObject = characterBoards[i].transform.Find("Boost 3").gameObject;
-			SetBoostImageToBought(boostObject.GetComponent<Image>());		
+			SetBoostImageToBought(boostObject.GetComponent<SVGImage>());		
 		}
 
-		Text gildText = characterPanels[i].transform.Find("Gilds Text").GetComponent<Text>();
+		Text gildText = characterBoards[i].transform.Find("Gilds Text").GetComponent<Text>();
 		if (controller.characterGilds[i] > 0) 
-			characterPanels[i].color = gildColor;
+			characterBoards[i].GetComponent<Image>().color = gildColor;
 		
 		gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
 		gildText.gameObject.SetActive(controller.characterGilds[i] > 0);
@@ -212,22 +211,22 @@ public class upgradeController : MonoBehaviour {
 			percentageText.gameObject.SetActive(false);
 		}
 		if ( boostBought1[selectedCharacter]){
-			SetBoostImageToBought(boostButton1.GetComponent<Image>());
+			SetBoostImageToBought(boostButton1.GetComponent<SVGImage>());
 		}
 		else {
-			SetBoostImageToNormal(boostButton1.GetComponent<Image>());
+			SetBoostImageToNormal(boostButton1.GetComponent<SVGImage>());
 		}
 		if ( boostBought2[selectedCharacter]){
-			SetBoostImageToBought(boostButton2.GetComponent<Image>());		
+			SetBoostImageToBought(boostButton2.GetComponent<SVGImage>());		
 		}
 		else {
-			SetBoostImageToNormal(boostButton2.GetComponent<Image>());
+			SetBoostImageToNormal(boostButton2.GetComponent<SVGImage>());
 		}
 		if ( boostBought3[selectedCharacter]){
-			SetBoostImageToBought(boostButton3.GetComponent<Image>());		
+			SetBoostImageToBought(boostButton3.GetComponent<SVGImage>());		
 		}
 		else {
-			SetBoostImageToNormal(boostButton3.GetComponent<Image>());
+			SetBoostImageToNormal(boostButton3.GetComponent<SVGImage>());
 		}
 
 		if (controller.characterGilds[selectedCharacter] > 0) 
@@ -267,9 +266,9 @@ public class upgradeController : MonoBehaviour {
 		controller.unitM1[selectedCharacter] += boostValues[0];
 		controller.RecalculateUnit(selectedCharacter);
 		boostButton1.interactable = false;
-		SetBoostImageToBought(boostButton1.image);
+		SetBoostImageToBought(boostButton1.GetComponent<SVGImage>());
 		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 1").gameObject;
-		SetBoostImageToBought(boostObject.GetComponent<Image>());
+		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
 	}
 
 	public void buyBoost2() {
@@ -278,9 +277,9 @@ public class upgradeController : MonoBehaviour {
 		controller.unitM1[selectedCharacter] += boostValues[1];
 		controller.RecalculateUnit(selectedCharacter);
 		boostButton2.interactable = false;
-		SetBoostImageToBought(boostButton2.image);
+		SetBoostImageToBought(boostButton2.GetComponent<SVGImage>());
 		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 2").gameObject;
-		SetBoostImageToBought(boostObject.GetComponent<Image>());
+		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
 	}
 
 	public void buyBoost3() {
@@ -290,12 +289,12 @@ public class upgradeController : MonoBehaviour {
 
 		controller.RecalculateUnit(selectedCharacter);
 		boostButton3.interactable = false;
-		SetBoostImageToBought(boostButton3.image);
+		SetBoostImageToBought(boostButton3.GetComponent<SVGImage>());
 		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 3").gameObject;
-		SetBoostImageToBought(boostObject.GetComponent<Image>());
+		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
 	}
 
-	public void SetBoostImageToBought(Image image) {
+	public void SetBoostImageToBought(SVGImage image) {
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#9F6752", out newCol))
 			if (image.color != newCol)
@@ -303,7 +302,7 @@ public class upgradeController : MonoBehaviour {
 	}
 
 	
-	public void SetBoostImageToNormal(Image image) {
+	public void SetBoostImageToNormal(SVGImage image) {
 		Color newCol;
 		if (ColorUtility.TryParseHtmlString("#FFFFFF", out newCol))
 			if (image.color != newCol)
