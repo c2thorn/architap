@@ -33,11 +33,10 @@ public class ItemController : MonoBehaviour {
 		}
 
 		for (int i = 0; i < inventory.Count; i++) {
-			float x = i % 2 > 0 ? 160f : -160f;
-			float y = 425 - (i / 2) * 200f;
-			Vector3 pos = new Vector3(x,y,0f);
+			float y = i * -160f - 80;
+			Vector3 pos = new Vector3(0,y,0f);
 			GameObject itemIcon = (GameObject) Instantiate(itemSlotPrefab,pos,Quaternion.Euler(0, 0, 0));
-			itemIcon.GetComponent<RectTransform>().anchoredPosition = pos;
+			itemIcon.GetComponent<RectTransform>().localPosition = pos;
 			itemIcon.transform.SetParent(itemContent.transform, false);
 			setItemIcon(itemIcon,inventory[i]);
 		}
@@ -62,9 +61,9 @@ public class ItemController : MonoBehaviour {
 				obj.GetComponent<Text>().text = item.name;
 			}
 			else if (obj.name == "Item Count") {
-				obj.GetComponent<Text>().text = item.count.ToString();
+				obj.GetComponent<Text>().text = "x"+item.count.ToString();
 			} else if (obj.name == "Item Description") {
-				obj.GetComponent<Text>().text = item.effect + " + " + item.effectValue*100 + "%";
+				obj.GetComponent<Text>().text = item.effect + "\n+ " + item.effectValue*100 + "%";
 			}
 		}
 	}

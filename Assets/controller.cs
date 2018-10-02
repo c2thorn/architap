@@ -133,7 +133,7 @@ public class controller : MonoBehaviour {
 	public Text enemyDescriptionText;
 	public Text coalConversionText;
 	public Text diamondConversionText;
-	public Text instantPrestigeButtonText;
+	public Text instantPrestigeText;
 	public Text individualUnitText;
 #endregion
 #region Buttons
@@ -207,7 +207,7 @@ public class controller : MonoBehaviour {
 			characterUnitLevelText[i].text = "";
 		}
 		instaGoldButton.GetComponentInChildren<Text>().text = instaGoldPrice+" diamonds";
-		instaGoldText.text = calculateMaxGold()+" gold!";
+		instaGoldText.text = calculateMaxGold()+" GOLD";
 
 		//Deactivate certain objects
 		levelNavigateDownButton.gameObject.SetActive(false);
@@ -249,7 +249,7 @@ public class controller : MonoBehaviour {
 		//resetSkillCooldownsButton.interactable = diamonds >= resetSkillCooldownsPrice;
 		resetSkillCooldownsButton.interactable = false;
 		instantPrestigeButton.interactable = diamonds >= instantPrestigePrice && unconvertedPrestigeCurrency > 0;
-		instantPrestigeButtonText.text = "+"+NumberFormat.format(unconvertedPrestigeCurrency);
+		instantPrestigeText.text = "+"+NumberFormat.format(unconvertedPrestigeCurrency) + " NOTES";
 		gildRandomHeroButton.interactable = diamonds >= gildRandomHeroPrice;
 		
 
@@ -325,13 +325,13 @@ public class controller : MonoBehaviour {
 		regionCompleteText.SetActive(completedRegions[region]);
 
 		m1UpgradeCost[0] = Math.Round(m1UpgradeBaseCost[0]*Math.Pow(m1UpgradeCostMultiplier[0],m1Level[0]));
-		unitM1Button[0].GetComponentInChildren<Text>().text = m1UpgradeCost[0]+" diamonds";
-		unitMultiplierText[0].text = " + "+(m1Level[0]-1)*25+"%"; 
+		unitM1Button[0].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[0] + "";
+		unitMultiplierText[0].text = "CURRENT BONUS: + "+(m1Level[0]-1)*25+"%"; 
 
 
 		m1UpgradeCost[1] = Math.Round(m1UpgradeBaseCost[1]*Math.Pow(m1UpgradeCostMultiplier[1],m1Level[1]));
-		unitM1Button[1].GetComponentInChildren<Text>().text = m1UpgradeCost[1]+" diamonds";
-		unitMultiplierText[1].text = " + "+(m1Level[1]-1)*25+"%"; 
+		unitM1Button[1].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[1] + "";
+		unitMultiplierText[1].text = "CURRENT BONUS: + "+(m1Level[1]-1)*25+"%"; 
 
 		prestigeButton.gameObject.SetActive(completedRegions[1]);
 
@@ -430,7 +430,7 @@ public class controller : MonoBehaviour {
 		upgradeController.RefreshCharacterBoard(i);
 		LevelUpUnit(i,numLevels);
 		saveStateController.SaveData();
-		characterAudio.levelUpSound();
+		// characterAudio.levelUpSound();
 	}
 
 
@@ -454,9 +454,9 @@ public class controller : MonoBehaviour {
 		diamonds -= m1UpgradeCost[i];
 		diamondText.text = "Diamonds: "+diamonds;
 		m1UpgradeCost[i] = Math.Round(m1UpgradeBaseCost[i]*Math.Pow(m1UpgradeCostMultiplier[i],m1Level[i]));
-		unitM1Button[i].GetComponentInChildren<Text>().text = m1UpgradeCost[i]+" diamonds";
+		unitM1Button[i].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[i]+"";
 		unitM1[i] += .25f;
-		unitMultiplierText[i].text = " + "+(m1Level[i]-1)*25+"%"; 
+		unitMultiplierText[i].text = "CURRENT BONUS: + "+(m1Level[i]-1)*25+"%"; 
 		RecalculateUnit(i);
 	}
 
@@ -469,8 +469,8 @@ public class controller : MonoBehaviour {
 		diamonds -= m1UpgradeCost[1];
 		diamondText.text = "Diamonds: "+diamonds;
 		m1UpgradeCost[1] = Math.Round(m1UpgradeBaseCost[1]*Math.Pow(m1UpgradeCostMultiplier[1],m1Level[1]));
-		unitM1Button[1].GetComponentInChildren<Text>().text = m1UpgradeCost[1]+" diamonds";
-		unitMultiplierText[1].text = " + "+(m1Level[1]-1)*25+"%"; 
+		unitM1Button[1].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[1]+"";
+		unitMultiplierText[1].text = "CURRENT BONUS: + "+(m1Level[1]-1)*25+"%"; 
 	}
 
 	public void buyInstaGold() {
@@ -481,7 +481,7 @@ public class controller : MonoBehaviour {
 	public void buyRandomItem() {
 		if (!itemController.itemDrop || modalOpen) {
 			Item item = itemController.getRandomItem();
-			DropItem(new Vector3(0,-5,-5),item);
+			DropItem(new Vector3(0,-2,-5),item);
 			diamonds -= randomItemPrice;
 		}
 	}
@@ -580,7 +580,7 @@ public class controller : MonoBehaviour {
 				buildingController.centerOnButton();
 				buildingController.RefreshBuildingPreviews();
 			}
-			instaGoldText.text = calculateMaxGold()+" gold!";
+			instaGoldText.text = calculateMaxGold()+" GOLD";
 			levelNavigateDownButton.gameObject.SetActive(true);
 		}
 	}

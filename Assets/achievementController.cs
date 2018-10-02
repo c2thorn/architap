@@ -43,22 +43,25 @@ public class achievementController : MonoBehaviour {
 		}
 
 		for (int i = 0; i < achievements.Count; i++) {
-			float x = i % 2 > 0 ? 160f : -160f;
-			float y = 425 - (i / 2) * 200f;
-			Vector3 pos = new Vector3(x,y,0f);
+			float y = i * -120F - 60;
+			Vector3 pos = new Vector3(0,y,0f);
 			GameObject achievementIcon = (GameObject) Instantiate(achievementPrefab,pos,Quaternion.Euler(0, 0, 0));
-			achievementIcon.GetComponent<RectTransform>().anchoredPosition = pos;
+			achievementIcon.GetComponent<RectTransform>().localPosition = pos;
 			achievementIcon.transform.SetParent(achievementContent.transform, false);
 			setItemIcon(achievementIcon,achievements[i]);
 		}
 	}
 
 	public void setItemIcon(GameObject achievementIcon, achievement achievement) {
+		Color newCol;
 		if (achievement.completed) {
-			achievementIcon.GetComponent<Image>().color = Color.yellow;
+			if (ColorUtility.TryParseHtmlString("#FFFD69", out newCol))
+				achievementIcon.GetComponent<Image>().color = newCol;
+			
 		}
 		else {
-			achievementIcon.GetComponent<Image>().color = new Color(152,152,152,255);
+			if (ColorUtility.TryParseHtmlString("#989898", out newCol))
+				achievementIcon.GetComponent<Image>().color = newCol;
 		}
 
 		foreach (Transform child in achievementIcon.transform) {
