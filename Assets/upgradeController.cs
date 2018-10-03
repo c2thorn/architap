@@ -313,7 +313,7 @@ public class upgradeController : MonoBehaviour {
 		goldPanel.SetActive(true);
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(false);
-		mapPanel.SetActive(false);
+		// mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		// goldButton.gameObject.GetComponent<tabButton>().stopNotification();
@@ -331,7 +331,7 @@ public class upgradeController : MonoBehaviour {
 		goldPanel.SetActive(false);
 		diamondPanel.SetActive(true);
 		itemPanel.SetActive(false);
-		mapPanel.SetActive(false);
+		// mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		diamondButton.gameObject.GetComponent<tabButton>().stopNotification();
@@ -342,7 +342,7 @@ public class upgradeController : MonoBehaviour {
 		goldPanel.SetActive(false);
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(true);
-		mapPanel.SetActive(false);
+		// mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		itemButton.gameObject.GetComponent<tabButton>().stopNotification();
@@ -350,12 +350,12 @@ public class upgradeController : MonoBehaviour {
 	}
 
 	public void mapTab() {
-		goldPanel.SetActive(false);
-		diamondPanel.SetActive(false);
-		itemPanel.SetActive(false);
-		mapPanel.SetActive(true);
-		achievementsPanel.SetActive(false);
-		individualCharacterPanel.SetActive(false);
+		// goldPanel.SetActive(false);
+		// diamondPanel.SetActive(false);
+		// itemPanel.SetActive(false);
+		mapPanel.SetActive(!mapPanel.activeSelf);
+		// achievementsPanel.SetActive(false);
+		// individualCharacterPanel.SetActive(false);
 		mapButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
 	}
@@ -364,7 +364,7 @@ public class upgradeController : MonoBehaviour {
 		goldPanel.SetActive(false);
 		diamondPanel.SetActive(false);
 		itemPanel.SetActive(false);
-		mapPanel.SetActive(false);
+		// mapPanel.SetActive(false);
 		achievementsPanel.SetActive(true);
 		individualCharacterPanel.SetActive(false);
 		achievementsButton.gameObject.GetComponent<tabButton>().stopNotification();
@@ -376,7 +376,7 @@ public class upgradeController : MonoBehaviour {
 			goldPanel.SetActive(false);
 			diamondPanel.SetActive(false);
 			itemPanel.SetActive(false);
-			mapPanel.SetActive(false);
+			// mapPanel.SetActive(false);
 			achievementsPanel.SetActive(false);
 			controller.individualLevelUpButton.interactable = controller.gold >= controller.characterUpgradeCost[i];
 			individualCharacterPanel.SetActive(true);
