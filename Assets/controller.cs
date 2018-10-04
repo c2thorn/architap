@@ -90,6 +90,7 @@ public class controller : MonoBehaviour {
 	public SaveStateController saveStateController;
 	public TutorialController tutorialController;
 	public BuildingController buildingController;
+	public SwipeCapture swipeCapture;
 #endregion
 #region Diamond Purchases
 	public double instaGoldPrice = 20;
@@ -817,6 +818,7 @@ public class controller : MonoBehaviour {
 
 	public void changeRegion(int i) {
 		if (!itemController.itemDrop && !modalOpen) {
+			swipeCapture.SnapClose();
 			levelArea.SetActive(true);
 			shopPanel.SetActive(false);
 			finishOffEnemy();
@@ -857,6 +859,7 @@ public class controller : MonoBehaviour {
 
 	public void goToUnique(int i) {
 		if (!itemController.itemDrop && !modalOpen) {
+			swipeCapture.SnapClose();
 			levelArea.SetActive(true);
 			shopPanel.SetActive(false);
 			finishOffEnemy();
@@ -875,6 +878,7 @@ public class controller : MonoBehaviour {
 	}
 	public void goToShop(int i) {
 		if (!itemController.itemDrop && !modalOpen) {
+			swipeCapture.SnapClose();
 			for(int j = 0; j < regionBackgrounds.Length; j++)
 				regionBackgrounds[j].SetActive(false);
 			for(int j = 0; j < shopBackgrounds.Length; j++)

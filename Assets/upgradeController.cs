@@ -10,6 +10,7 @@ public class upgradeController : MonoBehaviour {
 	public Button diamondButton;
 	public Button itemButton;
 	public Button mapButton;
+	public Button architectButton;
 	public Button achievementsButton;
 	public GameObject multiLevelButton;
 	public GameObject goldPanel;
@@ -59,6 +60,8 @@ public class upgradeController : MonoBehaviour {
 	public UIClickAudio uiClickAudio;
 	public Text percentageText;
 	public int currencyPanelIndex = 0;
+
+	public SwipeCapture swipeCapture;
 
 	// Use this for initialization
 	void Start () {
@@ -309,6 +312,14 @@ public class upgradeController : MonoBehaviour {
 				image.color = newCol;
 	}
 
+	public void ChangeTabIndicators(int i) {
+		goldButton.transform.Find("Indicator").gameObject.SetActive(i == 0);
+		diamondButton.transform.Find("Indicator").gameObject.SetActive(i == 1);
+		itemButton.transform.Find("Indicator").gameObject.SetActive(i == 2);
+		achievementsButton.transform.Find("Indicator").gameObject.SetActive(i == 3);
+		architectButton.transform.Find("Indicator").gameObject.SetActive(i == 4);
+	}
+
 	public void goldTab() {
 		goldPanel.SetActive(true);
 		diamondPanel.SetActive(false);
@@ -318,6 +329,7 @@ public class upgradeController : MonoBehaviour {
 		individualCharacterPanel.SetActive(false);
 		// goldButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		ChangeTabIndicators(0);
 	}
 	public void resetScroll() {
 		goldPanel.GetComponentInChildren<Scrollbar>().value = 1;
@@ -336,6 +348,7 @@ public class upgradeController : MonoBehaviour {
 		individualCharacterPanel.SetActive(false);
 		diamondButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		ChangeTabIndicators(1);
 	}
 
 	public void itemTab() {
@@ -347,13 +360,17 @@ public class upgradeController : MonoBehaviour {
 		individualCharacterPanel.SetActive(false);
 		itemButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		ChangeTabIndicators(2);
 	}
 
 	public void mapTab() {
 		// goldPanel.SetActive(false);
 		// diamondPanel.SetActive(false);
 		// itemPanel.SetActive(false);
-		mapPanel.SetActive(!mapPanel.activeSelf);
+		if (mapPanel.activeSelf)
+			swipeCapture.SnapClose();
+		else
+			swipeCapture.SnapOpen();
 		// achievementsPanel.SetActive(false);
 		// individualCharacterPanel.SetActive(false);
 		mapButton.gameObject.GetComponent<tabButton>().stopNotification();
@@ -369,6 +386,7 @@ public class upgradeController : MonoBehaviour {
 		individualCharacterPanel.SetActive(false);
 		achievementsButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		ChangeTabIndicators(3);
 	}
 
 	public void openCharacterPanel(int i) {
@@ -396,6 +414,7 @@ public class upgradeController : MonoBehaviour {
 			currencyPanel.SetActive(true);
 			goldButton.gameObject.SetActive(true);
 			SetCurrencyPanelGold();
+			ChangeTabIndicators(0);
 		}
 	}
 
@@ -419,6 +438,7 @@ public class upgradeController : MonoBehaviour {
 	public void enableMapButton(bool notify) {
 		if (!mapButton.gameObject.active){
 			mapButton.gameObject.SetActive(true);
+			swipeCapture.mapSwipeable = true;
 		}
 		if (notify)
 			mapButton.gameObject.GetComponent<tabButton>().startNotification();
