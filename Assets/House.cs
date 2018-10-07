@@ -20,10 +20,6 @@ public class House : MonoBehaviour {
 
 	public float p1Period = 0.1f;
 	private BoxCollider2D coll;
-
-	//public Shader unfinished;
-	//public Shader finished;
-	//protected MeshRenderer rend;
     public bool invulnerable = false;
 
     public BuildingController buildingController;
@@ -45,20 +41,12 @@ public class House : MonoBehaviour {
         healthBar = GameObject.Find("healthBar").GetComponent<SimpleHealthBar>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 		coll = GameObject.Find("Click Area").GetComponent<BoxCollider2D>();
-	//	rend = GetComponent<MeshRenderer>();
         tutorialController = GameObject.Find("Tutorial Controller").GetComponent<TutorialController>();
 
         maxHealth = controller.calculateHealth();
         healthBar.UpdateBar( health, maxHealth );
         if (!controller.uniqueBoss)
             halo.SetActive(controller.bonusEnemy);
-
-       // if (controller.sumofAllUnits < maxHealth)
-	//	    rend.material.shader = unfinished;
-     //   else
-     //       rend.material.shader = finished;
-        // if (controller.bonusEnemy) {
-        // }
         buildingAudioSource = GameObject.Find("Building Audio Source").GetComponent<BuildingAudioSource>();
         maskObject = transform.Find("Sprite Mask").gameObject;
         // rectHeight = GetComponent<RectTransform>().rect.height;
@@ -66,7 +54,6 @@ public class House : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-      //  rotate();
         if (health < maxHealth && !invulnerable) {
             if (!itemController.itemDrop && !controller.modalOpen){
                 bool hit = checkClick();
@@ -74,10 +61,6 @@ public class House : MonoBehaviour {
             }
         }
     }
-
-    // protected virtual void rotate() {
-    //     transform.Rotate(0, Time.deltaTime+0.15f, 0);
-    // }
 
 	public void partnerDamage(double sumDamage) {
         if (health < maxHealth && !invulnerable) {
@@ -139,6 +122,7 @@ public class House : MonoBehaviour {
 
     protected virtual IEnumerator startDying() {
         buildingAudioSource.PlayBuildingComplete(); 
+        bool uniqueBoss = controller.uniqueBoss;
         if (controller.boss || controller.uniqueBoss) {
             controller.checkBossReward(transform.position);
         }
@@ -152,8 +136,6 @@ public class House : MonoBehaviour {
         } else if ((controller.level >= 10  || controller.totalPrestiges > 0) && UnityEngine.Random.value <= controller.coalChance) {
             GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,0f,-3f),Quaternion.Euler(0, 0, 0));
         }
-    //    if (buildingController.buildingDeathWaitTime > 0.2f)
-	//	    rend.material.shader = finished;
         yield return new WaitForSeconds(buildingController.buildingDeathWaitTime);
         while (itemController.itemDrop || controller.modalOpen)
             yield return new WaitForSeconds(1f);
@@ -161,7 +143,8 @@ public class House : MonoBehaviour {
 
         DropCoins(goldIncrement);
 
-        Destroy(gameObject);
+        if (!uniqueBoss)
+            Destroy(gameObject);
     }
 
     public void DropCoins(double goldIncrement) {
@@ -204,7 +187,6 @@ public class House : MonoBehaviour {
     }
 
     protected void createDust(Vector3 pos){
-        //GameObject dust = (GameObject) Instantiate(dustParticle,pos+new Vector3(-0.5f,0,5),Quaternion.Euler(-90, 0, 0));
         Vector3 posi = pos+new Vector3(UnityEngine.Random.Range(-2f,1.5f),UnityEngine.Random.Range(-2f,2f),5);
         GameObject dust = (GameObject) Instantiate(dustParticle,posi,Quaternion.Euler(-90, 0, 0));
     }

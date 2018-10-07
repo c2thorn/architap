@@ -4,7 +4,7 @@ using UnityEngine;
 
  [System.Serializable] 
 public class Item {
-
+	public Sprite sprite;
 	public string name;
 	public int count;
 	public string effect;

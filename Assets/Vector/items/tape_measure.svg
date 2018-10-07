@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="464pt" width="464pt" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 -104 464 464">
+ <metadata id="metadata45">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="surface1">
+  <path id="path5" d="m200 72.379h-0.32c-3.93 51.131-44.55 91.751-95.68 95.681 51.13-3.93 91.75-44.55 95.68-95.681h-40.23c-4.01 31.991-31.21 56.001-63.45 56.001-32.242 0-59.441-24.01-63.449-56.001h-32.551v104c0 17.67 14.328 32 32 32h72v16h152v-152z" fill="#e0dfe2"/>
+  <path id="path7" d="m32 64.379c-0.141-23.914 13.062-45.91 34.23-57.035 21.172-11.121 46.77-9.5159 66.39 4.168 19.61 13.683 29.96 37.16 26.83 60.867h80.55v-72c0-17.672-14.33-32-32-32h-176c-17.672 0-32 14.328-32 32v72h32.551c-0.348-2.652-0.535-5.324-0.551-8z" fill="#eeebe5"/>
+  <path id="path9" d="m96 128.38c32.23-0.02 59.42-24.02 63.45-56.001h-126.9c4.032 31.981 31.216 55.981 63.45 56.001z" fill="#ebbf00"/>
+  <path id="path11" d="m96 0.37891c-18.398-0.10547-35.945 7.7578-48.109 21.562-12.164 13.805-17.758 32.2-15.34 50.438h126.9c2.42-18.238-3.18-36.633-15.34-50.438-12.16-13.804-29.71-21.668-48.11-21.562z" fill="#ffde17"/>
+  <path id="path13" d="m440 216.38h24v-112h-24z" fill="#957855"/>
+  <path id="path15" d="m240 8.3789h24v32h-24z" fill="#ffe26e"/>
+  <path id="path17" d="m256 72.379v152h-152v-56.32c51.13-3.93 91.75-44.55 95.68-95.681z" fill="#b29a7c"/>
+  <g fill="#ffd944">
+   <path id="path19" d="m328 176.38v-32h-24v24-24h-24v32z"/>
+   <path id="path21" d="m376 176.38v-32h-24v24-24h-24v32z"/>
+   <path id="path23" d="m400 144.38v24-24h-24v32h64v-32z"/>
+   <path id="path25" d="m256 144.38h24v32h-24z"/>
+  </g>
+  <path id="path27" d="m376 184.38v-8h-48v8-8h-48v8-8h-24v32h184v-32h-64z" fill="#ffcd00"/>
+  <g fill="#78767f">
+   <path id="path29" d="m392 144.38h16v24h-16z"/>
+   <path id="path31" d="m368 144.38h16v40h-16z"/>
+   <path id="path33" d="m344 144.38h16v24h-16z"/>
+   <path id="path35" d="m320 144.38h16v40h-16z"/>
+   <path id="path37" d="m296 144.38h16v24h-16z"/>
+   <path id="path39" d="m272 144.38h16v40h-16z"/>
+  </g>
+ </g>
+</svg>

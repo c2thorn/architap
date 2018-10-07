@@ -14,10 +14,10 @@ public class tabButton : MonoBehaviour {
 	void Awake () {
 		notification = false;
 		myImage = gameObject.GetComponent<Image>();
-		borderImage = gameObject.transform.Find("Border Image").GetComponent<Image>();
+		// borderImage = gameObject.transform.Find("Border Image").GetComponent<Image>();
 		defaultColor = myImage.color;
-		defaultBorderColor = borderImage.color;
-		borderImage.color = Color.clear;
+		// defaultBorderColor = borderImage.color;
+		// borderImage.color = Color.clear;
 		uiClickAudio = GameObject.Find("UI Click Audio Source").GetComponent<UIClickAudio>();
 	}
 	
@@ -25,7 +25,7 @@ public class tabButton : MonoBehaviour {
 	void Update () {
 		if (notification){
 			myImage.color = Color.Lerp(defaultColor, Color.white, Mathf.PingPong(Time.time*1.3f, .8f));
-			borderImage.color = Color.Lerp(Color.clear, defaultBorderColor,Mathf.PingPong(Time.time*1.3f, .8f));
+			// borderImage.color = Color.Lerp(Color.clear, defaultBorderColor,Mathf.PingPong(Time.time*1.3f, .8f));
 		}
 	}
 
@@ -37,7 +37,7 @@ public class tabButton : MonoBehaviour {
 	public void stopNotification() {
 		notification = false;
 		myImage.color = defaultColor;
-		borderImage.color = Color.clear;
+		// borderImage.color = Color.clear;
 	}
 
 }

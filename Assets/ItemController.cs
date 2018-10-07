@@ -15,7 +15,9 @@ public class ItemController : MonoBehaviour {
 	public GameObject itemContent;
 	public GameObject itemSlotPrefab;
 	public GameObject itemModal;
-
+	public ItemTemplate[] ancientPool;
+	public ItemTemplate[] modernPool;
+	public bool modern = false;
 
 	// Use this for initialization
 	void Start () {
@@ -99,28 +101,34 @@ public class ItemController : MonoBehaviour {
 	}
 
 	public Item getRandomItem() {
-		float itemCategoryVal = UnityEngine.Random.value;
-		if (itemCategoryVal <= .5f) {
-			float val = UnityEngine.Random.value;
-			if (val <= .6f) {
-				return createFromName("Common Gloves");
-			} else if (val <= .9f) {
-				return createFromName("Rare Gloves");
-			} else {
-				return createFromName("Legendary Gloves");
-			}
-		} else {
-			float val = UnityEngine.Random.value;
-			if (val <= .6f) {
-				return createFromName("Common Hammer");
-			} else if (val <= .9f) {
-				return createFromName("Rare Hammer");
-			} else {
-				return createFromName("Legendary Hammer");
-			}	
-		}
-	
+		int poolSize = modern ? ancientPool.Length + modernPool.Length - 1 : ancientPool.Length - 0;
+		System.Random r = new System.Random();
+		int index = r.Next(0, poolSize);
+		if (index < ancientPool.Length)
+			return createFromTemplate(ancientPool[index]);
+		else
+			return createFromTemplate(modernPool[index-ancientPool.Length]);
+	}
 
+	public Item createFromTemplate(ItemTemplate template) {
+		int rarity = 0;
+
+		float itemRarityChance = UnityEngine.Random.value;
+		if (itemRarityChance <= .6f) 
+			rarity = 0;
+		else if (itemRarityChance <= 0.9f)
+			rarity = 1;
+		else
+			rarity = 2;
+
+		Item item = new Item(template.name);
+		item.effect = template.effect;
+		item.effectValue = template.effectValue[rarity];
+		item.count = 1;
+		item.rarity = rarity;
+		item.sprite = template.sprite;
+
+		return item;
 	}
 
 	public Item createFromName(string input) {
