@@ -66,10 +66,11 @@ public class BuildingController : MonoBehaviour {
 
 		for (int i = 0; i < levelRange; i++) {
 			int buildingIndex = i%levelBuildingLists[region].buildings.Length;
-			Sprite buildingSprite = levelBuildingLists[region].buildings[buildingIndex].GetComponent<SpriteRenderer>().sprite;
-
+			Sprite buildingSprite = levelBuildingLists[region].buildings[buildingIndex].transform.Find("Structure").GetComponent<SpriteRenderer>().sprite;
 			GameObject previewButton = (GameObject) Instantiate(previewButtonPrefab,new Vector3(0,0,0),Quaternion.Euler(0, 0, 0),previewList.transform);
-			previewButton.GetComponent<SVGImage>().sprite = buildingSprite;
+			Debug.Log(buildingSprite.name);
+			previewButton.GetComponent<SVGImage>().m_Sprite = buildingSprite;
+			Debug.Log(previewButton.GetComponent<SVGImage>().sprite.name);
 			RectTransform rect = previewButton.GetComponent<RectTransform>();
 			rect.anchoredPosition = new Vector2(i*buttonDistance + 75,0);
 			previewButton.transform.GetComponentInChildren<Text>().text = ""+(i+minLevel);

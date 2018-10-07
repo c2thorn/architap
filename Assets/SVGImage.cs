@@ -12,7 +12,7 @@ using Unity.Collections;
 [AddComponentMenu("UI/SVG Image", 11)]
 public class SVGImage : MaskableGraphic
 {
-    [SerializeField] private Sprite m_Sprite = null;
+    [SerializeField] public Sprite m_Sprite = null;
 
     /// <summary>
     /// The sprite that is used to render this image.

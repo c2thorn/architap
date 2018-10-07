@@ -61,7 +61,7 @@ public class House : MonoBehaviour {
         // }
         buildingAudioSource = GameObject.Find("Building Audio Source").GetComponent<BuildingAudioSource>();
         maskObject = transform.Find("Sprite Mask").gameObject;
-        rectHeight = GetComponent<RectTransform>().rect.height;
+        // rectHeight = GetComponent<RectTransform>().rect.height;
 	}
 	
 	// Update is called once per frame
@@ -121,7 +121,8 @@ public class House : MonoBehaviour {
     }
 
     public void updateMaskPercentage() {
-        double percentage = Math.Min(1,health/maxHealth);
+        double percentage = Math.Min(1,((.92f)*health/maxHealth)+0.08f);
+        rectHeight = 1f;
         maskObject.transform.localPosition = new Vector3(0,(float)percentage*rectHeight,-.16f);
     }
 
