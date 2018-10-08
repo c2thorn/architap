@@ -16,7 +16,10 @@ public class controller : MonoBehaviour {
 	public float diamondChance = 0.05f;
 	public float coalChance = 0.1f;
 	public float bonusEnemyChance = 0.05f;
+	public double bonusEnemyMultiplier = 7;
 	public float prestigeCurrencyBase = 1.1f;
+	public double prestigeDropItemMultiplier = 1;
+	public double prestigeEffectItemMultiplier = 1;
 #endregion
 #region Enemy Level
 	public int level = 1;
@@ -34,6 +37,7 @@ public class controller : MonoBehaviour {
 	public double baseHealth = 5;
 	public double healthMultiplier = 1.12;
     public SimpleHealthBar healthBar;
+	public double bossLifeItemMultiplier = 1;
 #endregion
 #region Units
 	public double[] units = new double[] {1, 0, 0, 0, 0, 0, 0, 0};
@@ -354,9 +358,9 @@ public class controller : MonoBehaviour {
 	}
 	public double calculateHealth() {
 		if (uniqueBoss)
-			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 10; 
+			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 10 * bossLifeItemMultiplier; 
 		if (boss)
-			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5; 
+			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)) * 5 * bossLifeItemMultiplier; 
 		if (bonusEnemy)
 			return Math.Round(baseHealth*Math.Pow(healthMultiplier,level)* 1.5); 
 		return Math.Round(baseHealth*Math.Pow(healthMultiplier,level));
@@ -368,7 +372,7 @@ public class controller : MonoBehaviour {
 								*unitItemM2[i]
 								*unitAchievementM3[i]
 								*(characterGilds[i]+1)
-								*(1+(prestigeCurrency/100)));
+								*(1+(prestigeCurrency*prestigeEffectItemMultiplier/100)));
 	}
 
 	public void RecalculateSumUnits() {
@@ -410,7 +414,7 @@ public class controller : MonoBehaviour {
 	public double CalculateUnconvertedPrestigeCurrency() {
 		return Math.Round(
 			//prestigeCurrencyBase*
-			Math.Pow(prestigeCurrencyBase,(level-1)));
+			Math.Pow(prestigeCurrencyBase,(level-1))*prestigeDropItemMultiplier);
 	}
 #endregion
 
@@ -524,9 +528,49 @@ public class controller : MonoBehaviour {
 
 #region Items
 	public void RecalculateItemMultipliers() {
+		List<Item> itemsLeft = new List<Item>(itemController.inventory);
+		goldMultiplier1 = 1;
+		bossLifeItemMultiplier = 1;
+		bossStartTime = 30;
+		bonusEnemyChance = 0.02f;
+		bonusEnemyMultiplier = 7;
+		prestigeDropItemMultiplier = 1;
+		prestigeEffectItemMultiplier = 1;
+		for (int i = itemsLeft.Count - 1; i >= 0; i--) {
+			Item item = itemsLeft[i];
+			if (item.effect == "Gold") {
+				goldMultiplier1 += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			}
+			else if (item.effect ==  "Boss Life"){
+				bossLifeItemMultiplier += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			}
+			else if (item.effect ==  "Boss Timer"){
+				bossStartTime += (int)item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			} 
+			else if (item.effect ==  "Bonus Building Chance"){
+				bonusEnemyChance += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			} 
+			else if (item.effect ==  "Bonus Building Gold"){
+				bonusEnemyMultiplier += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			} 
+			else if (item.effect ==  "Notes"){
+				prestigeDropItemMultiplier += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			} 
+			else if (item.effect ==  "Note Effect"){
+				prestigeEffectItemMultiplier += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			} 
+		}
+
 		for (int i = 0; i < upgradeController.characterAmount; i++) {
 			double multiplier = 1.0;
-			foreach(Item item in itemController.inventory) {
+			foreach(Item item in itemsLeft) {
 				if (item.effect == "All Partners UPS" && i != 0)
 						multiplier += item.effectValue*item.count;
 				else if (item.effect ==  "Click Units" && i == 0)
@@ -613,7 +657,7 @@ public class controller : MonoBehaviour {
 	}
 
 	public double enemyDied (bool spawn, bool advanceLevel) {
-		double goldIncrement = boss ? calculateGold()*10 : bonusEnemy ? calculateGold()*7 : calculateGold();
+		double goldIncrement = boss ? calculateGold()*10 : bonusEnemy ? calculateGold()*bonusEnemyMultiplier : calculateGold();
 		bonusEnemy = false;
 		if (uniqueBoss || boss)
 			endBossTime();	

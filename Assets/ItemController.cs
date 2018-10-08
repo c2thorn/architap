@@ -73,7 +73,13 @@ public class ItemController : MonoBehaviour {
 			else if (obj.name == "Item Count") {
 				obj.GetComponent<Text>().text = "x"+item.count.ToString();
 			} else if (obj.name == "Item Description") {
-				obj.GetComponent<Text>().text = item.effect + "\n+ " + item.effectValue*100 + "%";
+				if (item.effectValue < 0)
+					obj.GetComponent<Text>().text = item.effect + "\n- " + item.effectValue*-100 + "%";
+				else if (item.effect != "Boss Timer")
+					obj.GetComponent<Text>().text = item.effect + "\n+ " + item.effectValue*100 + "%";
+				else
+					obj.GetComponent<Text>().text = item.effect + "\n+ " + item.effectValue + " seconds";
+
 			}
 			else if (obj.name == "Profile Circle") {
 				child.Find("Character Image").GetComponent<SVGImage>().m_Sprite = item.sprite;
