@@ -15,6 +15,7 @@ public class ItemController : MonoBehaviour {
 	public GameObject itemContent;
 	public GameObject itemSlotPrefab;
 	public GameObject itemModal;
+	public ItemTemplate[] characterPool;
 	public ItemTemplate[] ancientPool;
 	public ItemTemplate[] modernPool;
 	public bool modern = false;
@@ -42,30 +43,44 @@ public class ItemController : MonoBehaviour {
 			itemIcon.transform.SetParent(itemContent.transform, false);
 			setItemIcon(itemIcon,inventory[i]);
 		}
+		RectTransform rect = itemContent.GetComponent<RectTransform>();
+		rect.sizeDelta = new Vector2(rect.sizeDelta.x, 160*inventory.Count);
+
 	}
 
 	public void setItemIcon(GameObject itemIcon, Item item) {
+		String rarityText = "";
 		switch (item.rarity) {
 				case 0:
-					itemIcon.GetComponent<Image>().color = new Color(152,152,152,255);
+					// itemIcon.transform.Find("Profile Circle").GetComponent<SVGImage>().color = new Color(152,152,152,255);
+					itemIcon.transform.Find("Profile Circle").GetComponent<SVGImage>().color = Color.gray;
+					rarityText = "Common";
 					break;
 				case 1:
-					itemIcon.GetComponent<Image>().color = Color.cyan;
+					itemIcon.transform.Find("Profile Circle").GetComponent<SVGImage>().color = Color.cyan;
+					rarityText = "Rare";
 					break;
 				case 2:
-					itemIcon.GetComponent<Image>().color = Color.yellow;
+					itemIcon.transform.Find("Profile Circle").GetComponent<SVGImage>().color = Color.yellow;
+					rarityText = "Legendary";
 					break;
 			}
-		// itemIcon.GetComponent<RectTransform>().position = pos;
 		foreach (Transform child in itemIcon.transform) {
 			GameObject obj = child.gameObject;
 			if(obj.name == "Item Name") {
-				obj.GetComponent<Text>().text = item.name;
+				obj.GetComponent<Text>().text = rarityText + " " + item.name;
 			}
 			else if (obj.name == "Item Count") {
 				obj.GetComponent<Text>().text = "x"+item.count.ToString();
 			} else if (obj.name == "Item Description") {
 				obj.GetComponent<Text>().text = item.effect + "\n+ " + item.effectValue*100 + "%";
+			}
+			else if (obj.name == "Profile Circle") {
+				child.Find("Character Image").GetComponent<SVGImage>().m_Sprite = item.sprite;
+				RectTransform rectTransform = child.Find("Character Image").GetComponent<RectTransform>();
+				Rect spriteRect = item.sprite.rect;
+				float denom = spriteRect.width > spriteRect.height ? 60f / spriteRect.width : 60f / spriteRect.height;
+				rectTransform.sizeDelta = new Vector2(spriteRect.width*denom, spriteRect.height*denom);
 			}
 		}
 	}
@@ -91,7 +106,7 @@ public class ItemController : MonoBehaviour {
 	public void addItemToInventory(Item item) {
 		bool found = false;
 		foreach (Item i in inventory) {
-			if (i.name.Equals(item.name)) {
+			if (i.name.Equals(item.name) && i.rarity == item.rarity) {
 				found = true;
 				i.count++;
 			}
@@ -101,13 +116,21 @@ public class ItemController : MonoBehaviour {
 	}
 
 	public Item getRandomItem() {
+		int characterUnlockedSize = 0;
+		foreach (bool bought in controller.characterEverBought){
+			if (bought)
+				characterUnlockedSize++;
+		}
 		int poolSize = modern ? ancientPool.Length + modernPool.Length - 1 : ancientPool.Length - 0;
+		poolSize += characterUnlockedSize;
 		System.Random r = new System.Random();
 		int index = r.Next(0, poolSize);
-		if (index < ancientPool.Length)
-			return createFromTemplate(ancientPool[index]);
+		if (index < characterUnlockedSize)
+			return createFromTemplate(characterPool[index]);
+		else if (index < ancientPool.Length + characterUnlockedSize)
+			return createFromTemplate(ancientPool[index - characterUnlockedSize]);
 		else
-			return createFromTemplate(modernPool[index-ancientPool.Length]);
+			return createFromTemplate(modernPool[index-ancientPool.Length - characterUnlockedSize]);
 	}
 
 	public Item createFromTemplate(ItemTemplate template) {
@@ -137,47 +160,45 @@ public class ItemController : MonoBehaviour {
 					return null;
 				string name = input;
 				int count = 1;
+				int rarity = 0;
 				if (input.Contains("$")) {
 					name = input.Split('$')[0];
 					count = int.Parse(input.Split('$')[1]);
+					rarity = int.Parse(input.Split('$')[2]);
 				}
 
 				Item item = new Item(name);
 				item.count = count;
-				switch (name) {
-					case "Common Gloves":
-						item.effect = "partners";
-						item.effectValue = 0.15f;
-						item.rarity = 0;
+				item.rarity = rarity;
+				foreach (ItemTemplate template in ancientPool) {
+					if (name.Equals(template.name)) {
+						item.effect = template.effect;
+						item.effectValue = template.effectValue[rarity];
+						item.sprite = template.sprite;
 						break;
-					case "Rare Gloves":
-						item.effect = "partners";
-						item.effectValue = 0.25f;
-						item.rarity = 1;
-						break;
-					case "Legendary Gloves":
-						item.effect = "partners";
-						item.effectValue = 0.5f;
-						item.rarity = 2;
-						break;
-					case "Common Hammer":
-						item.effect = "unitIndex0";
-						item.effectValue = 0.15f;
-						item.rarity = 0;
-						break;
-					case "Rare Hammer":
-						item.effect = "unitIndex0";
-						item.effectValue = 0.25f;
-						item.rarity = 1;
-						break;
-					case "Legendary Hammer":
-						item.effect = "unitIndex0";
-						item.effectValue = 0.5f;
-						item.rarity = 2;
-						break;
-					default:
-						return null;
+					}
 				}
+				if (item.sprite == null) {
+					foreach (ItemTemplate template in characterPool) {
+						if (name.Equals(template.name)) {
+							item.effect = template.effect;
+							item.effectValue = template.effectValue[rarity];
+							item.sprite = template.sprite;
+							break;
+						}
+					}
+				}
+				if (item.sprite == null) {
+					foreach (ItemTemplate template in modernPool) {
+						if (name.Equals(template.name)) {
+							item.effect = template.effect;
+							item.effectValue = template.effectValue[rarity];
+							item.sprite = template.sprite;
+							break;
+						}
+					}
+				}
+
 				return item;
 		} catch (Exception e) {
 			Debug.LogError(e.StackTrace);

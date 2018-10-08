@@ -62,6 +62,7 @@ public class controller : MonoBehaviour {
 	public double[] characterUpgradeCostMultiplier = new double[] {1.07, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1};
 	public float[] periods = new float[] {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
 	public double[] characterGilds = new double[] {0,0,0,0,0,0,0,0};
+	public bool[] characterEverBought = new bool[] {true, false, false, false, false, false, false, false};
 #endregion
 #region Prefabs
 	public GameObject[] enemyPrefabs;
@@ -430,6 +431,8 @@ public class controller : MonoBehaviour {
 		gold -= characterUpgradeCost[i];
 		upgradeController.RefreshCharacterBoard(i);
 		LevelUpUnit(i,numLevels);
+		if (!characterEverBought[i])
+			characterEverBought[i] = true;
 		saveStateController.SaveData();
 		// characterAudio.levelUpSound();
 	}
@@ -459,6 +462,7 @@ public class controller : MonoBehaviour {
 		unitM1[i] += .25f;
 		unitMultiplierText[i].text = "CURRENT BONUS: + "+(m1Level[i]-1)*25+"%"; 
 		RecalculateUnit(i);
+		saveStateController.SaveData();
 	}
 
 	public void buyAllPartnersM1Up() {
@@ -472,11 +476,13 @@ public class controller : MonoBehaviour {
 		m1UpgradeCost[1] = Math.Round(m1UpgradeBaseCost[1]*Math.Pow(m1UpgradeCostMultiplier[1],m1Level[1]));
 		unitM1Button[1].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[1]+"";
 		unitMultiplierText[1].text = "CURRENT BONUS: + "+(m1Level[1]-1)*25+"%"; 
+		saveStateController.SaveData();
 	}
 
 	public void buyInstaGold() {
 		IncrementGold(calculateMaxGold());
 		diamonds -= instaGoldPrice;
+		saveStateController.SaveData();
 	}
 
 	public void buyRandomItem() {
@@ -484,6 +490,7 @@ public class controller : MonoBehaviour {
 			Item item = itemController.getRandomItem();
 			DropItem(new Vector3(0,-2,-5),item);
 			diamonds -= randomItemPrice;
+			saveStateController.SaveData();
 		}
 	}
 
@@ -491,6 +498,7 @@ public class controller : MonoBehaviour {
 		IncrementPrestigeCurrency(unconvertedPrestigeCurrency);
 		unconvertedPrestigeCurrency = 0;
 		diamonds -= instantPrestigePrice;
+		saveStateController.SaveData();
 	}
 
 	public void gildRandomCharacter() {
@@ -503,12 +511,14 @@ public class controller : MonoBehaviour {
 		System.Random rnd = new System.Random();
 		int index = rnd.Next(heroIndices.Count);
 		gildCharacter(index);
+		saveStateController.SaveData();
 	}
 
 	public void gildCharacter(int index) {
 		characterGilds[index]++;
 		upgradeController.RefreshCharacterBoard(index);
 		RecalculateUnit(index);
+		saveStateController.SaveData();
 	}
 #endregion
 
@@ -517,9 +527,25 @@ public class controller : MonoBehaviour {
 		for (int i = 0; i < upgradeController.characterAmount; i++) {
 			double multiplier = 1.0;
 			foreach(Item item in itemController.inventory) {
-				if (item.effect == "partners" && i != 0)
+				if (item.effect == "All Partners UPS" && i != 0)
 						multiplier += item.effectValue*item.count;
-				else if (item.effect ==  "unitIndex" + i)
+				else if (item.effect ==  "Click Units" && i == 0)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect == "Reeda Weaver UPS" && i == 1)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect == "Billy Hammerton UPS" && i == 2)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect == "Brick Sanchez UPS" && i == 3)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect == "Connor Crete UPS" && i == 4)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect == "Chris Shingle UPS" && i == 5)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect == "Alena Wrench UPS" && i == 6)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect == "Dan Buldozian UPS" && i == 7)
+						multiplier += item.effectValue*item.count;
+				else if (item.effect == "Build Nye UPS" && i == 8)
 						multiplier += item.effectValue*item.count;
 			}
 			unitItemM2[i] = multiplier;

@@ -73,6 +73,9 @@ public class SaveStateController : MonoBehaviour {
 				controller.characterLevel[i] = LoadInt("characterLevel"+i);
 		}
 
+		for (int i = 1; i < controller.characterEverBought.Length; i++)
+			controller.characterEverBought[i] = LoadBool("characterEverBought"+i);
+
 		controller.region = LoadInt("region");
 		for (int i = 0; i < controller.completedRegions.Length; i++) 
 			controller.completedRegions[i] = LoadBool("completedRegions"+i);
@@ -97,8 +100,9 @@ public class SaveStateController : MonoBehaviour {
 		int itemSize = LoadInt("itemSize");
 		for (int i = 0; i < itemSize; i++){
 			string itemName = LoadString("item"+i);
-			if (itemController.createFromName(itemName) != null)
-				itemController.inventory.Add(itemController.createFromName(itemName));
+			Item item = itemController.createFromName(itemName);
+			if (item != null)
+				itemController.inventory.Add(item);
 		} 
 
 		for (int i = 0; i < upgradeController.boostBought1.Length; i++) 
@@ -176,6 +180,9 @@ public class SaveStateController : MonoBehaviour {
 
 		for (int i = 0; i < controller.characterLevel.Length; i++) 
 			SaveInt("characterLevel"+i, controller.characterLevel[i]);
+		
+		for (int i = 0; i < controller.characterEverBought.Length; i++)
+			SaveBool("characterEverBought"+i, controller.characterEverBought[i]);
 
 		SaveInt("region", controller.region);
 		for (int i = 0; i < controller.completedRegions.Length; i++) 
@@ -198,7 +205,7 @@ public class SaveStateController : MonoBehaviour {
 		SaveInt("itemSize", itemController.inventory.Count);
 		for (int i = 0; i < itemController.inventory.Count; i++){
 			Item item = itemController.inventory[i];
-			SaveString("item"+i, item.name+"$"+item.count);
+			SaveString("item"+i, item.name+"$"+item.count+"$"+item.rarity);
 		} 
 
 		for (int i = 0; i < upgradeController.boostBought1.Length; i++) 
