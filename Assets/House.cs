@@ -81,11 +81,17 @@ public class House : MonoBehaviour {
             if (coll.OverlapPoint(wp)) {
                 buildingAudioSource.clickSound();
                 hit = true;
+
+                double clickDamage = controller.units[0];
+                bool critical = UnityEngine.Random.value <= controller.criticalClickChance;
+                if (critical){
+                    clickDamage *= controller.criticalClickMultiplier;
+                }
                 
-                health += controller.units[0];
-                updateTotalUnits(controller.units[0]);
+                health += clickDamage;
+                updateTotalUnits(clickDamage);
                 healthBar.UpdateBar( health, maxHealth );
-                createFloatText(Input.mousePosition,controller.units[0].ToString(), Color.red, false);
+                createFloatText(Input.mousePosition,NumberFormat.format(clickDamage), Color.red, critical);
                 createDust(wp);
                 controller.totalClicks++;
                 //TODO best way?
@@ -177,13 +183,17 @@ public class House : MonoBehaviour {
         StartCoroutine(delayDamage());
     }
 
-    protected void createFloatText(Vector3 pos, string text, Color color, bool goldPos) {
+    protected void createFloatText(Vector3 pos, string text, Color color, bool critical) {
         GameObject floatText = (GameObject) Instantiate(damageTextPrefab,pos,Quaternion.Euler(0, 0, 0),canvas.transform);
         floatText.transform.SetAsFirstSibling();
+
+        if (critical){
+            floatText.transform.localScale = new Vector3(2f,2f,1f);
+            text = text + "!";
+            color = Color.magenta;
+        }
         floatText.GetComponent<Text>().text = text;
         floatText.GetComponent<Text>().color = color;
-        if (goldPos)
-            floatText.GetComponent<RectTransform>().anchoredPosition = pos;
     }
 
     protected void createDust(Vector3 pos){

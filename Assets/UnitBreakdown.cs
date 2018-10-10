@@ -11,13 +11,17 @@ public class UnitBreakdown : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 	public void OnPointerEnter(PointerEventData eventData)
 	{
 		if (gameObject.transform.parent.gameObject.active 
-			&& gameObject.GetComponent<Text>().text.Length > 1)
+			&& gameObject.GetComponent<Text>().text.Length > 1
+			&& Application.platform != RuntimePlatform.Android
+			&& Application.platform != RuntimePlatform.IPhonePlayer)
 			upgradeController.showToolTip(characterIndex);
      }
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
-		upgradeController.hideToolTip();
+		if (Application.platform != RuntimePlatform.Android
+			&& Application.platform != RuntimePlatform.IPhonePlayer)
+			upgradeController.hideToolTip();
      }
 
 }

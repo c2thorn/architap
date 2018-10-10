@@ -6,6 +6,7 @@ public class CharacterAudio : MonoBehaviour {
 	public SoundController soundController;
 	public AudioSource audioSource;
 	public AudioClip[] levelUpSounds;
+	public AudioClip boostSound;
 	// Use this for initialization
 	void Start () {
 		
@@ -19,6 +20,12 @@ public class CharacterAudio : MonoBehaviour {
 	public void levelUpSound() {
 		int index = UnityEngine.Random.Range(0, levelUpSounds.Length);
         audioSource.clip = levelUpSounds[index];
+		if (!soundController.soundMute)
+			audioSource.Play();
+	}
+
+	public void BoostSound() {
+		audioSource.clip = boostSound;
 		if (!soundController.soundMute)
 			audioSource.Play();
 	}

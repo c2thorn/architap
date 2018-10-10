@@ -60,6 +60,7 @@ public class upgradeController : MonoBehaviour {
 	public UIClickAudio uiClickAudio;
 	public Text percentageText;
 	public int currencyPanelIndex = 0;
+	public CharacterAudio characterAudio;
 
 	public SwipeCapture swipeCapture;
 
@@ -272,6 +273,7 @@ public class upgradeController : MonoBehaviour {
 		SetBoostImageToBought(boostButton1.GetComponent<SVGImage>());
 		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 1").gameObject;
 		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
+		characterAudio.BoostSound();
 	}
 
 	public void buyBoost2() {
@@ -283,6 +285,7 @@ public class upgradeController : MonoBehaviour {
 		SetBoostImageToBought(boostButton2.GetComponent<SVGImage>());
 		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 2").gameObject;
 		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
+		characterAudio.BoostSound();
 	}
 
 	public void buyBoost3() {
@@ -295,6 +298,7 @@ public class upgradeController : MonoBehaviour {
 		SetBoostImageToBought(boostButton3.GetComponent<SVGImage>());
 		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 3").gameObject;
 		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
+		characterAudio.BoostSound();
 	}
 
 	public void SetBoostImageToBought(SVGImage image) {

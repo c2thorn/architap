@@ -38,29 +38,32 @@ public class SwipeCapture : MonoBehaviour {
 			FinishDrag();
 		}
 
+		if (Input.touchCount > 0){
+			if (Input.touches[0].phase == TouchPhase.Began)
+			{
+				isDragging = true;
+				tap = true;
+				startTouch = Camera.main.ScreenToViewportPoint(Input.touches[0].position);
+				startScrollVal = scrollRect.GetComponentInChildren<Scrollbar>().value;
+			} else if(Input.touches[0].phase==TouchPhase.Ended || Input.touches[0].phase == TouchPhase.Canceled)
+			{
+				isDragging = false;
+				Reset();
+				FinishDrag();
+			}
+		}
+
 	
 		if ( !mapSwipeable || controller.modalOpen ||
 			((!(startTouch.y < 0.95f && startTouch.y > .90f) && !snappedOpen) || (!(startTouch.y < 0.6f && startTouch.y > 0.4f) && snappedOpen)))
 			Reset();
 		else {
-			if (Input.touchCount > 0){
-				if (Input.touches[0].phase == TouchPhase.Began)
-				{
-					isDragging = true;
-					tap = true;
-					startTouch = Input.touches[0].position;
-				} else if(Input.touches[0].phase==TouchPhase.Ended || Input.touches[0].phase == TouchPhase.Canceled)
-				{
-					isDragging = false;
-					Reset();
-				}
-			}
 
 			swipeDelta = Vector2.zero;
 			if (isDragging)
 			{
 				if (Input.touches.Length > 0)
-					swipeDelta = Input.touches[0].position - startTouch;
+					swipeDelta = (Vector2)Camera.main.ScreenToViewportPoint(Input.touches[0].position) - startTouch;
 				else if (Input.GetMouseButton(0)){
 					swipeDelta = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition) - startTouch;
 				}

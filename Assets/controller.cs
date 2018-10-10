@@ -67,6 +67,8 @@ public class controller : MonoBehaviour {
 	public float[] periods = new float[] {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
 	public double[] characterGilds = new double[] {0,0,0,0,0,0,0,0};
 	public bool[] characterEverBought = new bool[] {true, false, false, false, false, false, false, false};
+	public float criticalClickChance = 0f;
+	public double criticalClickMultiplier = 3;
 #endregion
 #region Prefabs
 	public GameObject[] enemyPrefabs;
@@ -536,6 +538,8 @@ public class controller : MonoBehaviour {
 		bonusEnemyMultiplier = 7;
 		prestigeDropItemMultiplier = 1;
 		prestigeEffectItemMultiplier = 1;
+		criticalClickChance = 0;
+		criticalClickMultiplier = 3;
 		for (int i = itemsLeft.Count - 1; i >= 0; i--) {
 			Item item = itemsLeft[i];
 			if (item.effect == "Gold") {
@@ -565,7 +569,13 @@ public class controller : MonoBehaviour {
 			else if (item.effect ==  "Note Effect"){
 				prestigeEffectItemMultiplier += item.effectValue*item.count;
 				itemsLeft.RemoveAt(i);
-			} 
+			} else if (item.effect == "Critical Click Chance") {
+				criticalClickChance += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			} else if (item.effect == "Critical Click Units") {
+				criticalClickMultiplier += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			}
 		}
 
 		for (int i = 0; i < upgradeController.characterAmount; i++) {
@@ -878,8 +888,10 @@ public class controller : MonoBehaviour {
 		achievementController.checkAchievement("region",region);
 		if (region == 1) {
 			prestigeButton.gameObject.SetActive(true);
+			itemController.modern = true;
 		}
 		totalRegionsCompleted++;
+		saveStateController.SaveData();
 	}
 
 #endregion

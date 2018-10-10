@@ -19,6 +19,7 @@ public class SaveStateController : MonoBehaviour {
 	public upgradeController upgradeController;
 
 	public achievementController achievementController;
+	public SoundController soundController;
 
 	public Text autoSaveText;
 
@@ -120,6 +121,15 @@ public class SaveStateController : MonoBehaviour {
 
 		for (int i = 0; i < controller.characterGilds.Length; i++) 
 			controller.characterGilds[i] = LoadDouble("characterGild"+i);
+		
+		itemController.modern = LoadBool("modern");
+		if(LoadBool("soundMute")){
+			soundController.soundMute = true;
+		}
+		if(LoadBool("musicMute")) {
+			soundController.musicMute = true;
+			soundController.musicAudioSource.volume = 0;
+		}
 	}
 
 	public double LoadDouble(string name) {
@@ -223,6 +233,10 @@ public class SaveStateController : MonoBehaviour {
 
 		for (int i = 0; i < controller.characterGilds.Length; i++) 
 			SaveDouble("characterGild"+i,controller.characterGilds[i]);
+
+		SaveBool("modern",itemController.modern);
+		SaveBool("soundMute", soundController.soundMute);
+		SaveBool("musicMute", soundController.musicMute);
 
 		StartCoroutine(TrySaveDateTime());
 	}
