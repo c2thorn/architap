@@ -83,6 +83,7 @@ public class controller : MonoBehaviour {
 	public bool modalOpen;
 	public bool bossTimeCountdownFlag = false;
 	public bool bonusEnemy = false;
+	public bool idling = false;
 #endregion
 #region Enemy Naming
 	public string[] enemyNouns;
@@ -123,6 +124,12 @@ public class controller : MonoBehaviour {
 #region Boss Time
 	public int bossTime = 30;
 	public int bossStartTime = 30;
+
+#endregion
+#region Idling
+	public int idleTimer = 8;
+	public int idleStartTimer = 8;
+	public double idleBonus = 1;
 #endregion
 #region Text
 	public Text[] characterUnitLevelText;
@@ -194,6 +201,7 @@ public class controller : MonoBehaviour {
 		//Start repeating methods
 		InvokeRepeating("bossTimeCountdown",Time.time,1.0f);
 		InvokeRepeating("checkUnitAchievement",Time.time,1.0f);
+		InvokeRepeating("idleTimerCountdown", Time.time, 1.0f);
 
 	}
 	void Start () {
@@ -344,6 +352,8 @@ public class controller : MonoBehaviour {
 		prestigeButton.gameObject.SetActive(completedRegions[1]);
 
 		bonusEnemy = false;
+
+		idleTimer = idleStartTimer;
 
 		//Should be last
 		saveStateController.CheckIdleTime();
@@ -1055,6 +1065,16 @@ public class controller : MonoBehaviour {
 	public void closeCoalModal() {
 		coalModal.SetActive(false);
 		modalOpen = false;
+	}
+#endregion
+
+#region Idling
+	public void idleTimerCountdown() {
+		// if (idleBonus > 1.0) {
+		// 	idleTimer--;
+
+		// 	if (idleTimer <= 0)
+		// }
 	}
 #endregion
 }
