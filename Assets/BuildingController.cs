@@ -140,8 +140,11 @@ public class BuildingController : MonoBehaviour {
 	public void DeterminePreviewColor(GameObject preview, int highestLevel) {
 		BuildingPreview buildingPreview = preview.GetComponent<BuildingPreview>();
 		if (buildingPreview) {
-			SVGImage svgImage = preview.GetComponent<SVGImage>();
-			svgImage.color = buildingPreview.index <= highestLevel ? Color.white : new Color(0,0,0,0.7f); 
+			SVGImage svgImage1 = preview.transform.Find("Ground").GetComponent<SVGImage>();
+			SVGImage svgImage2 = preview.transform.Find("Structure").GetComponent<SVGImage>();
+			svgImage1.color = buildingPreview.index <= highestLevel ? Color.white : new Color(0,0,0,0.7f); 
+			svgImage2.color = buildingPreview.index <= highestLevel ? Color.white : new Color(0,0,0,0.7f); 
+
 		}
 	}
 
