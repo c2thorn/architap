@@ -384,7 +384,14 @@ public class controller : MonoBehaviour {
 								*unitItemM2[i]
 								*unitAchievementM3[i]
 								*(characterGilds[i]+1)
-								*(1+(prestigeCurrency*prestigeEffectItemMultiplier/100)));
+								*(1+(prestigeCurrency*prestigeEffectItemMultiplier/100))
+								* (idling ? idleBonus : 1));
+	}
+
+	public void RecalculateAllUnits() {
+		for (int i = 0; i < units.Length; i++) {
+			RecalculateUnit(i);
+		}
 	}
 
 	public void RecalculateSumUnits() {
@@ -1070,11 +1077,23 @@ public class controller : MonoBehaviour {
 
 #region Idling
 	public void idleTimerCountdown() {
-		// if (idleBonus > 1.0) {
-		// 	idleTimer--;
+		if (idleBonus > 1.0 || !idling) {
+			idleTimer--;
 
-		// 	if (idleTimer <= 0)
-		// }
+			if (idleTimer <= 0){
+				idling = true;
+				RecalculateAllUnits();
+			}
+
+		}
+	}
+
+	public void StopIdling() {
+		bool wasIdling = idling;
+		idling = false;
+		idleTimer = idleStartTimer;
+		if (wasIdling)
+			RecalculateAllUnits();
 	}
 #endregion
 }

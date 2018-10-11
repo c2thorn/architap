@@ -81,6 +81,7 @@ public class House : MonoBehaviour {
             if (coll.OverlapPoint(wp)) {
                 buildingAudioSource.clickSound();
                 hit = true;
+                controller.StopIdling();
 
                 double clickDamage = controller.units[0];
                 bool critical = UnityEngine.Random.value <= controller.criticalClickChance;
