@@ -33,6 +33,10 @@ public class House : MonoBehaviour {
 
     private float rectHeight;
 
+    public bool startedDying = false;
+    public bool finishingDying = false;
+
+
 	// Use this for initialization
 	void Start () {
         controller = GameObject.Find("controller").GetComponent<controller>();
@@ -59,6 +63,9 @@ public class House : MonoBehaviour {
                 bool hit = checkClick();
                 hit = !checkDead() && hit;
             }
+        } else {
+            if (startedDying)
+                CheckClickSkip();
         }
     }
 
@@ -79,28 +86,61 @@ public class House : MonoBehaviour {
         if (Input.GetMouseButtonDown(0)) {
             Vector3 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (coll.OverlapPoint(wp)) {
-                buildingAudioSource.clickSound();
                 hit = true;
-                controller.StopIdling();
-
-                double clickDamage = controller.units[0];
-                bool critical = UnityEngine.Random.value <= controller.criticalClickChance;
-                if (critical){
-                    clickDamage *= controller.criticalClickMultiplier;
-                }
                 
-                health += clickDamage;
-                updateTotalUnits(clickDamage);
-                healthBar.UpdateBar( health, maxHealth );
-                createFloatText(Input.mousePosition,NumberFormat.format(clickDamage), Color.red, critical);
-                createDust(wp);
-                controller.totalClicks++;
-                //TODO best way?
-                tutorialController.RemovePointer();
+                ClickAction(Input.mousePosition);
+
             }
         }
 
         return hit;
+    }
+
+    public void autoClick() {
+        Vector3 wp = new Vector3(0.5f,0.5f,-25f);
+        if (health < maxHealth && !invulnerable) {
+            if (!itemController.itemDrop && !controller.modalOpen){
+                ClickAction(Camera.main.WorldToScreenPoint(wp));
+                checkDead();
+            }
+        } else {
+            if (startedDying)
+                StartCoroutine(FinishDying());
+            createDust(wp);
+        }
+    }
+
+    public void CheckClickSkip() {
+        if (Input.GetMouseButtonDown(0)) {
+            Vector3 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if (coll.OverlapPoint(wp)) {
+                StartCoroutine(FinishDying());
+            }
+        } 
+    }
+
+
+
+    public void ClickAction(Vector3 mousePosition) {
+        Vector3 wp = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        buildingAudioSource.clickSound();
+        controller.StopIdling();
+
+        double clickDamage = controller.units[0];
+        bool critical = UnityEngine.Random.value <= controller.criticalClickChance;
+        if (critical){
+            clickDamage *= controller.criticalClickMultiplier;
+        }
+        
+        health += clickDamage;
+        updateTotalUnits(clickDamage);
+        healthBar.UpdateBar( health, maxHealth );
+        createFloatText(mousePosition,NumberFormat.format(clickDamage), Color.red, critical);
+        createDust(wp);
+        controller.totalClicks++;
+        //TODO best way?
+        tutorialController.RemovePointer();
     }
 
 
@@ -128,6 +168,7 @@ public class House : MonoBehaviour {
     }
 
     protected virtual IEnumerator startDying() {
+        startedDying = true;
         buildingAudioSource.PlayBuildingComplete(); 
         bool uniqueBoss = controller.uniqueBoss;
         if (controller.boss || controller.uniqueBoss) {
@@ -143,7 +184,16 @@ public class House : MonoBehaviour {
         } else if ((controller.level >= 10  || controller.totalPrestiges > 0) && UnityEngine.Random.value <= controller.coalChance) {
             GameObject coal = (GameObject) Instantiate(coalPrefab,transform.position+new Vector3(0,0f,-3f),Quaternion.Euler(0, 0, 0));
         }
-        yield return new WaitForSeconds(buildingController.buildingDeathWaitTime);
+        yield return new WaitForSeconds(buildingController.buildingDeathWaitTime*(0.7f));
+        if (!finishingDying)
+            StartCoroutine(FinishDying());
+    }
+
+    protected IEnumerator FinishDying() {
+        finishingDying = true;
+        bool uniqueBoss = controller.uniqueBoss;
+
+        yield return new WaitForSeconds(buildingController.buildingDeathWaitTime*(0.3f));
         while (itemController.itemDrop || controller.modalOpen)
             yield return new WaitForSeconds(1f);
         double goldIncrement = controller.enemyDied(true, true);

@@ -736,6 +736,10 @@ public class controller : MonoBehaviour {
 	}
 
 	private void spawnNewEnemy(bool delay) {
+		//Ensure everything is destroyed
+		foreach (GameObject obj in GameObject.FindGameObjectsWithTag("enemy")) {
+			Destroy(obj);
+		}
 		int enemySelector;
 		if (boss) {
 			levelText.text = "LEVEL "+level;
