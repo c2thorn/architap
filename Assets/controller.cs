@@ -127,8 +127,8 @@ public class controller : MonoBehaviour {
 
 #endregion
 #region Idling
-	public int idleTimer = 8;
-	public int idleStartTimer = 8;
+	public int idleTimer = 10;
+	public int idleStartTimer = 10;
 	public double idleBonus = 1;
 #endregion
 #region Text
@@ -150,6 +150,7 @@ public class controller : MonoBehaviour {
 	public Text diamondConversionText;
 	public Text instantPrestigeText;
 	public Text individualUnitText;
+	public Text idlingText;
 #endregion
 #region Buttons
 	public Button levelNavigateUpButton;
@@ -354,6 +355,7 @@ public class controller : MonoBehaviour {
 		bonusEnemy = false;
 
 		idleTimer = idleStartTimer;
+		idlingText.gameObject.SetActive(false);
 
 		//Should be last
 		saveStateController.CheckIdleTime();
@@ -1077,11 +1079,11 @@ public class controller : MonoBehaviour {
 
 #region Idling
 	public void idleTimerCountdown() {
-		if (idleBonus > 1.0 || !idling) {
+		if (idleBonus > 1.0 && !idling) {
 			idleTimer--;
-
 			if (idleTimer <= 0){
 				idling = true;
+				idlingText.gameObject.SetActive(true);
 				RecalculateAllUnits();
 			}
 
@@ -1092,6 +1094,7 @@ public class controller : MonoBehaviour {
 		bool wasIdling = idling;
 		idling = false;
 		idleTimer = idleStartTimer;
+		idlingText.gameObject.SetActive(false);
 		if (wasIdling)
 			RecalculateAllUnits();
 	}
