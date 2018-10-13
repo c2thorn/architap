@@ -11,6 +11,7 @@ public class upgradeController : MonoBehaviour {
 	public Button itemButton;
 	public Button mapButton;
 	public Button architectButton;
+	public Button skillButton;
 	public Button achievementsButton;
 	public GameObject multiLevelButton;
 	public GameObject goldPanel;
@@ -19,6 +20,7 @@ public class upgradeController : MonoBehaviour {
 	public GameObject mapPanel;
 	public GameObject achievementsPanel;
 	public GameObject individualCharacterPanel;
+	public GameObject skillPanel;
 	public GameObject navigationArea;
 	public GameObject panelArea;
 
@@ -73,12 +75,14 @@ public class upgradeController : MonoBehaviour {
 		itemButton.gameObject.SetActive(false);
 		mapButton.gameObject.SetActive(false);
 		achievementsButton.gameObject.SetActive(false);
+		skillButton.gameObject.SetActive(false);
 		if (controller.diamonds < 1)
 			diamondPanel.SetActive(false);
 		goldPanel.SetActive(false);
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
+		// skillPanel.SetActive(false);
 		statsPanel.SetActive(false);
 		currencyPanel.SetActive(false);
 		// navigationArea.SetActive(false);
@@ -95,6 +99,7 @@ public class upgradeController : MonoBehaviour {
 		}
 		toolTipShowing = false;
 		toolTip.SetActive(false);
+		enableSkillButton(false);
 	}
 
 	public void restart() {
@@ -321,7 +326,8 @@ public class upgradeController : MonoBehaviour {
 		diamondButton.transform.Find("Indicator").gameObject.SetActive(i == 1);
 		itemButton.transform.Find("Indicator").gameObject.SetActive(i == 2);
 		achievementsButton.transform.Find("Indicator").gameObject.SetActive(i == 3);
-		architectButton.transform.Find("Indicator").gameObject.SetActive(i == 4);
+		skillButton.transform.Find("Indicator").gameObject.SetActive(i == 4);
+		architectButton.transform.Find("Indicator").gameObject.SetActive(i == 5);
 	}
 
 	public void goldTab() {
@@ -331,6 +337,7 @@ public class upgradeController : MonoBehaviour {
 		// mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
+		skillPanel.SetActive(false);
 		// goldButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
 		ChangeTabIndicators(0);
@@ -350,6 +357,7 @@ public class upgradeController : MonoBehaviour {
 		// mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
+		skillPanel.SetActive(false);
 		diamondButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
 		ChangeTabIndicators(1);
@@ -362,6 +370,7 @@ public class upgradeController : MonoBehaviour {
 		// mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
+		skillPanel.SetActive(false);
 		itemButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
 		ChangeTabIndicators(2);
@@ -388,9 +397,22 @@ public class upgradeController : MonoBehaviour {
 		// mapPanel.SetActive(false);
 		achievementsPanel.SetActive(true);
 		individualCharacterPanel.SetActive(false);
+		skillPanel.SetActive(false);
 		achievementsButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
 		ChangeTabIndicators(3);
+	}
+
+	public void skillTab() {
+		goldPanel.SetActive(false);
+		diamondPanel.SetActive(false);
+		itemPanel.SetActive(false);
+		achievementsPanel.SetActive(false);
+		individualCharacterPanel.SetActive(false);
+		skillPanel.SetActive(true);
+		skillPanel.gameObject.GetComponent<tabButton>().stopNotification();
+		uiClickAudio.tabSound();
+		ChangeTabIndicators(4);
 	}
 
 	public void openCharacterPanel(int i) {
@@ -453,6 +475,13 @@ public class upgradeController : MonoBehaviour {
 		}
 		if (notify)
 			achievementsButton.gameObject.GetComponent<tabButton>().startNotification();
+	}
+	public void enableSkillButton(bool notify) {
+		if (!skillButton.gameObject.active){
+			skillButton.gameObject.SetActive(true);
+		}
+		if (notify)
+			skillButton.gameObject.GetComponent<tabButton>().startNotification();
 	}
 
 	public void enableMultiLevelUpButton() {
