@@ -20,6 +20,7 @@ public class SaveStateController : MonoBehaviour {
 
 	public achievementController achievementController;
 	public SoundController soundController;
+	public SkillController skillController;
 
 	public Text autoSaveText;
 
@@ -130,6 +131,9 @@ public class SaveStateController : MonoBehaviour {
 			soundController.musicMute = true;
 			soundController.musicAudioSource.volume = 0;
 		}
+		foreach(String key in skillController.keys){
+			skillController.skillsBought[key] = LoadBool(key+"Bought");
+		}
 	}
 
 	public double LoadDouble(string name) {
@@ -237,6 +241,10 @@ public class SaveStateController : MonoBehaviour {
 		SaveBool("modern",itemController.modern);
 		SaveBool("soundMute", soundController.soundMute);
 		SaveBool("musicMute", soundController.musicMute);
+
+		foreach(String key in skillController.keys){
+			SaveBool(key+"Bought",skillController.skillsBought[key]);
+		}
 
 		StartCoroutine(TrySaveDateTime());
 	}

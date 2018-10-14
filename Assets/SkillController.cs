@@ -5,6 +5,13 @@ using UnityEngine.UI;
 
 public class SkillController : MonoBehaviour {
 
+	public Transform panelTr;
+
+	public List<string> keys = new List<string>() {
+		"autoClick","clickBoost","partnerBoost","goldBoost",
+		"criticalClickChanceBoost","goldHouseChanceBoost","doubleNextSkill","buildingReduction",
+		"cooldownReduction"
+	};
 	public Dictionary<string,bool> skillsBought = new Dictionary<string,bool>(){
 		{"autoClick",false},
 		{"clickBoost",false},
@@ -12,6 +19,7 @@ public class SkillController : MonoBehaviour {
 		{"goldBoost",false},
 		{"criticalClickChanceBoost",false},
 		{"goldHouseChanceBoost",false},
+		{"doubleNextSkill",false},
 		{"buildingReduction",false},
 		{"cooldownReduction",false}
 	};
@@ -23,6 +31,7 @@ public class SkillController : MonoBehaviour {
 		{"goldBoost",2},
 		{"criticalClickChanceBoost",0.5},
 		{"goldHouseChanceBoost",0.5},
+		{"doubleNextSkill",2},
 		{"buildingReduction",1},
 		{"cooldownReduction",300}
 	};
@@ -44,6 +53,7 @@ public class SkillController : MonoBehaviour {
 		{"goldBoost",0},
 		{"criticalClickChanceBoost",0},
 		{"goldHouseChanceBoost",0},
+		{"doubleNextSkill",0},
 		{"buildingReduction",0},
 		{"cooldownReduction",0}
 	};
@@ -54,6 +64,7 @@ public class SkillController : MonoBehaviour {
 		{"goldBoost",600},
 		{"criticalClickChanceBoost",600},
 		{"goldHouseChanceBoost",900},
+		{"doubleNextSkill",600},
 		{"buildingReduction",600},
 		{"cooldownReduction",600}
 	};
@@ -64,6 +75,7 @@ public class SkillController : MonoBehaviour {
 		{"goldBoost",false},
 		{"criticalClickChanceBoost",false},
 		{"goldHouseChanceBoost",false},
+		{"doubleNextSkill",false},
 		{"buildingReduction",false},
 		{"cooldownReduction",false}
 	};
@@ -75,6 +87,7 @@ public class SkillController : MonoBehaviour {
 		{"goldBoost",null},
 		{"criticalClickChanceBoost",null},
 		{"goldHouseChanceBoost",null},
+		{"doubleNextSkill",null},
 		{"buildingReduction",null},
 		{"cooldownReduction",null}
 	};
@@ -85,39 +98,28 @@ public class SkillController : MonoBehaviour {
 		{"goldBoost",null},
 		{"criticalClickChanceBoost",null},
 		{"goldHouseChanceBoost",null},
+		{"doubleNextSkill",null},
 		{"buildingReduction",null},
 		{"cooldownReduction",null}
 	};
 
 	// Use this for initialization
-	void dooly () {
+	void Start () {
+		StartCoroutine(WaitSetUp());
+	}
+
+	IEnumerator WaitSetUp() {
+		yield return new WaitForEndOfFrame();
 		InvokeRepeating("DecrementCooldowns", Time.time, 1f);
-		List<string> keys = new List<string>();
-		foreach(KeyValuePair<string,Button> item in skillButtons) {
-			keys.Add(item.Key);
-		}
-		for (int i = 0; i < keys.Count;i++) {
-			string key = keys[i];
-			// var name = "AutoClickButton";
-			Debug.Log(key);
-			Debug.Log(GameObject.FindGameObjectWithTag("Player").name);
-			Button button = GameObject.Find(key).GetComponent<Button>();
+		foreach (string key in keys) {
+			Button button = panelTr.Find(key+"Button").GetComponent<Button>();
 			skillButtons[key] = button;
-			skillText[key] = GameObject.Find(key+"CooldownText").GetComponent<Text>();
+			skillText[key] = button.transform.Find(key+"CooldownText").GetComponent<Text>();
 			skillText[key].text = NumberFormat.format(skillCooldown[key]);
 		}
-		// foreach (KeyValuePair<string,Button> item in skillButtons){
-		// 	var name = "AutoClickButton";
-		// 	Debug.Log(name);
-		// 	Debug.Log(GameObject.FindGameObjectWithTag("Player").name);
-		// 	Button button = GameObject.Find(name).GetComponent<Button>();
-		// 	skillButtons[item.Key] = button;
-		// 	skillText[item.Key] = GameObject.Find(item.Key+"CooldownText").GetComponent<Text>();
-		// 	skillText[item.Key].text = NumberFormat.format(skillCooldown[item.Key]);
-		// }
 		//TODO calculate skills cooldown from time
 
-		// CheckIfSkillsBought();
+		CheckIfSkillsBought();
 	}
 	
 	// Update is called once per frame
@@ -126,33 +128,32 @@ public class SkillController : MonoBehaviour {
 	}
 
 	public void CheckIfSkillsBought(){
-		foreach (KeyValuePair<string,Button> item in skillButtons){
-			skillButtons[item.Key].gameObject.SetActive(skillsBought[item.Key]);
-			skillButtons[item.Key].interactable = skillCooldown[item.Key] == 0;
-			skillText[item.Key].gameObject.SetActive(skillsBought[item.Key]);
+		foreach (string key in keys){
+			skillButtons[key].gameObject.SetActive(skillsBought[key]);
+			skillButtons[key].interactable = skillCooldown[key] == 0;
+			skillText[key].gameObject.SetActive(skillsBought[key]);
 		}
 	}
 
-	public void activateSkill(string key) {
-		dooly();
-		// if (!skillFlag[key]) {
-		// 	skillCooldown[key] = skillCooldownStartTime[key];
-		// 	skillButtons[key].interactable = false;
-		// 	switch (key) {
-		// 		case "autoClick":
-		// 			StartCoroutine(AutoClickForDuration());
-		// 			break;
-		// 	}
-		// }
+	public void BuySkill(string key) {
+		skillsBought[key] = true;
+		skillButtons[key].gameObject.SetActive(true);
+		skillButtons[key].interactable = true;
+		skillText[key].gameObject.SetActive(true);
+		skillCooldown[key] = 0;
 	}
 
-	// public void autoClickSkill() {
-	// 	if (!skillFlag["autoClick"]) {
-	// 		StartCoroutine(AutoClickForDuration());
-	// 		skillCooldown["autoClick"] = skillCooldownStartTime["autoClick"];
-	// 		skillButtons["autoClick"].interactable = false;
-	// 	}
-	// }
+	public void activateSkill(string key) {
+		if (!skillFlag[key]) {
+			skillCooldown[key] = skillCooldownStartTime[key];
+			skillButtons[key].interactable = false;
+			switch (key) {
+				case "autoClick":
+					StartCoroutine(AutoClickForDuration());
+					break;
+			}
+		}
+	}
 
 	protected IEnumerator AutoClickForDuration() {
 		float autoClickRate = (float)skillEffect["autoClick"];
@@ -166,17 +167,15 @@ public class SkillController : MonoBehaviour {
     }
 
 	public void DecrementCooldowns() {
-		foreach (KeyValuePair<string,int> item in skillCooldown) {
-			if (skillCooldown[item.Key] > 0) {
-				skillCooldown[item.Key]--;
-				skillText[item.Key].text = NumberFormat.format(skillCooldown[item.Key]);
-				if (skillCooldown[item.Key] <= 0) {
-					skillButtons[item.Key].interactable = true;
-					skillCooldown[item.Key] = 0;
+		foreach (string key in keys) {
+			if (skillCooldown[key] > 0) {
+				skillCooldown[key]--;
+				skillText[key].text = NumberFormat.format(skillCooldown[key]);
+				if (skillCooldown[key] <= 0) {
+					skillButtons[key].interactable = true;
+					skillCooldown[key] = 0;
 				}
 			}
 		}
 	}
-
-
 }

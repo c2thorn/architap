@@ -63,6 +63,7 @@ public class upgradeController : MonoBehaviour {
 	public Text percentageText;
 	public int currencyPanelIndex = 0;
 	public CharacterAudio characterAudio;
+	public SkillController skillController;
 
 	public SwipeCapture swipeCapture;
 
@@ -82,7 +83,7 @@ public class upgradeController : MonoBehaviour {
 		itemPanel.SetActive(false);
 		mapPanel.SetActive(false);
 		achievementsPanel.SetActive(false);
-		// skillPanel.SetActive(false);
+		skillPanel.SetActive(false);
 		statsPanel.SetActive(false);
 		currencyPanel.SetActive(false);
 		// navigationArea.SetActive(false);
@@ -410,7 +411,7 @@ public class upgradeController : MonoBehaviour {
 		achievementsPanel.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		skillPanel.SetActive(true);
-		skillPanel.gameObject.GetComponent<tabButton>().stopNotification();
+		skillButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
 		ChangeTabIndicators(4);
 	}
@@ -504,6 +505,10 @@ public class upgradeController : MonoBehaviour {
 		RefreshCharacterPanel();
 		// int characterLevel = controller.characterLevel[selectedCharacter];
 		// characterPanelLevelText.text = "Level: "+characterLevel;
+	}
+
+	public void BuyIndividualCharacterSkill() {
+		skillController.BuySkill(skillController.keys[selectedCharacter]);
 	}
 
 	public void showToolTip(int i) {
