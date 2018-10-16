@@ -411,7 +411,7 @@ public class controller : MonoBehaviour {
 		for(int i = 0; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].interactable = gold >= characterUpgradeCost[i];
 			if (i == upgradeController.selectedCharacter && upgradeController.individualCharacterPanel.activeSelf){
-				individualUnitText.text = "Units: "+NumberFormat.format(units[i]);				
+				individualUnitText.text = "LEVEL: "+characterLevel[i]+" UNITS: "+NumberFormat.format(units[i]);			
 				individualLevelUpButton.interactable = gold >= characterUpgradeCost[i];
 			}
 			if (characterLevel[i] > 0) {
@@ -483,7 +483,7 @@ public class controller : MonoBehaviour {
 		characterUpgradeCost[i] = sum;
 		levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = characterLevel[i] > 0 ? "LEVEL UP" : "HIRE";
 		levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
-		individualLevelUpButton.GetComponentInChildren<Text>().text = NumberFormat.format(characterUpgradeCost[i])+"g";
+		individualLevelUpButton.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
 	}
 	
 	public void buyClickM1Up() {
