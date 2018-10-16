@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="106px"
+   height="48px"
+   viewBox="0 0 106 48"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Button.svg">
+  <metadata
+     id="metadata17">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Rectangle 10</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs15" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1707"
+     inkscape:window-height="900"
+     id="namedview13"
+     showgrid="false"
+     inkscape:zoom="5.5849057"
+     inkscape:cx="71.098032"
+     inkscape:cy="56.746956"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Group-12" />
+  <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">Rectangle 10</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <g
+     id="App"
+     stroke="none"
+     stroke-width="1"
+     fill="none"
+     fill-rule="evenodd">
+    <g
+       id="Builder---Open"
+       transform="translate(-292.000000, -544.000000)"
+       fill="#A8DA61"
+       fill-rule="nonzero">
+      <g
+         id="Group-9"
+         transform="translate(0.000000, 544.000000)">
+        <g
+           id="Group-12"
+           transform="translate(292.000000, 0.000000)">
+          <rect
+             id="Rectangle-10"
+             x="0"
+             y="0"
+             width="106"
+             height="48"
+             rx="24"
+             style="fill:#ffffff" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

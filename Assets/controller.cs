@@ -99,6 +99,7 @@ public class controller : MonoBehaviour {
 	public TutorialController tutorialController;
 	public BuildingController buildingController;
 	public SwipeCapture swipeCapture;
+	public SkillController skillController;
 #endregion
 #region Diamond Purchases
 	public double instaGoldPrice = 20;
@@ -299,8 +300,16 @@ public class controller : MonoBehaviour {
 		if (itemController.inventory.Count > 0)
 			upgradeController.enableItemButton(false);
 		for (int i = 0; i < achievementController.achievements.Count; i++){
-			if (achievementController.achievements[i].completed)
+			if (achievementController.achievements[i].completed){
 				upgradeController.enableAchievementsButton(false);
+				break;
+			}
+		}
+		foreach(String key in skillController.keys){
+			if (skillController.skillsBought[key]){
+				upgradeController.enableSkillButton(false);
+				break;
+			}
 		}
 		if (highestLevel > 20)
 			upgradeController.enableMapButton(false);

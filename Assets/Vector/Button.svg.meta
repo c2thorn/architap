@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8cf83358556828648bcb35cba5ebd998
+guid: b15ee8436c30d0c468e8ed2d7b474182
 ScriptedImporter:
   fileIDToRecycleName:
-    100000: gameObject/electricity-sign (1)
-    400000: gameObject/electricity-sign (1)/Transform
-    21200000: gameObject/electricity-sign (1)/SpriteRenderer
+    100000: gameObject/Button
+    400000: gameObject/Button/Transform
+    21200000: gameObject/Button/SpriteRenderer
     21300000: sprite
     100100000: gameObject
   externalObjects: {}
@@ -40,5 +40,5 @@ ScriptedImporter:
         y: 0
         width: 0
         height: 0
-      spriteID: fee744cfa10b91d49b665de37a6e2fa6
+      spriteID: a7d37ebb456c9cf4094b717437c9150a
     PhysicsOutlines: []
