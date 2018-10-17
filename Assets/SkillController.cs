@@ -6,12 +6,15 @@ using UnityEngine.UI;
 public class SkillController : MonoBehaviour {
 
 	public Transform panelTr;
+	public controller controller;
 
+	[HideInInspector]
 	public List<string> keys = new List<string>() {
 		"autoClick","clickBoost","partnerBoost","goldBoost",
 		"criticalClickChanceBoost","goldHouseChanceBoost","doubleNextSkill","buildingReduction",
 		"cooldownReduction"
 	};
+
 	public Dictionary<string,bool> skillsBought = new Dictionary<string,bool>(){
 		{"autoClick",false},
 		{"clickBoost",false},
@@ -151,6 +154,12 @@ public class SkillController : MonoBehaviour {
 				case "autoClick":
 					StartCoroutine(AutoClickForDuration());
 					break;
+				case "clickBoost":
+					StartCoroutine(BoostClicksForDuration());
+					break;
+				case "partnerBoost":
+					StartCoroutine(BoostPartnersForDuration());
+					break;
 			}
 		}
 	}
@@ -165,6 +174,22 @@ public class SkillController : MonoBehaviour {
 		}
 		skillFlag["autoClick"] = false;
     }
+
+	protected IEnumerator BoostClicksForDuration() {
+		skillFlag["clickBoost"] = true;
+		controller.RecalculateUnit(0);
+		yield return new WaitForSeconds(skillDuration["clickBoost"]);
+		skillFlag["clickBoost"] = false;
+		controller.RecalculateUnit(0);
+	}
+
+	protected IEnumerator BoostPartnersForDuration() {
+		skillFlag["partnerBoost"] = true;
+		controller.RecalculateAllUnits();
+		yield return new WaitForSeconds(skillDuration["partnerBoost"]);
+		skillFlag["partnerBoost"] = false;
+		controller.RecalculateAllUnits();
+	}
 
 	public void DecrementCooldowns() {
 		foreach (string key in keys) {

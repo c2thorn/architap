@@ -188,7 +188,6 @@ public class controller : MonoBehaviour {
 	public double totalUnits = 0;
 	public double totalRegionsCompleted = 0;
 #endregion
-
 #region Sounds
 	public CharacterAudio characterAudio;
 	public UIClickAudio uiclickAudio;
@@ -320,15 +319,25 @@ public class controller : MonoBehaviour {
 		}
 		if (highestLevel > 10) 
 			upgradeController.enableMultiLevelUpButton();
+		
+		int numCharactersBought = -1;
+		for (int i = 0; i < characterLevel.Length;i++){
+			if (i > 0 && characterLevel[i] > 0) {
+				numCharactersBought++;
+			} else if (characterLevel[i] > 1){
+				numCharactersBought++;
+			}
+		}
+		upgradeController.enableBoard(numCharactersBought);
 
 		for (int i = 0;i < units.Length;i++){
 			if (characterLevel[i] > 0)
 				upgradeController.RefreshCharacterBoard(i);
-			else {
-				levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
-				levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
-				characterUnitLevelText[i].text = "";
-			}
+			// else {
+			// 	levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
+			// 	levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
+			// 	characterUnitLevelText[i].text = "";
+			// }
 		}
 		for (int i = 0; i < completedRegions.Length;i++) {
 			if (completedRegions[i]){
@@ -397,6 +406,11 @@ public class controller : MonoBehaviour {
 								*(characterGilds[i]+1)
 								*(1+(prestigeCurrency*prestigeEffectItemMultiplier/100))
 								* (idling ? idleBonus : 1));
+		if (i == 0 && skillController.skillFlag["clickBoost"]) {
+			units[i] = Math.Round(units[i]*skillController.skillEffect["clickBoost"]);
+		} else if (i != 0 && skillController.skillFlag["partnerBoost"]) {
+			units[i] = Math.Round(units[i]*skillController.skillEffect["partnerBoost"]);
+		}
 	}
 
 	public void RecalculateAllUnits() {
@@ -465,8 +479,11 @@ public class controller : MonoBehaviour {
 		gold -= characterUpgradeCost[i];
 		upgradeController.RefreshCharacterBoard(i);
 		LevelUpUnit(i,numLevels);
-		if (!characterEverBought[i])
+		if (!characterEverBought[i]){
 			characterEverBought[i] = true;
+			if ((i+1) < upgradeController.characterAmount)
+				upgradeController.ScrollABit();
+		}
 		saveStateController.SaveData();
 		// characterAudio.levelUpSound();
 	}

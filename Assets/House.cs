@@ -64,7 +64,7 @@ public class House : MonoBehaviour {
                 hit = !checkDead() && hit;
             }
         } else {
-            if (startedDying)
+            if (startedDying && !finishingDying)
                 CheckClickSkip();
         }
     }

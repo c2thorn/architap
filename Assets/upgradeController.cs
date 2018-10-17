@@ -23,13 +23,32 @@ public class upgradeController : MonoBehaviour {
 	public GameObject skillPanel;
 	public GameObject navigationArea;
 	public GameObject panelArea;
+	public RectTransform contentRect;
+	public GameObject characterHeader;
 
-
+	[HideInInspector]
+	public string[] characterNames = new string[] {
+		"The Student", "Reeda Weaver", "Billy Hammerton", "Brick Sanchez",
+		"Connor Crete", "Chris Shingle", "Alena Wrench", "Dan Buldozian", "Build Nye"
+	};
+	public GameObject[] characterProfilePrefabs;
 	public int characterAmount = 8;
 	public GameObject[] characterBoards;
 	public bool[] boostBought1 = new bool[] { false, false, false, false, false, false, false, false};
 	public bool[] boostBought2 = new bool[] { false, false, false, false, false, false, false, false};
 	public bool[] boostBought3 = new bool[] { false, false, false, false, false, false, false, false};
+	[HideInInspector]
+	public string[,,] boostInfo = new string[,,] {
+		{{"Super Clicks",""}, { "Mega Clicks",""}, { "Ultra Clicks",""}, { "Auto Click","Automatically click while this skill is active. (10 clicks per second)"}}, 
+		{{"Wet Felting",""}, { "Spinning wheel",""}, { "Friggjar rockr",""}, { "Multi-Threading","Clicks are +100% more effective while this skill is active."}},
+		{{"Stronger Swing",""}, { "Harder Hit",""}, { "Hammer Tar",""}, { "Grand Slam","All builders gain +100% UPS while this skill is active."}},
+		{{"Tiny Brick",""}, { "Brick Infused Mortar ",""}, { "Pickled Brick",""}, { "Gold Bricks","Gain x2 gold from buildings while this skill is active."}},
+		{{"Quick Drying Bond",""}, { "Absorbing Concrete",""}, { "Reinforced Concrete ",""}, { "Crete Head","Gain +50% critical click chance while this skill is active."}},
+		{{"Stronger Roof",""}, { "Nonslip Shingles",""}, { "LED Shingles",""}, { "Festive Spirit","All buildings are golden while this skill is active."}},
+		{{"Angled Handle",""}, { "Hydraulics",""}, { "Extra Torque",""}, { "Efficient Tools","The effect of your next skill is doubled."}},
+		{{"Better Traction",""}, { "Quick Loading",""}, { "Armored Vehicle",""}, { "Wide Load","Decrease the building requirement by 1 while this skill is active."}},
+		{{"Chemical Mixture",""}, { "Automated Tools",""}, { "3D Printed Parts",""}, { "Science Rules","Reduce the cooldown of all other skills."}}
+		};
 
 	public Button boostButton1;
 	public Button boostButton2;
@@ -40,6 +59,10 @@ public class upgradeController : MonoBehaviour {
 	public Text boost2Description;
 	public Text boost3Description;
 	public Text skillDescription;
+	public Text boost1NameText;
+	public Text boost2NameText;
+	public Text boost3NameText;
+	public Text skillNameText;
 	public SVGImage boost1ImageCircle;
 	public SVGImage boost2ImageCircle;
 	public SVGImage boost3ImageCircle;
@@ -79,6 +102,8 @@ public class upgradeController : MonoBehaviour {
 
 	public SwipeCapture swipeCapture;
 	public GameObject individualCharacterBreakdown;
+	public ScrollRect goldScrollRect;
+	public bool multiLevelUpEnabled;
 
 	// Use this for initialization
 	void Start () {
@@ -104,6 +129,7 @@ public class upgradeController : MonoBehaviour {
 		individualCharacterPanel.SetActive(false);
 		diamondCountText.SetActive(false);
 		multiLevelButton.SetActive(false);
+		multiLevelUpEnabled = false;
 		currentMultiLevelUpIndex = 0;
 		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
 		for (int i = 0; i < characterBoards.Length; i++){ 
@@ -123,14 +149,8 @@ public class upgradeController : MonoBehaviour {
 			GameObject skillObject = characterBoards[i].transform.Find("Skill").gameObject;
 
 			boostObject1.gameObject.SetActive(false);
-			// boostObject1.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[i]) + "g";
-			// boostObject1.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[0]*100) + "%";
 			boostObject2.gameObject.SetActive(false);
-			// boostObject2.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[i]) + "g";
-			// boostObject2.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[1]*100) + "%";
 			boostObject3.gameObject.SetActive(false);
-			// boostObject3.transform.Find("Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[i]) + "g";
-			// boostObject3.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 			skillObject.gameObject.SetActive(false);
 			if (i != 0)
 				characterBoards[i].SetActive(false);
@@ -144,24 +164,24 @@ public class upgradeController : MonoBehaviour {
 				boostBought1[i] = false;
 				controller.unitM1[i] -= boostValues[0];
 				GameObject boostObject = characterBoards[i].transform.Find("Boost 1").gameObject;
-				SetBoostImageToNormal(boostObject.GetComponent<SVGImage>());
+				SetBoostImageIcon(i,"Boost 1", false);
 			}
 			if (boostBought2[i]) {
 				boostBought2[i] = false;
 				controller.unitM1[i] -= boostValues[1];
 				GameObject boostObject = characterBoards[i].transform.Find("Boost 2").gameObject;
-				SetBoostImageToNormal(boostObject.GetComponent<SVGImage>());
+				SetBoostImageIcon(i,"Boost 2", false);
 			}
 			if (boostBought3[i]) {
 				boostBought3[i] = false;
 				controller.unitM1[i] -= boostValues[2];
 				GameObject boostObject = characterBoards[i].transform.Find("Boost 3").gameObject;
-				SetBoostImageToNormal(boostObject.GetComponent<SVGImage>());
+				SetBoostImageIcon(i,"Boost 3", false);
 			}
 			if (skillController.skillsBought[skillController.keys[i]]) {
 				skillController.skillsBought[skillController.keys[i]] = false;
 				GameObject skillObject = characterBoards[i].transform.Find("Skill").gameObject;
-				SetBoostImageToNormal(skillObject.GetComponent<SVGImage>());
+				SetBoostImageIcon(i,"Skill", false);
 			}
 		}
 	}
@@ -169,11 +189,14 @@ public class upgradeController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (individualCharacterPanel.gameObject.activeSelf){
-			boostButton1.interactable = boostButton1.gameObject.active && controller.gold >= boost1Price[selectedCharacter] && !boostBought1[selectedCharacter];
-			boostButton2.interactable = boostButton2.gameObject.active && controller.gold >= boost2Price[selectedCharacter] && !boostBought2[selectedCharacter];
-			boostButton3.interactable = boostButton3.gameObject.active && controller.gold >= boost3Price[selectedCharacter] && !boostBought3[selectedCharacter];
+			boostButton1.interactable = boostButton1.gameObject.active && controller.gold >= boost1Price[selectedCharacter] 
+									&& !boostBought1[selectedCharacter] && controller.characterLevel[selectedCharacter] >= boostLevelRequirements[0];
+			boostButton2.interactable = boostButton2.gameObject.active && controller.gold >= boost2Price[selectedCharacter] 
+									&& !boostBought2[selectedCharacter] && controller.characterLevel[selectedCharacter] >= boostLevelRequirements[1];
+			boostButton3.interactable = boostButton3.gameObject.active && controller.gold >= boost3Price[selectedCharacter] 
+									&& !boostBought3[selectedCharacter] && controller.characterLevel[selectedCharacter] >= boostLevelRequirements[2];
 			skillBuyButton.interactable = skillBuyButton.gameObject.active && controller.gold >= skillPrice[selectedCharacter] 
-																&& !skillController.skillsBought[skillController.keys[selectedCharacter]];
+				&& !skillController.skillsBought[skillController.keys[selectedCharacter]] && controller.characterLevel[selectedCharacter] >= boostLevelRequirements[3];
 		}
 	}
 	
@@ -194,22 +217,11 @@ public class upgradeController : MonoBehaviour {
 			enableSkill(i);
 		if ((i != 0 && characterLevel > 0 ) || characterLevel > 1)
 			enableBoard(i);
-		if ( boostBought1[i]){
-			GameObject boostObject = characterBoards[i].transform.Find("Boost 1").gameObject;
-			SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
-		}
-		if ( boostBought2[i]){
-			GameObject boostObject = characterBoards[i].transform.Find("Boost 2").gameObject;
-			SetBoostImageToBought(boostObject.GetComponent<SVGImage>());		
-		}
-		if ( boostBought3[i]){
-			GameObject boostObject = characterBoards[i].transform.Find("Boost 3").gameObject;
-			SetBoostImageToBought(boostObject.GetComponent<SVGImage>());		
-		}
-		if ( skillController.skillsBought[skillController.keys[i]]){
-			GameObject skillObject = characterBoards[i].transform.Find("Skill").gameObject;
-			SetBoostImageToBought(skillObject.GetComponent<SVGImage>());		
-		}
+	
+		SetBoostImageIcon(i,"Boost 1", boostBought1[i]);
+		SetBoostImageIcon(i,"Boost 2", boostBought2[i]);
+		SetBoostImageIcon(i,"Boost 3", boostBought3[i]);
+		SetBoostImageIcon(i,"Skill", skillController.skillsBought[skillController.keys[i]]);
 
 		Text gildText = characterBoards[i].transform.Find("Gilds Text").GetComponent<Text>();
 		if (controller.characterGilds[i] > 0) 
@@ -220,30 +232,74 @@ public class upgradeController : MonoBehaviour {
 	}
 
 	public void RefreshCharacterPanel() {
-		characterPanelHeroText.text = selectedCharacter == 0 ? "Hero" : "Partner "+selectedCharacter;
-		boostButton1.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[selectedCharacter]) + "g";
-		boost1Description.text = "+"+(boostValues[0]*100) + "%";
-		boostButton2.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[selectedCharacter]) + "g";
-		boost2Description.text = "+"+(boostValues[1]*100) + "%";
-		boostButton3.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]) + "g";
-		boost3Description.text = "+"+(boostValues[2]*100) + "%";
-		skillBuyButton.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]) + "g";
+		characterPanelHeroText.text = characterNames[selectedCharacter];
+
+		foreach (ProfileCircle circle in characterHeader.GetComponentsInChildren<ProfileCircle>()) {
+			Destroy(circle.gameObject);
+		}
+		GameObject characterProfileCircle = (GameObject) Instantiate(characterProfilePrefabs[selectedCharacter],
+													new Vector3(0,0,0),Quaternion.Euler(0, 0, 0),characterHeader.transform);
+		
+		RectTransform rect = characterProfileCircle.GetComponent<RectTransform>();
+		rect.localScale = new Vector3(0.75f,0.75f,1);
+		rect.anchoredPosition = new Vector2(100f,0f);
+
+		boost1NameText.text = boostInfo[selectedCharacter,0,0];
+		boost2NameText.text = boostInfo[selectedCharacter,1,0];
+		boost3NameText.text = boostInfo[selectedCharacter,2,0];
+		skillNameText.text = boostInfo[selectedCharacter,3,0];
+
+		string measurement = selectedCharacter == 0 ? "% units per click." : "% UPS.";
+
+		boostButton1.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[selectedCharacter]);
+		boost1Description.text = boostInfo[selectedCharacter,0,1] + characterNames[selectedCharacter]+" gains +"+(boostValues[0]*100) + measurement;
+		boostButton2.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[selectedCharacter]);
+		boost2Description.text = boostInfo[selectedCharacter,1,1] + characterNames[selectedCharacter]+" gains +"+(boostValues[1]*100) + measurement;
+		boostButton3.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]);
+		boost3Description.text = boostInfo[selectedCharacter,2,1] + characterNames[selectedCharacter]+" gains +"+(boostValues[2]*100) + measurement;
+		skillBuyButton.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]);
+		skillDescription.text = boostInfo[selectedCharacter,3,1];
 		// skillBuyButton.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 
 		int characterLevel = controller.characterLevel[selectedCharacter];
 		// characterPanelLevelText.text = "Level: "+characterLevel;
 
-		boostButton1.gameObject.SetActive(characterLevel >= boostLevelRequirements[0]);
-		boostButton2.gameObject.SetActive(characterLevel >= boostLevelRequirements[1]);
-		boostButton3.gameObject.SetActive(characterLevel >= boostLevelRequirements[2]);
-		skillBuyButton.gameObject.SetActive(characterLevel >= boostLevelRequirements[3]);
+		bool isSkillBought = skillController.skillsBought[skillController.keys[selectedCharacter]];
+
+		boostButton1.gameObject.SetActive(!boostBought1[selectedCharacter]);
+		boostButton2.gameObject.SetActive(!boostBought2[selectedCharacter]);
+		boostButton3.gameObject.SetActive(!boostBought3[selectedCharacter]);
+		skillBuyButton.gameObject.SetActive(!isSkillBought);
+		boostButton1.transform.Find("Action Text").GetComponent<Text>().text = 
+						characterLevel >= boostLevelRequirements[0] ? "BUY" : "Unlock at Level "+boostLevelRequirements[0];
+		boostButton1.transform.Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[0]);
+		boostButton1.transform.Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[0]);
+
+		boostButton2.transform.Find("Action Text").GetComponent<Text>().text = 
+						characterLevel >= boostLevelRequirements[1] ? "BUY" : "Unlock at Level "+boostLevelRequirements[1];
+		boostButton2.transform.Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[1]);
+		boostButton2.transform.Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[1]);
+
+		boostButton3.transform.Find("Action Text").GetComponent<Text>().text = 
+						characterLevel >= boostLevelRequirements[2] ? "BUY" : "Unlock at Level "+boostLevelRequirements[2];
+		boostButton3.transform.Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[2]);
+		boostButton3.transform.Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[2]);
+
+		skillBuyButton.transform.Find("Action Text").GetComponent<Text>().text = 
+						characterLevel >= boostLevelRequirements[3] ? "BUY" : "Unlock at Level "+boostLevelRequirements[3];
+		skillBuyButton.transform.Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[3]);
+		skillBuyButton.transform.Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[3]);
+
+
 
 		Update();
+		
 
-		if (selectedCharacter != 0 || characterLevel > 1)
+		// if (selectedCharacter != 0 || characterLevel > 1)
 			controller.RecalculateCharacterUpgradeCost(selectedCharacter);
 		if (selectedCharacter != 0) {
 			percentageText.gameObject.SetActive(true);
+			controller.RecalculateSumUnits();
 			double percentage = Math.Round(controller.units[selectedCharacter]/controller.sumofAllUnits,4)*100;
 			percentageText.text = percentage + "% of UPS";
 		}
@@ -253,7 +309,7 @@ public class upgradeController : MonoBehaviour {
 		SetBoostImageCircle(boost1ImageCircle, boostBought1[selectedCharacter]);
 		SetBoostImageCircle(boost2ImageCircle, boostBought2[selectedCharacter]);
 		SetBoostImageCircle(boost3ImageCircle, boostBought3[selectedCharacter]);
-		SetBoostImageCircle(skillImageCircle, skillController.skillsBought[skillController.keys[selectedCharacter]]);
+		SetBoostImageCircle(skillImageCircle, isSkillBought);
 
 		if (controller.characterGilds[selectedCharacter] > 0) 
 			individualCharacterPanel.GetComponent<Image>().color = gildColor;
@@ -265,8 +321,13 @@ public class upgradeController : MonoBehaviour {
 	}
 
 	public void enableBoard(int i) {		
-		if (i+1 < characterAmount && !characterBoards[i+1].active)
-			characterBoards[i+1].SetActive(true);
+		if (i+1 < characterAmount) {
+			if (!characterBoards[i+1].active){
+				characterBoards[i+1].SetActive(true);
+			}
+			if (controller.characterLevel[i+1] == 0 || i == -1)
+				contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x,Mathf.Min(1280f,(i+2)*160f));
+		}
 	}
 
 	public void enableBoost1(int index) {
@@ -300,11 +361,9 @@ public class upgradeController : MonoBehaviour {
 		controller.unitM1[selectedCharacter] += boostValues[0];
 		controller.RecalculateUnit(selectedCharacter);
 		boostButton1.interactable = false;
-		SetBoostImageCircle(boost1ImageCircle,true);
-		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 1").gameObject;
-		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
+		SetBoostImageIcon(selectedCharacter,"Boost 1", true);
 		characterAudio.BoostSound();
-		ShowIndividualBreakdown();
+		RefreshCharacterPanel();
 	}
 
 	public void buyBoost2() {
@@ -313,58 +372,49 @@ public class upgradeController : MonoBehaviour {
 		controller.unitM1[selectedCharacter] += boostValues[1];
 		controller.RecalculateUnit(selectedCharacter);
 		boostButton2.interactable = false;
-		SetBoostImageCircle(boost2ImageCircle,true);
-		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 2").gameObject;
-		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
+		SetBoostImageIcon(selectedCharacter,"Boost 2", true);
 		characterAudio.BoostSound();
-		ShowIndividualBreakdown();
+		RefreshCharacterPanel();
 	}
 
 	public void buyBoost3() {
 		boostBought3[selectedCharacter] = true;
 		controller.gold -= boost3Price[selectedCharacter];
 		controller.unitM1[selectedCharacter] += boostValues[2];
-
 		controller.RecalculateUnit(selectedCharacter);
 		boostButton3.interactable = false;
-		SetBoostImageCircle(boost3ImageCircle,true);
-		GameObject boostObject = characterBoards[selectedCharacter].transform.Find("Boost 3").gameObject;
-		SetBoostImageToBought(boostObject.GetComponent<SVGImage>());
+		SetBoostImageIcon(selectedCharacter,"Boost 3", true);
 		characterAudio.BoostSound();
-		ShowIndividualBreakdown();
+		RefreshCharacterPanel();
 	}
 
 	public void BuyIndividualCharacterSkill() {
 		skillController.BuySkill(skillController.keys[selectedCharacter]);
 		enableSkillButton(false);
-		SetBoostImageCircle(skillImageCircle,true);
-		GameObject skillObject = characterBoards[selectedCharacter].transform.Find("Skill").gameObject;
-		SetBoostImageToBought(skillObject.GetComponent<SVGImage>());
+		SetBoostImageIcon(selectedCharacter,"Skill", true);
 		characterAudio.BoostSound();
-		ShowIndividualBreakdown();
-		// RefreshCharacterPanel();
-		// RefreshCharacterBoard(selectedCharacter);
+		RefreshCharacterPanel();
 	}
 
-	public void SetBoostImageToBought(SVGImage image) {
+	public void SetBoostImageIcon(int i, String name, bool bought) {
+		SVGImage image = characterBoards[i].transform.Find(name).GetComponent<SVGImage>();
 		Color newCol;
-		if (ColorUtility.TryParseHtmlString("#FFFFFF", out newCol))
-			if (image.color != newCol)
-				image.color = newCol;
-	}
-
-	
-	public void SetBoostImageToNormal(SVGImage image) {
-		Color newCol;
-		if (ColorUtility.TryParseHtmlString("#5A5A5A", out newCol))
-			if (image.color != newCol)
-				image.color = newCol;
+		if (bought) {
+			if (ColorUtility.TryParseHtmlString("#FFFFFF", out newCol))
+				if (image.color != newCol)
+					image.color = newCol;
+		} else {
+			if (ColorUtility.TryParseHtmlString("#5A5A5A", out newCol))
+				if (image.color != newCol)
+					image.color = newCol;
+		}
 	}
 
 	public void SetBoostImageCircle(SVGImage circle, bool bought) {
 		Color newCol;
 
 		SVGImage image = circle.transform.Find("Boost Image").GetComponent<SVGImage>();
+		Image backgroundImage = circle.transform.parent.GetComponent<Image>();
 
 		if (bought) {
 			if (ColorUtility.TryParseHtmlString("#EAEAEA", out newCol))
@@ -373,6 +423,10 @@ public class upgradeController : MonoBehaviour {
 			if (ColorUtility.TryParseHtmlString("#FFFFFF", out newCol))
 				if (image.color != newCol)
 					image.color = newCol;
+			if (ColorUtility.TryParseHtmlString("#FFFFFF", out newCol))
+				if (backgroundImage.color != newCol)
+					backgroundImage.color = newCol;
+
 		}
 		else {
 			if (ColorUtility.TryParseHtmlString("#686868", out newCol))
@@ -381,6 +435,9 @@ public class upgradeController : MonoBehaviour {
 			if (ColorUtility.TryParseHtmlString("#5A5A5A", out newCol))
 				if (image.color != newCol)
 					image.color = newCol;
+			if (ColorUtility.TryParseHtmlString("#C8C8C8", out newCol))
+				if (backgroundImage.color != newCol)
+					backgroundImage.color = newCol;
 		}
 	}
 
@@ -403,6 +460,8 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(false);
 		// goldButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		if (multiLevelUpEnabled)
+			multiLevelButton.SetActive(true);
 		ChangeTabIndicators(0);
 	}
 	public void resetScroll() {
@@ -423,6 +482,7 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(false);
 		diamondButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		multiLevelButton.SetActive(false);
 		ChangeTabIndicators(1);
 	}
 
@@ -436,6 +496,7 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(false);
 		itemButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		multiLevelButton.SetActive(false);
 		ChangeTabIndicators(2);
 	}
 
@@ -463,6 +524,7 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(false);
 		achievementsButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		multiLevelButton.SetActive(false);
 		ChangeTabIndicators(3);
 	}
 
@@ -475,6 +537,7 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(true);
 		skillTabButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
+		multiLevelButton.SetActive(false);
 		ChangeTabIndicators(4);
 	}
 
@@ -487,7 +550,8 @@ public class upgradeController : MonoBehaviour {
 			achievementsPanel.SetActive(false);
 			controller.individualLevelUpButton.interactable = controller.gold >= controller.characterUpgradeCost[i];
 			individualCharacterPanel.SetActive(true);
-
+			if (multiLevelUpEnabled)
+				multiLevelButton.SetActive(true);
 			selectedCharacter = i;
 			RefreshCharacterPanel();
 			uiClickAudio.clickSound();
@@ -548,7 +612,9 @@ public class upgradeController : MonoBehaviour {
 	}
 
 	public void enableMultiLevelUpButton() {
-		multiLevelButton.SetActive(true);
+		multiLevelUpEnabled = true;
+		if (goldPanel.activeSelf || individualCharacterPanel.activeSelf)
+			multiLevelButton.SetActive(true);
 	}
 
 	public void changeMultiLevelUp() {
@@ -558,12 +624,13 @@ public class upgradeController : MonoBehaviour {
 		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
 		for (int i = 0; i < controller.levelUpButton.Length; i++)
 			controller.RecalculateCharacterUpgradeCost(i);
+		if (individualCharacterPanel.activeSelf)
+			RefreshCharacterPanel();
 		uiClickAudio.clickSound();
 	}
 
 	public void individualCharacterLevelUp() {
 		controller.levelUp(selectedCharacter);
-		controller.RecalculateSumUnits();
 		RefreshCharacterPanel();
 		// int characterLevel = controller.characterLevel[selectedCharacter];
 		// characterPanelLevelText.text = "Level: "+characterLevel;
@@ -585,28 +652,28 @@ public class upgradeController : MonoBehaviour {
 
 
 	public void showToolTip(int i) {
-		if (individualCharacterPanel.activeSelf)
-			i = selectedCharacter;
-		if (controller.characterLevel[i] > 0) {
-			if (toolTipShowing) {
-				toolTipShowing = false;
-				toolTip.SetActive(false);
-			} else {
-				if (!controller.modalOpen) {
-					toolTipShowing = true;
-					toolTip.SetActive(true);
-					toolTip.transform.position = Input.mousePosition + toolTipOffset;
-					Text text = toolTip.transform.Find("Text").GetComponent<Text>();
-					text.text = "Base " + NumberFormat.format(controller.baseLevelUnits[i]) 
-					+ " x" + Math.Round(controller.unitM1[i],2) + " Upgrades"
-					+ (itemController.inventory.Count > 0 ? " x" + Math.Round(controller.unitItemM2[i],2) + " Items" : "")
-					+ (achievementController.achievements.Count > 0 ? " x" + Math.Round(controller.unitAchievementM3[i],2) + " Achievements" : "")
-					+ (controller.characterGilds[i] > 0 ? " x" + Math.Round(controller.characterGilds[i]+1,2) + " Gilds" : "")
-					+ (controller.prestigeCurrency > 0 ? " x" + Math.Round(1+(controller.prestigeCurrency*controller.prestigeEffectItemMultiplier/100),2) 
-							+ " Prestige" : "");
-				}
-			}
-		}
+		// if (individualCharacterPanel.activeSelf)
+		// 	i = selectedCharacter;
+		// if (controller.characterLevel[i] > 0) {
+		// 	if (toolTipShowing) {
+		// 		toolTipShowing = false;
+		// 		toolTip.SetActive(false);
+		// 	} else {
+		// 		if (!controller.modalOpen) {
+		// 			toolTipShowing = true;
+		// 			toolTip.SetActive(true);
+		// 			toolTip.transform.position = Input.mousePosition + toolTipOffset;
+		// 			Text text = toolTip.transform.Find("Text").GetComponent<Text>();
+		// 			text.text = "Base " + NumberFormat.format(controller.baseLevelUnits[i]) 
+		// 			+ " x" + Math.Round(controller.unitM1[i],2) + " Upgrades"
+		// 			+ (itemController.inventory.Count > 0 ? " x" + Math.Round(controller.unitItemM2[i],2) + " Items" : "")
+		// 			+ (achievementController.achievements.Count > 0 ? " x" + Math.Round(controller.unitAchievementM3[i],2) + " Achievements" : "")
+		// 			+ (controller.characterGilds[i] > 0 ? " x" + Math.Round(controller.characterGilds[i]+1,2) + " Gilds" : "")
+		// 			+ (controller.prestigeCurrency > 0 ? " x" + Math.Round(1+(controller.prestigeCurrency*controller.prestigeEffectItemMultiplier/100),2) 
+		// 					+ " Prestige" : "");
+		// 		}
+		// 	}
+		// }
 	}
 
 	public void hideToolTip() {
@@ -645,4 +712,22 @@ public class upgradeController : MonoBehaviour {
 			currencyPanelIndex = 4;
 		}
 	}
+
+	public void ScrollABit() {
+		StartCoroutine(Scroll());
+	}
+
+	IEnumerator Scroll() {
+		float timeLimit = 5f;
+		float start = goldScrollRect.verticalNormalizedPosition;
+		float destination = -0.08f;
+		float distance = start - destination;
+		float rate = .06f*(distance+.5f)/1.5f;
+
+		while (timeLimit > 0f){
+			goldScrollRect.verticalNormalizedPosition = Mathf.Lerp(goldScrollRect.verticalNormalizedPosition,destination,rate);
+			timeLimit -= .1f;
+			yield return null;	
+		}
+    }
 }
