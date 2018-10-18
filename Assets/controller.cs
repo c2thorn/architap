@@ -130,7 +130,8 @@ public class controller : MonoBehaviour {
 #region Idling
 	public int idleTimer = 10;
 	public int idleStartTimer = 10;
-	public double idleBonus = 1;
+	public double idleUPSBonus = 1;
+	public double idleGoldBonus = 1;
 #endregion
 #region Text
 	public Text[] characterUnitLevelText;
@@ -382,7 +383,10 @@ public class controller : MonoBehaviour {
 
 #region Calculations
 	public double calculateGold() {
-		return Math.Round(baseGoldDrop*Math.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
+		double calc = Math.Round(baseGoldDrop*Math.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
+		if (idling && idleGoldBonus > 1)
+			calc = Math.Round(calc*idleGoldBonus);
+		return calc;
 	}
 
 	private double calculateMaxGold() {
@@ -404,8 +408,9 @@ public class controller : MonoBehaviour {
 								*unitItemM2[i]
 								*unitAchievementM3[i]
 								*(characterGilds[i]+1)
-								*(1+(prestigeCurrency*prestigeEffectItemMultiplier/100))
-								* (idling ? idleBonus : 1));
+								*(1+(prestigeCurrency*prestigeEffectItemMultiplier/100)));
+		if (idling && i > 0 && idleUPSBonus > 1)
+			units[i] = Math.Round(units[i]*idleUPSBonus);
 		if (i == 0 && skillController.skillFlag["clickBoost"]) {
 			units[i] = Math.Round(units[i]*skillController.skillEffect["clickBoost"]);
 		} else if (i != 0 && skillController.skillFlag["partnerBoost"]) {
@@ -585,6 +590,9 @@ public class controller : MonoBehaviour {
 		prestigeEffectItemMultiplier = 1;
 		criticalClickChance = 0;
 		criticalClickMultiplier = 3;
+		idleGoldBonus = 1;
+		idleUPSBonus = 1;
+
 		for (int i = itemsLeft.Count - 1; i >= 0; i--) {
 			Item item = itemsLeft[i];
 			if (item.effect == "Gold") {
@@ -620,6 +628,12 @@ public class controller : MonoBehaviour {
 			} else if (item.effect == "Critical Click Units") {
 				criticalClickMultiplier += item.effectValue*item.count;
 				itemsLeft.RemoveAt(i);
+			} else if (item.effect == "Idle UPS") {
+				idleUPSBonus += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
+			} else if (item.effect == "Idle Gold") {
+				idleGoldBonus += item.effectValue*item.count;
+				itemsLeft.RemoveAt(i);
 			}
 		}
 
@@ -648,8 +662,10 @@ public class controller : MonoBehaviour {
 						multiplier += item.effectValue*item.count;
 			}
 			unitItemM2[i] = multiplier;
+
 			RecalculateUnit(i);
 		}
+		bossLifeItemMultiplier = Math.Max(0.5,bossLifeItemMultiplier);
 	}
 
 	public void DropItem(Vector3 pos, Item item) {
@@ -711,8 +727,12 @@ public class controller : MonoBehaviour {
 		}
 	}
 
-	public double enemyDied (bool spawn, bool advanceLevel) {
+	public double getEnemyGold() {
 		double goldIncrement = boss ? calculateGold()*10 : bonusEnemy ? calculateGold()*bonusEnemyMultiplier : calculateGold();
+		return goldIncrement;
+	}
+
+	public void enemyDied (bool spawn, bool advanceLevel) {
 		bonusEnemy = false;
 		if (uniqueBoss || boss)
 			endBossTime();	
@@ -758,7 +778,6 @@ public class controller : MonoBehaviour {
 		totalBuildings++;
 		// IncrementGold(goldIncrement);
 		saveStateController.SaveData();
-		return goldIncrement;
 	}
 
 	private void spawnNewEnemy(bool delay) {
@@ -873,6 +892,7 @@ public class controller : MonoBehaviour {
 
 	public void checkBossReward(Vector3 pos) {
 		if (uniqueBoss) {
+			endBossTime();
 			Item item = itemController.getRandomItem();
 			DropItem(pos, item);
 		} else {
@@ -969,7 +989,6 @@ public class controller : MonoBehaviour {
 			}
 			SetUpRegion(i);
 			spawnNewEnemy(true);
-			buildingController.ShowNavigationScrollView();
 			saveStateController.SaveData();
 		}
 	}
@@ -1109,7 +1128,7 @@ public class controller : MonoBehaviour {
 
 #region Idling
 	public void idleTimerCountdown() {
-		if (idleBonus > 1.0 && !idling) {
+		if ((idleGoldBonus > 1.0 || idleUPSBonus > 1.0) && !idling) {
 			idleTimer--;
 			if (idleTimer <= 0){
 				idling = true;

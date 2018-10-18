@@ -53,6 +53,7 @@ public class BuildingController : MonoBehaviour {
 	}
 
 	public void CreateBuildingNavigation() {
+		ShowNavigationScrollView();
 		GameObject[] oldButtons = GameObject.FindGameObjectsWithTag("preview_button");
 		for (int i = 0; i < oldButtons.Length; i++) {
 			Destroy(oldButtons[i]);

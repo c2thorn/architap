@@ -170,6 +170,9 @@ public class House : MonoBehaviour {
     protected virtual IEnumerator startDying() {
         startedDying = true;
         buildingAudioSource.PlayBuildingComplete(); 
+        double goldIncrement = controller.getEnemyGold();
+        DropCoins(goldIncrement);
+
         bool uniqueBoss = controller.uniqueBoss;
         if (controller.boss || controller.uniqueBoss) {
             controller.checkBossReward(transform.position);
@@ -196,9 +199,7 @@ public class House : MonoBehaviour {
         yield return new WaitForSeconds(buildingController.buildingDeathWaitTime*(0.3f));
         while (itemController.itemDrop || controller.modalOpen)
             yield return new WaitForSeconds(1f);
-        double goldIncrement = controller.enemyDied(true, true);
-
-        DropCoins(goldIncrement);
+        controller.enemyDied(true, true);
 
         if (!uniqueBoss)
             Destroy(gameObject);

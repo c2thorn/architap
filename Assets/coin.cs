@@ -10,6 +10,8 @@ public class coin : MonoBehaviour {
     public Canvas canvas;
     public CurrencyAudioSource currencyAudioSource;
 
+    public bool canClick = false;
+
     public BuildingAudioSource buildingAudioSource;
 
     
@@ -23,10 +25,12 @@ public class coin : MonoBehaviour {
 
 		var x = Random.Range(-1f, 1f);
 		var y = Random.Range(-1f, 1f);
+        canClick = false;
 		Vector2 direction = new Vector2(x, y);
 		direction = direction.normalized * -150f;
 		GetComponent<Rigidbody2D>().AddForce(direction);
 		StartCoroutine(startDying());
+        StartCoroutine(delayClicking());
 		Physics2D.IgnoreLayerCollision(0,1,true);
         Physics2D.IgnoreLayerCollision(1,1,true);
 
@@ -38,11 +42,16 @@ public class coin : MonoBehaviour {
             Vector3 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             PolygonCollider2D coll = GetComponent<PolygonCollider2D>();
 
-            if (coll.OverlapPoint(wp)) {
+            if (coll.OverlapPoint(wp) && canClick) {
                 CashOut();
             }
         // }
 	}
+
+    IEnumerator delayClicking() {
+        yield return new WaitForSeconds(.3f);
+        canClick = true;
+    }
 
 	IEnumerator startDying() {
         float x;
