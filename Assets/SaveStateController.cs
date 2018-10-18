@@ -31,6 +31,7 @@ public class SaveStateController : MonoBehaviour {
 	public Text idleBuildingText;
 	public Text idleGoldText;
 	public Text idleCoalText;
+	public bool canSave = true;
 
 	public void LoadData() {
 		controller.gold = LoadDouble("gold");
@@ -153,100 +154,102 @@ public class SaveStateController : MonoBehaviour {
 	}
 
 	public void SaveData() {
-		countdownNumber = 60;
-		autoSaveText.text = "Autosave in " + countdownNumber;
+		if (canSave){
+			countdownNumber = 60;
+			autoSaveText.text = "Autosave in " + countdownNumber;
 
-		SaveDouble("gold", controller.gold);
-		SaveDouble("totalBuildings", controller.totalBuildings);
+			SaveDouble("gold", controller.gold);
+			SaveDouble("totalBuildings", controller.totalBuildings);
 
 
-		SaveDouble("diamonds", controller.diamonds);
-		SaveDouble("prestigeCurrency",controller.prestigeCurrency);
-		SaveDouble("unconvertedPrestigeCurrency",controller.unconvertedPrestigeCurrency);
-		SaveDouble("coal", controller.coal);
+			SaveDouble("diamonds", controller.diamonds);
+			SaveDouble("prestigeCurrency",controller.prestigeCurrency);
+			SaveDouble("unconvertedPrestigeCurrency",controller.unconvertedPrestigeCurrency);
+			SaveDouble("coal", controller.coal);
 
-		if (controller.uniqueBoss) {
-			SaveInt("level", controller.highestRegionLevels[controller.region]);
+			if (controller.uniqueBoss) {
+				SaveInt("level", controller.highestRegionLevels[controller.region]);
+			}
+			else{
+				SaveInt("level", controller.level);
+			}
+			SaveInt("highestLevel", controller.highestLevel);
+			SaveInt("levelCount", controller.levelCount);
+			SaveInt("levelMaxCount", controller.levelMaxCount);
+
+			SaveDouble("goldMultiplier1", controller.goldMultiplier1);
+			SaveDouble("goldMultiplier2", controller.goldMultiplier2);
+
+			for (int i = 0; i < controller.baseLevelUnits.Length; i++) 
+				SaveDouble("baseLevelUnits"+i, controller.baseLevelUnits[i]);
+			
+			for (int i = 0; i < controller.unitM1.Length; i++) 
+				SaveDouble("unitM1"+i, controller.unitM1[i]);
+			for (int i = 0; i < controller.m1Level.Length; i++) 
+				SaveDouble("m1Level"+i, controller.m1Level[i]);
+
+			// for (int i = 0; i < controller.unitItemM2.Length; i++) 
+			// 	controller.unitItemM2[i] = LoadDouble("unitItemM2"+i);
+
+			// for (int i = 0; i < controller.unitAchievementM3.Length; i++) 
+			// 	controller.unitAchievementM3[i] = LoadDouble("unitAchievementM3"+i);
+
+			for (int i = 0; i < controller.characterLevel.Length; i++) 
+				SaveInt("characterLevel"+i, controller.characterLevel[i]);
+			
+			for (int i = 0; i < controller.characterEverBought.Length; i++)
+				SaveBool("characterEverBought"+i, controller.characterEverBought[i]);
+
+			SaveInt("region", controller.region);
+			for (int i = 0; i < controller.completedRegions.Length; i++) 
+				SaveBool("completedRegions"+i,controller.completedRegions[i]);
+			for (int i = 0; i < controller.highestRegionLevels.Length; i++) 
+				SaveInt("highestRegionLevels"+i, controller.highestRegionLevels[i]);
+			//TODO completedBossLevels?
+			for (int i = 0; i < controller.uniqueBossCompleted.Length; i++) 
+				SaveBool("uniqueBossCompleted"+i,controller.uniqueBossCompleted[i]);
+
+			SaveInt("bossStartTime", controller.bossStartTime);
+
+			SaveDouble("totalBuildings", controller.totalBuildings);
+			SaveDouble("totalPrestiges", controller.totalPrestiges);
+			SaveDouble("totalClicks", controller.totalClicks);
+			SaveDouble("totalGold", controller.totalGold);
+			SaveDouble("totalUnits", controller.totalUnits);
+			SaveDouble("totalRegionsCompleted", controller.totalRegionsCompleted);
+
+			SaveInt("itemSize", itemController.inventory.Count);
+			for (int i = 0; i < itemController.inventory.Count; i++){
+				Item item = itemController.inventory[i];
+				SaveString("item"+i, item.name+"$"+item.count+"$"+item.rarity);
+			} 
+
+			for (int i = 0; i < upgradeController.boostBought1.Length; i++) 
+				SaveBool("boostBought1"+i,upgradeController.boostBought1[i]);
+			for (int i = 0; i < upgradeController.boostBought2.Length; i++) 
+				SaveBool("boostBought2"+i,upgradeController.boostBought2[i]);
+			for (int i = 0; i < upgradeController.boostBought3.Length; i++) 
+				SaveBool("boostBought3"+i,upgradeController.boostBought3[i]);
+			//TODO set boost buttons to non-interactable;
+
+			for (int i = 0; i < achievementController.achievements.Count; i++){
+				achievement achievement = achievementController.achievements[i];
+				SaveBool("achievement "+achievementController.achievements[i].name, achievement.completed);
+			}
+
+			for (int i = 0; i < controller.characterGilds.Length; i++) 
+				SaveDouble("characterGild"+i,controller.characterGilds[i]);
+
+			SaveBool("modern",itemController.modern);
+			SaveBool("soundMute", soundController.soundMute);
+			SaveBool("musicMute", soundController.musicMute);
+
+			foreach(String key in skillController.keys){
+				SaveBool(key+"Bought",skillController.skillsBought[key]);
+			}
+
+			StartCoroutine(TrySaveDateTime());
 		}
-		else{
-			SaveInt("level", controller.level);
-		}
-		SaveInt("highestLevel", controller.highestLevel);
-		SaveInt("levelCount", controller.levelCount);
-		SaveInt("levelMaxCount", controller.levelMaxCount);
-
-		SaveDouble("goldMultiplier1", controller.goldMultiplier1);
-		SaveDouble("goldMultiplier2", controller.goldMultiplier2);
-
-		for (int i = 0; i < controller.baseLevelUnits.Length; i++) 
-			SaveDouble("baseLevelUnits"+i, controller.baseLevelUnits[i]);
-		
-		for (int i = 0; i < controller.unitM1.Length; i++) 
-			SaveDouble("unitM1"+i, controller.unitM1[i]);
-		for (int i = 0; i < controller.m1Level.Length; i++) 
-			SaveDouble("m1Level"+i, controller.m1Level[i]);
-
-		// for (int i = 0; i < controller.unitItemM2.Length; i++) 
-		// 	controller.unitItemM2[i] = LoadDouble("unitItemM2"+i);
-
-		// for (int i = 0; i < controller.unitAchievementM3.Length; i++) 
-		// 	controller.unitAchievementM3[i] = LoadDouble("unitAchievementM3"+i);
-
-		for (int i = 0; i < controller.characterLevel.Length; i++) 
-			SaveInt("characterLevel"+i, controller.characterLevel[i]);
-		
-		for (int i = 0; i < controller.characterEverBought.Length; i++)
-			SaveBool("characterEverBought"+i, controller.characterEverBought[i]);
-
-		SaveInt("region", controller.region);
-		for (int i = 0; i < controller.completedRegions.Length; i++) 
-			SaveBool("completedRegions"+i,controller.completedRegions[i]);
-		for (int i = 0; i < controller.highestRegionLevels.Length; i++) 
-			SaveInt("highestRegionLevels"+i, controller.highestRegionLevels[i]);
-		//TODO completedBossLevels?
-		for (int i = 0; i < controller.uniqueBossCompleted.Length; i++) 
-			SaveBool("uniqueBossCompleted"+i,controller.uniqueBossCompleted[i]);
-
-		SaveInt("bossStartTime", controller.bossStartTime);
-
-		SaveDouble("totalBuildings", controller.totalBuildings);
-		SaveDouble("totalPrestiges", controller.totalPrestiges);
-		SaveDouble("totalClicks", controller.totalClicks);
-		SaveDouble("totalGold", controller.totalGold);
-		SaveDouble("totalUnits", controller.totalUnits);
-		SaveDouble("totalRegionsCompleted", controller.totalRegionsCompleted);
-
-		SaveInt("itemSize", itemController.inventory.Count);
-		for (int i = 0; i < itemController.inventory.Count; i++){
-			Item item = itemController.inventory[i];
-			SaveString("item"+i, item.name+"$"+item.count+"$"+item.rarity);
-		} 
-
-		for (int i = 0; i < upgradeController.boostBought1.Length; i++) 
-			SaveBool("boostBought1"+i,upgradeController.boostBought1[i]);
-		for (int i = 0; i < upgradeController.boostBought2.Length; i++) 
-			SaveBool("boostBought2"+i,upgradeController.boostBought2[i]);
-		for (int i = 0; i < upgradeController.boostBought3.Length; i++) 
-			SaveBool("boostBought3"+i,upgradeController.boostBought3[i]);
-		//TODO set boost buttons to non-interactable;
-
-		for (int i = 0; i < achievementController.achievements.Count; i++){
-			achievement achievement = achievementController.achievements[i];
-			SaveBool("achievement "+achievementController.achievements[i].name, achievement.completed);
-		}
-
-		for (int i = 0; i < controller.characterGilds.Length; i++) 
-			SaveDouble("characterGild"+i,controller.characterGilds[i]);
-
-		SaveBool("modern",itemController.modern);
-		SaveBool("soundMute", soundController.soundMute);
-		SaveBool("musicMute", soundController.musicMute);
-
-		foreach(String key in skillController.keys){
-			SaveBool(key+"Bought",skillController.skillsBought[key]);
-		}
-
-		StartCoroutine(TrySaveDateTime());
 	}
 
 	public void SaveDouble(string name, double value) {
@@ -313,6 +316,8 @@ public class SaveStateController : MonoBehaviour {
 
 	IEnumerator TryGetCurrentTime()
 	{
+		Debug.Log("Making the Request");
+		canSave = false;
 		//Make request
 		UnityWebRequest uwr = UnityWebRequest.Get("http://architap.io");
 		yield return uwr.SendWebRequest();
@@ -344,6 +349,7 @@ public class SaveStateController : MonoBehaviour {
 			Debug.Log("Loading Current Date failed.");
 			Debug.Log(e.StackTrace);
 		}
+		canSave = true;
 	}
 
 	public TimeSpan GetTimeDifference(string previousTimeString, DateTime nowTime) {
