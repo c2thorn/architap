@@ -251,13 +251,13 @@ public class upgradeController : MonoBehaviour {
 
 		string measurement = selectedCharacter == 0 ? "% units per click." : "% UPS.";
 
-		boostButton1.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[selectedCharacter]);
+		boostButton1.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost1Price[selectedCharacter]);
 		boost1Description.text = boostInfo[selectedCharacter,0,1] + characterNames[selectedCharacter]+" gains +"+(boostValues[0]*100) + measurement;
-		boostButton2.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[selectedCharacter]);
+		boostButton2.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost2Price[selectedCharacter]);
 		boost2Description.text = boostInfo[selectedCharacter,1,1] + characterNames[selectedCharacter]+" gains +"+(boostValues[1]*100) + measurement;
-		boostButton3.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]);
+		boostButton3.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]);
 		boost3Description.text = boostInfo[selectedCharacter,2,1] + characterNames[selectedCharacter]+" gains +"+(boostValues[2]*100) + measurement;
-		skillBuyButton.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]);
+		skillBuyButton.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]);
 		skillDescription.text = boostInfo[selectedCharacter,3,1];
 		// skillBuyButton.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 
@@ -272,23 +272,23 @@ public class upgradeController : MonoBehaviour {
 		skillBuyButton.gameObject.SetActive(!isSkillBought);
 		boostButton1.transform.Find("Action Text").GetComponent<Text>().text = 
 						characterLevel >= boostLevelRequirements[0] ? "BUY" : "Unlock at Level "+boostLevelRequirements[0];
-		boostButton1.transform.Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[0]);
-		boostButton1.transform.Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[0]);
+		boostButton1.transform.Find("Level Up Layout").Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[0]);
+		boostButton1.transform.Find("Level Up Layout").Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[0]);
 
 		boostButton2.transform.Find("Action Text").GetComponent<Text>().text = 
 						characterLevel >= boostLevelRequirements[1] ? "BUY" : "Unlock at Level "+boostLevelRequirements[1];
-		boostButton2.transform.Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[1]);
-		boostButton2.transform.Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[1]);
+		boostButton2.transform.Find("Level Up Layout").Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[1]);
+		boostButton2.transform.Find("Level Up Layout").Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[1]);
 
 		boostButton3.transform.Find("Action Text").GetComponent<Text>().text = 
 						characterLevel >= boostLevelRequirements[2] ? "BUY" : "Unlock at Level "+boostLevelRequirements[2];
-		boostButton3.transform.Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[2]);
-		boostButton3.transform.Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[2]);
+		boostButton3.transform.Find("Level Up Layout").Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[2]);
+		boostButton3.transform.Find("Level Up Layout").Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[2]);
 
 		skillBuyButton.transform.Find("Action Text").GetComponent<Text>().text = 
 						characterLevel >= boostLevelRequirements[3] ? "BUY" : "Unlock at Level "+boostLevelRequirements[3];
-		skillBuyButton.transform.Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[3]);
-		skillBuyButton.transform.Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[3]);
+		skillBuyButton.transform.Find("Level Up Layout").Find("Price Text").gameObject.SetActive(characterLevel >= boostLevelRequirements[3]);
+		skillBuyButton.transform.Find("Level Up Layout").Find("Coin Image").gameObject.SetActive(characterLevel >= boostLevelRequirements[3]);
 
 
 

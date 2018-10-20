@@ -216,15 +216,15 @@ public class controller : MonoBehaviour {
 		//Screen text
 		levelText.text = "LEVEL "+level;
 		amountText.text = levelCount+" / "+levelMaxCount;
-		levelUpButton[0].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[0]);
+		levelUpButton[0].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[0]);
 		characterUnitLevelText[0].text = "LEVEL: "+characterLevel[0]+" UNITS: "+units[0];
 		// characterLevelText[1].text = "Partner";
 		for (int i = 1; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
-			levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
+			levelUpButton[i].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
 			characterUnitLevelText[i].text = "";
 		}
-		instaGoldButton.GetComponentInChildren<Text>().text = instaGoldPrice+" diamonds";
+		instaGoldButton.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = instaGoldPrice+"";
 		instaGoldText.text = calculateMaxGold()+" GOLD";
 
 		//Deactivate certain objects
@@ -264,8 +264,8 @@ public class controller : MonoBehaviour {
 		//Update diamond purchases price
 		instaGoldButton.interactable = diamonds >= instaGoldPrice;
 		randomItemButton.interactable = diamonds >= randomItemPrice;
-		//resetSkillCooldownsButton.interactable = diamonds >= resetSkillCooldownsPrice;
-		resetSkillCooldownsButton.interactable = false;
+		resetSkillCooldownsButton.interactable = (diamonds >= resetSkillCooldownsPrice) && upgradeController.skillTabButton.gameObject.activeSelf;
+		// resetSkillCooldownsButton.interactable = false;
 		instantPrestigeButton.interactable = diamonds >= instantPrestigePrice && unconvertedPrestigeCurrency > 0;
 		instantPrestigeText.text = "+"+NumberFormat.format(unconvertedPrestigeCurrency) + " NOTES";
 		gildRandomHeroButton.interactable = diamonds >= gildRandomHeroPrice;
@@ -361,13 +361,14 @@ public class controller : MonoBehaviour {
 		regionCompleteText.SetActive(completedRegions[region]);
 
 		m1UpgradeCost[0] = Math.Round(m1UpgradeBaseCost[0]*Math.Pow(m1UpgradeCostMultiplier[0],m1Level[0]));
-		unitM1Button[0].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[0] + "";
+		unitM1Button[0].transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[0] + "";
 		unitMultiplierText[0].text = "CURRENT BONUS: + "+(m1Level[0]-1)*25+"%"; 
 
 
 		m1UpgradeCost[1] = Math.Round(m1UpgradeBaseCost[1]*Math.Pow(m1UpgradeCostMultiplier[1],m1Level[1]));
-		unitM1Button[1].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[1] + "";
+		unitM1Button[1].transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[1] + "";
 		unitMultiplierText[1].text = "CURRENT BONUS: + "+(m1Level[1]-1)*25+"%"; 
+		resetSkillCooldownsButton.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = resetSkillCooldownsPrice + "";
 
 		prestigeButton.gameObject.SetActive(completedRegions[1]);
 
@@ -504,8 +505,8 @@ public class controller : MonoBehaviour {
 			sum += Math.Round(baseCharacterUpgradeCost[i]*Math.Pow(characterUpgradeCostMultiplier[i],characterLevel[i]+j));
 		characterUpgradeCost[i] = sum;
 		levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = characterLevel[i] > 0 ? "LEVEL UP" : "HIRE";
-		levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
-		individualLevelUpButton.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
+		levelUpButton[i].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
+		individualLevelUpButton.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
 	}
 	
 	public void buyClickM1Up() {
@@ -514,7 +515,7 @@ public class controller : MonoBehaviour {
 		diamonds -= m1UpgradeCost[i];
 		diamondText.text = "Diamonds: "+diamonds;
 		m1UpgradeCost[i] = Math.Round(m1UpgradeBaseCost[i]*Math.Pow(m1UpgradeCostMultiplier[i],m1Level[i]));
-		unitM1Button[i].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[i]+"";
+		unitM1Button[i].transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[i]+"";
 		unitM1[i] += .25f;
 		unitMultiplierText[i].text = "CURRENT BONUS: + "+(m1Level[i]-1)*25+"%"; 
 		RecalculateUnit(i);
@@ -530,7 +531,7 @@ public class controller : MonoBehaviour {
 		diamonds -= m1UpgradeCost[1];
 		diamondText.text = "Diamonds: "+diamonds;
 		m1UpgradeCost[1] = Math.Round(m1UpgradeBaseCost[1]*Math.Pow(m1UpgradeCostMultiplier[1],m1Level[1]));
-		unitM1Button[1].transform.Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[1]+"";
+		unitM1Button[1].transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[1]+"";
 		unitMultiplierText[1].text = "CURRENT BONUS: + "+(m1Level[1]-1)*25+"%"; 
 		saveStateController.SaveData();
 	}
@@ -574,6 +575,12 @@ public class controller : MonoBehaviour {
 		characterGilds[index]++;
 		upgradeController.RefreshCharacterBoard(index);
 		RecalculateUnit(index);
+		saveStateController.SaveData();
+	}
+
+	public void buyResetCooldowns() {
+		diamonds -= resetSkillCooldownsPrice;
+		skillController.ResetSkillCooldowns();
 		saveStateController.SaveData();
 	}
 #endregion

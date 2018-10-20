@@ -203,4 +203,12 @@ public class SkillController : MonoBehaviour {
 			}
 		}
 	}
+
+	public void ResetSkillCooldowns() {
+		foreach (string key in keys) {
+			skillCooldown[key] = 0;
+			skillText[key].text = NumberFormat.format(skillCooldown[key]);
+			skillButtons[key].interactable = true;
+		}
+	}
 }
