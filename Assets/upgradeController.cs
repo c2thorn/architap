@@ -257,7 +257,7 @@ public class upgradeController : MonoBehaviour {
 		boost2Description.text = boostInfo[selectedCharacter,1,1] + characterNames[selectedCharacter]+" gains +"+(boostValues[1]*100) + measurement;
 		boostButton3.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]);
 		boost3Description.text = boostInfo[selectedCharacter,2,1] + characterNames[selectedCharacter]+" gains +"+(boostValues[2]*100) + measurement;
-		skillBuyButton.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(boost3Price[selectedCharacter]);
+		skillBuyButton.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(skillPrice[selectedCharacter]);
 		skillDescription.text = boostInfo[selectedCharacter,3,1];
 		// skillBuyButton.transform.Find("Boost Bonus Text").GetComponent<Text>().text = "+"+(boostValues[2]*100) + "%";
 

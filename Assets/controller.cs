@@ -387,6 +387,8 @@ public class controller : MonoBehaviour {
 		double calc = Math.Round(baseGoldDrop*Math.Pow(baseGoldMultiplier,level)*goldMultiplier1*goldMultiplier2);
 		if (idling && idleGoldBonus > 1)
 			calc = Math.Round(calc*idleGoldBonus);
+		if (skillController.skillFlag["goldBoost"])
+			calc = Math.Round(calc*skillController.GetSkillEffect("goldBoost"));
 		return calc;
 	}
 
@@ -413,9 +415,9 @@ public class controller : MonoBehaviour {
 		if (idling && i > 0 && idleUPSBonus > 1)
 			units[i] = Math.Round(units[i]*idleUPSBonus);
 		if (i == 0 && skillController.skillFlag["clickBoost"]) {
-			units[i] = Math.Round(units[i]*skillController.skillEffect["clickBoost"]);
+			units[i] = Math.Round(units[i]*skillController.GetSkillEffect("clickBoost"));
 		} else if (i != 0 && skillController.skillFlag["partnerBoost"]) {
-			units[i] = Math.Round(units[i]*skillController.skillEffect["partnerBoost"]);
+			units[i] = Math.Round(units[i]*skillController.GetSkillEffect("partnerBoost"));
 		}
 	}
 
@@ -591,11 +593,15 @@ public class controller : MonoBehaviour {
 		goldMultiplier1 = 1;
 		bossLifeItemMultiplier = 1;
 		bossStartTime = 30;
-		bonusEnemyChance = 0.02f;
+		bonusEnemyChance = 0.02f;		
+		if (skillController.skillFlag["goldHouseChanceBoost"])
+			bonusEnemyChance += (float)skillController.GetSkillEffect("goldHouseChanceBoost");
 		bonusEnemyMultiplier = 7;
 		prestigeDropItemMultiplier = 1;
 		prestigeEffectItemMultiplier = 1;
 		criticalClickChance = 0;
+		if (skillController.skillFlag["criticalClickChanceBoost"])
+			criticalClickChance += (float)skillController.GetSkillEffect("criticalClickChanceBoost");
 		criticalClickMultiplier = 3;
 		idleGoldBonus = 1;
 		idleUPSBonus = 1;

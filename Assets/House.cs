@@ -49,8 +49,10 @@ public class House : MonoBehaviour {
 
         maxHealth = controller.calculateHealth();
         healthBar.UpdateBar( health, maxHealth );
-        if (!controller.uniqueBoss)
+        if (!controller.uniqueBoss){
             halo.SetActive(controller.bonusEnemy);
+            halo.GetComponent<ParticleSystem>().Play();
+        }
         buildingAudioSource = GameObject.Find("Building Audio Source").GetComponent<BuildingAudioSource>();
         maskObject = transform.Find("Sprite Mask").gameObject;
         // rectHeight = GetComponent<RectTransform>().rect.height;
