@@ -104,9 +104,11 @@ public class upgradeController : MonoBehaviour {
 	public GameObject individualCharacterBreakdown;
 	public ScrollRect goldScrollRect;
 	public bool multiLevelUpEnabled;
+	public int[] maxLevelUpAmounts;
 
 	// Use this for initialization
 	void Start () {
+		maxLevelUpAmounts = new int[characterAmount];
 		currencyPanelIndex = 0;
 		restart();
 		goldButton.gameObject.SetActive(false);
@@ -139,6 +141,7 @@ public class upgradeController : MonoBehaviour {
 		}
 		toolTipShowing = false;
 		toolTip.SetActive(false);
+		InvokeRepeating("CalculalteMaxMultiLevelUp",Time.time,4.0f);
 	}
 
 	public void restart() {
@@ -465,12 +468,12 @@ public class upgradeController : MonoBehaviour {
 		ChangeTabIndicators(0);
 	}
 	public void resetScroll() {
-		goldPanel.GetComponentInChildren<Scrollbar>().value = 1;
-		diamondPanel.GetComponentInChildren<Scrollbar>().value = 1;
-		itemPanel.GetComponentInChildren<Scrollbar>().value = 1;
-		mapPanel.GetComponentInChildren<Scrollbar>().size = (float)Math.Round(mapPanel.GetComponentInChildren<Scrollbar>().size,1);
-		mapPanel.GetComponentInChildren<Scrollbar>().value = 0;
-		achievementsPanel.GetComponentInChildren<Scrollbar>().value = 0;
+		goldPanel.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 1;
+		diamondPanel.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 1;
+		itemPanel.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 1;
+		// mapPanel.GetComponentInChildren<Scrollbar>().size = (float)Math.Round(mapPanel.GetComponentInChildren<Scrollbar>().size,1);
+		mapPanel.GetComponentInChildren<ScrollRect>().horizontalNormalizedPosition = 0;
+		achievementsPanel.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 1;
 	}
 	public void diamondTab() {
 		goldPanel.SetActive(false);
@@ -621,12 +624,44 @@ public class upgradeController : MonoBehaviour {
 		currentMultiLevelUpIndex++;
 		if (currentMultiLevelUpIndex == multiLevelUpValues.Length )
 			currentMultiLevelUpIndex = 0;
-		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
-		for (int i = 0; i < controller.levelUpButton.Length; i++)
-			controller.RecalculateCharacterUpgradeCost(i);
+		
+		if (currentMultiLevelUpIndex == multiLevelUpValues.Length - 1) {
+			CalculalteMaxMultiLevelUp();
+			multiLevelButton.GetComponentInChildren<Text>().text = "MAX";
+		} else {
+			for (int i = 0; i < controller.levelUpButton.Length; i++)
+				controller.RecalculateCharacterUpgradeCost(i);
+			multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
+		}
+
 		if (individualCharacterPanel.activeSelf)
 			RefreshCharacterPanel();
 		uiClickAudio.clickSound();
+	}
+
+	public void CalculalteMaxMultiLevelUp() {
+		if (currentMultiLevelUpIndex == multiLevelUpValues.Length - 1) {
+			for (int i = 0; i < maxLevelUpAmounts.Length; i++) {
+				double sum = 0;
+				int counter = 0;
+				do {
+					sum += Math.Round(controller.baseCharacterUpgradeCost[i]*Math.Pow(controller.characterUpgradeCostMultiplier[i],controller.characterLevel[i]+counter));
+					counter++;
+				}while (sum < controller.gold);
+				counter = Mathf.Max(1, counter - 1);
+				maxLevelUpAmounts[i] = counter;
+				controller.RecalculateCharacterUpgradeCost(i);
+			}
+		}
+	}
+
+	public int GetNumLevels(int i) {
+		int numLevels;
+		if (currentMultiLevelUpIndex == multiLevelUpValues.Length - 1)
+			numLevels = maxLevelUpAmounts[i];
+		else
+			numLevels = multiLevelUpValues[currentMultiLevelUpIndex];
+		return numLevels;
 	}
 
 	public void individualCharacterLevelUp() {
@@ -648,8 +683,6 @@ public class upgradeController : MonoBehaviour {
 		+ (controller.prestigeCurrency > 0 ? " x" + Math.Round(1+(controller.prestigeCurrency*controller.prestigeEffectItemMultiplier/100),2) 
 				+ " Prestige" : "");
 	}
-
-
 
 	public void showToolTip(int i) {
 		// if (individualCharacterPanel.activeSelf)

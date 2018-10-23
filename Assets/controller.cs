@@ -207,46 +207,11 @@ public class controller : MonoBehaviour {
 
 	}
 	void Start () {
-		// saveStateController.LoadData();
 		Application.runInBackground = true;
-		double health = 0;
-		double maxHealth = calculateHealth();
-		healthBar.UpdateBar( health, maxHealth );
 
-		//Screen text
-		levelText.text = "LEVEL "+level;
-		amountText.text = levelCount+" / "+levelMaxCount;
-		levelUpButton[0].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[0]);
-		characterUnitLevelText[0].text = "LEVEL: "+characterLevel[0]+" UNITS: "+units[0];
-		// characterLevelText[1].text = "Partner";
-		for (int i = 1; i < upgradeController.characterAmount; i++) {
-			levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
-			levelUpButton[i].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
-			characterUnitLevelText[i].text = "";
-		}
-		instaGoldButton.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = instaGoldPrice+"";
-		instaGoldText.text = calculateMaxGold()+" GOLD";
-
-		//Deactivate certain objects
-		levelNavigateDownButton.gameObject.SetActive(false);
-		levelNavigateUpButton.gameObject.SetActive(false);
-		prestigeText.gameObject.SetActive(false);
-		coalText.gameObject.SetActive(false);
-		bossTimeText.gameObject.SetActive(false);
-		for (int i = 1; i < regionButtons.Length; i++)
-			regionButtons[i].SetActive(false);
-		foreach(Button button in uniqueBossButtons)
-			button.interactable=false;
-		closeCoalModal();
-		shopPanel.SetActive(false);
-
-		//Set other variables
-		modalOpen = false;
-		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
-		// totalBuildings = 0;
 		SetUp();
-		// if (highestLevel < 2)
-		// 	gold = 1000000;
+		//Should be last
+		saveStateController.CheckIdleTime();
 	}
 	
 	// Update is called once per frame
@@ -278,6 +243,42 @@ public class controller : MonoBehaviour {
 	}
 
 	public void SetUp() {
+		double health = 0;
+		double maxHealth = calculateHealth();
+		healthBar.UpdateBar( health, maxHealth );
+
+
+		//Screen text
+		levelText.text = "LEVEL "+level;
+		amountText.text = levelCount+" / "+levelMaxCount;
+		levelUpButton[0].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[0]);
+		characterUnitLevelText[0].text = "LEVEL: "+characterLevel[0]+" UNITS: "+units[0];
+		for (int i = 1; i < upgradeController.characterAmount; i++) {
+			levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
+			levelUpButton[i].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
+			characterUnitLevelText[i].text = "";
+		}
+		instaGoldButton.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = instaGoldPrice+"";
+		instaGoldText.text = calculateMaxGold()+" GOLD";
+
+		//Deactivate certain objects
+		levelNavigateDownButton.gameObject.SetActive(false);
+		levelNavigateUpButton.gameObject.SetActive(false);
+		prestigeText.gameObject.SetActive(false);
+		coalText.gameObject.SetActive(false);
+		bossTimeText.gameObject.SetActive(false);
+		for (int i = 1; i < regionButtons.Length; i++)
+			regionButtons[i].SetActive(false);
+		foreach(Button button in uniqueBossButtons)
+			button.interactable=false;
+		closeCoalModal();
+		shopPanel.SetActive(false);
+
+		//Set other variables
+		modalOpen = false;
+		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
+
+
 		RecalculateAchievementMultipliers();
 		for (int i = 0; i < baseCharacterUpgradeCost.Length; i++)
 			RecalculateCharacterUpgradeCost(i);
@@ -334,11 +335,6 @@ public class controller : MonoBehaviour {
 		for (int i = 0;i < units.Length;i++){
 			if (characterLevel[i] > 0)
 				upgradeController.RefreshCharacterBoard(i);
-			// else {
-			// 	levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
-			// 	levelUpButton[i].gameObject.transform.Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
-			// 	characterUnitLevelText[i].text = "";
-			// }
 		}
 		for (int i = 0; i < completedRegions.Length;i++) {
 			if (completedRegions[i]){
@@ -356,7 +352,7 @@ public class controller : MonoBehaviour {
 			prestigeText.gameObject.SetActive(true);
 			upgradeController.SetCurrencyPanelPrestige();
 		}
-		// setRegionBackground(region);
+
 		SetUpRegion(region);
 		regionCompleteText.SetActive(completedRegions[region]);
 
@@ -376,9 +372,6 @@ public class controller : MonoBehaviour {
 
 		idleTimer = idleStartTimer;
 		idlingText.gameObject.SetActive(false);
-
-		//Should be last
-		saveStateController.CheckIdleTime();
 	}
 #endregion
 
@@ -482,16 +475,21 @@ public class controller : MonoBehaviour {
 
 	//When you purchase a level up
 	public void levelUp(int i) {
-		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
+		int numLevels = upgradeController.GetNumLevels(i);
+		int previousLevel = characterLevel[i];
+
 		characterLevel[i] += numLevels;
 		gold -= characterUpgradeCost[i];
 		upgradeController.RefreshCharacterBoard(i);
 		LevelUpUnit(i,numLevels);
 		if (!characterEverBought[i]){
 			characterEverBought[i] = true;
+		}
+
+		if (previousLevel == 0 || (previousLevel == 1 && i == 0))
 			if ((i+1) < upgradeController.characterAmount)
 				upgradeController.ScrollABit();
-		}
+		upgradeController.CalculalteMaxMultiLevelUp();
 		saveStateController.SaveData();
 		// characterAudio.levelUpSound();
 	}
@@ -501,8 +499,8 @@ public class controller : MonoBehaviour {
 	
 #region Upgrades/Purchases
 	public void RecalculateCharacterUpgradeCost(int i) {
-		int numLevels = upgradeController.multiLevelUpValues[upgradeController.currentMultiLevelUpIndex];
 		double sum = 0;
+		int numLevels = upgradeController.GetNumLevels(i);
 		for (int j = 0; j < numLevels; j++)
 			sum += Math.Round(baseCharacterUpgradeCost[i]*Math.Pow(characterUpgradeCostMultiplier[i],characterLevel[i]+j));
 		characterUpgradeCost[i] = sum;
@@ -1082,7 +1080,8 @@ public class controller : MonoBehaviour {
 			uniqueBossCompleted[i] = false;
 		}
 		//TODO change this
-		Start();
+		// Start();
+		SetUp();
 		upgradeController.restart();
 		upgradeController.UndoBoosts();
 		upgradeController.goldTab();
