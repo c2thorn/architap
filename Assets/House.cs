@@ -85,7 +85,19 @@ public class House : MonoBehaviour {
     bool checkClick() {
         bool hit = false;
 
-        if (Input.GetMouseButtonDown(0)) {
+		if (Input.touchCount > 0){
+            foreach (Touch touch in Input.touches) {
+                if (touch.fingerId < 3 && touch.phase == TouchPhase.Began){
+                    Vector3 wp = Camera.main.ScreenToWorldPoint(touch.position);
+                    if (coll.OverlapPoint(wp)) {
+                        hit = true;
+                        
+                        ClickAction(Input.mousePosition);
+
+                    }
+                }
+            }
+        } else if (Input.GetMouseButtonDown(0)) {
             Vector3 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (coll.OverlapPoint(wp)) {
                 hit = true;
