@@ -1,0 +1,37 @@
+{
+  "client": [
+    {
+      "services": {
+        "appinvite_service": {
+          "status": 0
+        }, 
+        "analytics_service": {
+          "status": 0
+        }
+      }, 
+      "oauth_client": [
+        {
+          "client_id": "214648748290-u5bvg486iaiv8ktgqkdbi82t9f73vftk.apps.googleusercontent.com"
+        }
+      ], 
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ89GeMJLmhFrYNpjTeji_wfSwt4HuM7g"
+        }
+      ], 
+      "client_info": {
+        "mobilesdk_app_id": "1:214648748290:ios:24a2449b0f0103ca", 
+        "android_client_info": {
+          "package_name": "com.Orso.clicker"
+        }
+      }
+    }
+  ], 
+  "configuration_version": "1", 
+  "project_info": {
+    "storage_bucket": "architap-e6a32.appspot.com", 
+    "project_id": "architap-e6a32", 
+    "firebase_url": "https://architap-e6a32.firebaseio.com", 
+    "project_number": "214648748290"
+  }
+}

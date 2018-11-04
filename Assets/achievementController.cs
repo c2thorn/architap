@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Firebase;
+using Firebase.Analytics;
+using System;
 
 public class achievementController : MonoBehaviour {
 
@@ -17,11 +20,41 @@ public class achievementController : MonoBehaviour {
 	public SaveStateController saveStateController;
 	public GameObject lockedButton;
 	public GameObject unlockedButton;
+	
+		// Use this for initialization
+	public void Start() {
+      FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
+        var dependencyStatus = task.Result;
+        if (dependencyStatus == DependencyStatus.Available) {
+          InitializeFirebase();
+        } else {
+          Debug.LogError(
+            "Could not resolve all Firebase dependencies: " + dependencyStatus);
+        }
+      });
+    }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+	// Handle initialization of the necessary firebase modules:
+    void InitializeFirebase() {
+      Debug.Log("Enabling data collection.");
+      FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
+
+      Debug.Log("Set user properties.");
+      // Set the user's sign up method.
+      FirebaseAnalytics.SetUserProperty(
+        FirebaseAnalytics.UserPropertySignUpMethod,
+        "Google");
+      // Set the user ID.
+      FirebaseAnalytics.SetUserId("uber_user_510");
+      // Set default session duration values.
+      FirebaseAnalytics.SetMinimumSessionDuration(new TimeSpan(0, 0, 10));
+      FirebaseAnalytics.SetSessionTimeoutDuration(new TimeSpan(0, 30, 0));
+      bool firebaseInitialized = true;
+	  FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLogin);
+	  Debug.Log("trying to log");
+    }
+	
+
 	
 	// Update is called once per frame
 	void Update () {
@@ -36,7 +69,12 @@ public class achievementController : MonoBehaviour {
 					uController.enableAchievementsButton(true);
 					refreshAchievementsUI();
 					controller.RecalculateAchievementMultipliers();
-					saveStateController.SaveData();
+					saveStateController.SaveData();			
+					
+					// Log an event with no parameters.
+				
+					FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventUnlockAchievement);					
+			
 				}
 			}
 		}

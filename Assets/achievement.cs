@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 [System.Serializable] 
 public class achievement {
 	public string name;
@@ -13,5 +14,5 @@ public class achievement {
 
 	public achievement(string name) {
 		this.name = name;
-	}
+	}	
 }
