@@ -25,7 +25,11 @@ namespace UnityEngine.UI.Extensions
 
         private Material currentMaterial;
 
+
+
         private Texture currentTexture;
+
+        public bool isPlaying = false;
 
 #if UNITY_5_5_OR_NEWER
         private ParticleSystem.MainModule mainModule;
@@ -292,7 +296,8 @@ namespace UnityEngine.UI.Extensions
         {
             if (!fixedTime && Application.isPlaying)
             {
-                pSystem.Simulate(Time.unscaledDeltaTime, false, false, true);
+                if (isPlaying)
+                    pSystem.Simulate(Time.unscaledDeltaTime, false, false, true);
                 SetAllDirty();
 
                 if ((currentMaterial != null && currentTexture != currentMaterial.mainTexture) ||
@@ -328,6 +333,13 @@ namespace UnityEngine.UI.Extensions
                 return;
             pSystem = null;
             Initialize();
+        }
+    
+        public void Play(){
+            isPlaying = true;
+        }
+        public void Stop(){
+            isPlaying = false;
         }
     }
 #endif

@@ -134,6 +134,7 @@ public class SaveStateController : MonoBehaviour {
 		}
 		foreach(String key in skillController.keys){
 			skillController.skillsBought[key] = LoadBool(key+"Bought");
+			skillController.skillCooldown[key] = LoadInt(key+"Cooldown");
 		}
 	}
 
@@ -246,6 +247,7 @@ public class SaveStateController : MonoBehaviour {
 
 			foreach(String key in skillController.keys){
 				SaveBool(key+"Bought",skillController.skillsBought[key]);
+				SaveInt(key+"Cooldown", skillController.skillCooldown[key]);
 			}
 
 			StartCoroutine(TrySaveDateTime());
@@ -343,6 +345,9 @@ public class SaveStateController : MonoBehaviour {
 					Debug.Log("Time Difference: "+idleTimeSpan);
 					Debug.Log("In Seconds: " + idleSeconds);
 					CalculateIdleReward(idleSeconds, idleTimeSpan);
+					foreach (string key in skillController.keys) {
+						skillController.DecreaseCooldownBySeconds(key, (int)idleSeconds);
+					}
 				}
 			} 
 		} catch (Exception e) {
