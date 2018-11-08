@@ -129,30 +129,6 @@ public class SkillController : MonoBehaviour {
 		{"cooldownReduction",false}
 	};
 
-	// public Dictionary<string,UIParticleSystem> skillGlow = new Dictionary<string,UIParticleSystem>() {
-	// 	{"autoClick",null},
-	// 	{"clickBoost",null},
-	// 	{"partnerBoost",null},
-	// 	{"goldBoost",null},
-	// 	{"criticalClickChanceBoost",null},
-	// 	{"goldHouseChanceBoost",null},
-	// 	{"doubleNextSkill",null},
-	// 	{"buildingReduction",null},
-	// 	{"cooldownReduction",null}
-	// };
-
-	// public Dictionary<string,ParticleSystem> skillGlow = new Dictionary<string,ParticleSystem>() {
-	// 	{"autoClick",null},
-	// 	{"clickBoost",null},
-	// 	{"partnerBoost",null},
-	// 	{"goldBoost",null},
-	// 	{"criticalClickChanceBoost",null},
-	// 	{"goldHouseChanceBoost",null},
-	// 	{"doubleNextSkill",null},
-	// 	{"buildingReduction",null},
-	// 	{"cooldownReduction",null}
-	// };
-
 	public Dictionary<string,GameObject> skillGlow = new Dictionary<string,GameObject>() {
 		{"autoClick",null},
 		{"clickBoost",null},
@@ -163,7 +139,7 @@ public class SkillController : MonoBehaviour {
 		{"doubleNextSkill",null},
 		{"buildingReduction",null},
 		{"cooldownReduction",null}
-	};	
+	};
 
 	// Use this for initialization
 	void Start () {
@@ -182,12 +158,10 @@ public class SkillController : MonoBehaviour {
 			skillRadial[key].fillAmount = 1 - ((float)skillCooldown[key]/(float)skillCooldownStartTime[key]);
 			skillText[key] = button.transform.Find("Cooldown").GetComponent<Text>();
 			skillText[key].text = FormatSeconds(skillCooldown[key]);
-			// UIParticleSystem particleSystem = parentTransform.Find("Glow").GetComponent<UIParticleSystem>();
-			// ParticleSystem particleSystem = parentTransform.Find("Glow").GetComponent<ParticleSystem>();
-			// particleSystem.Stop();
 			GameObject particleSystem = parentTransform.Find("Glow").gameObject;
 			particleSystem.SetActive(false);
 			skillGlow[key] = particleSystem;
+
 		}
 		RectTransform rect = contentTr.GetComponent<RectTransform>();
 		rect.sizeDelta = new Vector2(rect.sizeDelta.x, 170f);
@@ -208,21 +182,15 @@ public class SkillController : MonoBehaviour {
 			Color newCol;
 			if (skillDoubled[key]) {
 				if (!skillGlow[key].activeSelf){
-					// if (ColorUtility.TryParseHtmlString("#FF00C8", out newCol))
-					// 	skillRadial[key].color = newCol;
 					skillGlow[key].SetActive(true);
 				}
 			}
 			else if (key == "doubleNextSkill" || key == "cooldownReduction"){
 				if (!skillGlow[key].activeSelf){
-					// if (ColorUtility.TryParseHtmlString("#FFAF02", out newCol))
-					// 	skillRadial[key].color = newCol;
 					skillGlow[key].SetActive(true);
 				}
 			}
 			else {
-				// if (ColorUtility.TryParseHtmlString("#A8DA61", out newCol))
-				// 	skillRadial[key].color = newCol;
 			}
 
 		}
@@ -263,18 +231,20 @@ public class SkillController : MonoBehaviour {
 	public void activateSkill(string key) {
 		if (!skillFlag[key]) {
 			if (skillCooldown[key] > 0){
-				// Debug.Log("cooldown for "+key+" not ready");
 				if (skillFlag["cooldownReduction"]) {
 					skillCooldown[key] = 0;
 					skillRadial[key].fillAmount = 1;
 					skillText[key].text = FormatSeconds(0);
+					skillButtons["cooldownReduction"].transform.Find("Cancel").gameObject.SetActive(false);
+					skillButtons["cooldownReduction"].transform.Find("Icon").gameObject.SetActive(true);
 					SkillFinished("cooldownReduction");
 				}
 			} else {
-				// Debug.Log(key+" ready");
 				skillCooldown[key] = skillCooldownStartTime[key];
 				if (skillFlag["doubleNextSkill"] && key != "doubleNextSkill" && key != "cooldownReduction") {
 					skillDoubled[key] = true;
+					skillButtons["doubleNextSkill"].transform.Find("Cancel").gameObject.SetActive(false);
+					skillButtons["doubleNextSkill"].transform.Find("Icon").gameObject.SetActive(true);
 					SkillFinished("doubleNextSkill");
 				}
 				switch (key) {
@@ -307,6 +277,12 @@ public class SkillController : MonoBehaviour {
 						break;
 				}
 			}
+		} else if (key == "doubleNextSkill" || key == "cooldownReduction"){
+			skillButtons[key].transform.Find("Cancel").gameObject.SetActive(false);
+			skillButtons[key].transform.Find("Icon").gameObject.SetActive(true);
+			SkillFinished(key);
+			skillCooldown[key] = 0;
+			skillRadial[key].fillAmount = 1;
 		}
 	}
 
@@ -357,18 +333,23 @@ public class SkillController : MonoBehaviour {
 
 	public void SetDoubleNextSkill() {
 		skillFlag["doubleNextSkill"] = true;
+		skillButtons["doubleNextSkill"].transform.Find("Cancel").gameObject.SetActive(true);
+		skillButtons["doubleNextSkill"].transform.Find("Icon").gameObject.SetActive(false);
 	}
 
 	protected IEnumerator ReduceBuildingRequirementForDuration() {
 		skillFlag["buildingReduction"] = true;
 		int effect = (int)GetSkillEffect("buildingReduction");
 		controller.levelMaxCount = Math.Max(1,controller.levelMaxCount - effect);
+		controller.levelCount = Math.Min(controller.levelMaxCount, controller.levelCount);
 		yield return StartCoroutine(DurationWait("buildingReduction"));
 		controller.levelMaxCount = Math.Max(1,controller.levelMaxCount + effect);
 	}
 
 	public void ResetCooldownForNextSkill() {
 		skillFlag["cooldownReduction"] = true;
+		skillButtons["cooldownReduction"].transform.Find("Cancel").gameObject.SetActive(true);
+		skillButtons["cooldownReduction"].transform.Find("Icon").gameObject.SetActive(false);
 	}
 	
 	public IEnumerator DurationWait(string key) {

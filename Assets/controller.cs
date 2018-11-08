@@ -193,6 +193,7 @@ public class controller : MonoBehaviour {
 	public CharacterAudio characterAudio;
 	public UIClickAudio uiclickAudio;
 #endregion
+	public float houseSpawnY = 0.65f;
 #endregion
 
 #region Start/Update
@@ -782,6 +783,8 @@ public class controller : MonoBehaviour {
 					else
 						levelCount++;
 				}
+			} else if (levelCount != levelMaxCount) {
+				levelCount = levelMaxCount;
 			}
 			if (spawn)
 				spawnNewEnemy(false);
@@ -810,7 +813,7 @@ public class controller : MonoBehaviour {
 			bonusEnemy = UnityEngine.Random.value <= bonusEnemyChance;
 		}
 
-		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,0.3f,-5f),Quaternion.Euler(0,0, 0));
+		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,houseSpawnY,-5f),Quaternion.Euler(0,0, 0));
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
 		if (delay)
 			newEnemy.GetComponent<House>().delay();
@@ -894,7 +897,7 @@ public class controller : MonoBehaviour {
 		levelText.text = "LEVEL "+level;
 		amountText.text = "Unique #"+(i+1)+"!";
 
-		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,0.3f,-5f),Quaternion.Euler(0,0,0));
+		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,houseSpawnY,-5f),Quaternion.Euler(0,0,0));
 		newUnique.GetComponent<House>().health = 0;
 		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ uniqueNouns[i];
 		newUnique.GetComponent<House>().delay();
@@ -908,7 +911,7 @@ public class controller : MonoBehaviour {
 			DropItem(pos, item);
 		} else {
 			if(unlockUniqueBoss()){
-				GameObject blueprint = (GameObject) Instantiate(blueprintPrefab,pos+new Vector3(0,2f,-3f),Quaternion.Euler(0, 0, 0));
+				GameObject blueprint = (GameObject) Instantiate(blueprintPrefab,pos+new Vector3(0,2.25f,-3f),Quaternion.Euler(0, 0, 0));
 			}
 		}
 		upgradeController.enableMultiLevelUpButton();
