@@ -194,6 +194,7 @@ public class controller : MonoBehaviour {
 	public UIClickAudio uiclickAudio;
 #endregion
 	public float houseSpawnY = 0.65f;
+	public GameObject UFOPrefab;
 #endregion
 
 #region Start/Update
@@ -211,6 +212,8 @@ public class controller : MonoBehaviour {
 		Application.runInBackground = true;
 
 		SetUp();
+
+		StartCoroutine(SpawnUFOs());
 		//Should be last
 		saveStateController.CheckIdleTime();
 	}
@@ -1163,4 +1166,13 @@ public class controller : MonoBehaviour {
 			RecalculateAllUnits();
 	}
 #endregion
+
+	IEnumerator SpawnUFOs() {
+		while (true) {
+			float waitSeconds = UnityEngine.Random.Range(10f, 100f);
+			yield return new WaitForSeconds(waitSeconds);
+			GameObject ufo = Instantiate(UFOPrefab,Vector3.zero,Quaternion.Euler(0, 0, -45f));
+			ufo.GetComponent<UFO>().value = Math.Round((baseGoldDrop*Math.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2)*(1+waitSeconds/100));
+		}
+	}
 }
