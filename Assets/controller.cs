@@ -1171,7 +1171,7 @@ public class controller : MonoBehaviour {
 		while (true) {
 			float waitSeconds = UnityEngine.Random.Range(10f, 100f);
 			yield return new WaitForSeconds(waitSeconds);
-			GameObject ufo = Instantiate(UFOPrefab,Vector3.zero,Quaternion.Euler(0, 0, -45f));
+			GameObject ufo = Instantiate(UFOPrefab,Vector3.zero,Quaternion.Euler(0, 0, 0));
 			ufo.GetComponent<UFO>().value = Math.Round((baseGoldDrop*Math.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2)*(1+waitSeconds/100));
 		}
 	}
