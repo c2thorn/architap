@@ -141,6 +141,8 @@ public class SkillController : MonoBehaviour {
 		{"cooldownReduction",null}
 	};
 
+	public GameObject skillNotificationPanel;
+
 	// Use this for initialization
 	void Start () {
 		StartCoroutine(WaitSetUp());
@@ -165,6 +167,7 @@ public class SkillController : MonoBehaviour {
 		}
 		RectTransform rect = contentTr.GetComponent<RectTransform>();
 		rect.sizeDelta = new Vector2(rect.sizeDelta.x, 170f);
+		skillNotificationPanel.SetActive(false);
 		//TODO calculate skills cooldown from time
 
 		CheckIfSkillsBought();
@@ -237,6 +240,7 @@ public class SkillController : MonoBehaviour {
 					skillText[key].text = FormatSeconds(0);
 					skillButtons["cooldownReduction"].transform.Find("Cancel").gameObject.SetActive(false);
 					skillButtons["cooldownReduction"].transform.Find("Icon").gameObject.SetActive(true);
+					skillNotificationPanel.SetActive(false);
 					SkillFinished("cooldownReduction");
 				}
 			} else {
@@ -245,6 +249,7 @@ public class SkillController : MonoBehaviour {
 					skillDoubled[key] = true;
 					skillButtons["doubleNextSkill"].transform.Find("Cancel").gameObject.SetActive(false);
 					skillButtons["doubleNextSkill"].transform.Find("Icon").gameObject.SetActive(true);
+					skillNotificationPanel.SetActive(false);
 					SkillFinished("doubleNextSkill");
 				}
 				switch (key) {
@@ -280,6 +285,7 @@ public class SkillController : MonoBehaviour {
 		} else if (key == "doubleNextSkill" || key == "cooldownReduction"){
 			skillButtons[key].transform.Find("Cancel").gameObject.SetActive(false);
 			skillButtons[key].transform.Find("Icon").gameObject.SetActive(true);
+			skillNotificationPanel.SetActive(false);
 			SkillFinished(key);
 			skillCooldown[key] = 0;
 			skillRadial[key].fillAmount = 1;
@@ -335,6 +341,8 @@ public class SkillController : MonoBehaviour {
 		skillFlag["doubleNextSkill"] = true;
 		skillButtons["doubleNextSkill"].transform.Find("Cancel").gameObject.SetActive(true);
 		skillButtons["doubleNextSkill"].transform.Find("Icon").gameObject.SetActive(false);
+		skillNotificationPanel.SetActive(true);
+		skillNotificationPanel.transform.Find("Text").GetComponent<Text>().text = "Select an ability to boost";
 	}
 
 	protected IEnumerator ReduceBuildingRequirementForDuration() {
@@ -348,6 +356,8 @@ public class SkillController : MonoBehaviour {
 
 	public void ResetCooldownForNextSkill() {
 		skillFlag["cooldownReduction"] = true;
+		skillNotificationPanel.SetActive(true);
+		skillNotificationPanel.transform.Find("Text").GetComponent<Text>().text = "Select an ability to reset";
 		skillButtons["cooldownReduction"].transform.Find("Cancel").gameObject.SetActive(true);
 		skillButtons["cooldownReduction"].transform.Find("Icon").gameObject.SetActive(false);
 	}
