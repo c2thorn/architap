@@ -35,21 +35,21 @@ public class SettingsController : MonoBehaviour {
 	}
 
 	public void OpenSettings() {
-		controller.modalOpen = true;
+		controller.activateModal();
 		settingsPanel.SetActive(true);
 		statisticsPanel.SetActive(false);
 		debugPanel.SetActive(false);
 	}
 
 	public void CloseSettings() {
-		controller.modalOpen = false;
+		controller.closeModal();
 		settingsPanel.SetActive(false);
 		statisticsPanel.SetActive(false);
 		debugPanel.SetActive(false);
 	}
 
 	public void OpenStatistics() {
-		controller.modalOpen = true;
+		controller.activateModal();
 		settingsPanel.SetActive(false);
 		statisticsPanel.SetActive(true);
 		debugPanel.SetActive(false);
@@ -67,7 +67,7 @@ public class SettingsController : MonoBehaviour {
 	}
 
 	public void OpenDebug() {
-		controller.modalOpen = true;
+		controller.activateModal();
 		settingsPanel.SetActive(false);
 		statisticsPanel.SetActive(false);
 		debugPanel.SetActive(true);

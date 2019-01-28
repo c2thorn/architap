@@ -71,7 +71,6 @@ public class controller : MonoBehaviour {
 	public double criticalClickMultiplier = 3;
 #endregion
 #region Prefabs
-	public GameObject[] enemyPrefabs;
 	public GameObject blueprintPrefab;
     public GameObject chestPrefab;
 	public GameObject[] uniqueBossPrefabs;
@@ -175,6 +174,7 @@ public class controller : MonoBehaviour {
 	public GameObject levelArea;
 	public GameObject coalModal;
 	public GameObject shopPanel;
+	public GameObject modalBackDrop;
 
 #endregion
 #region Backgrounds
@@ -279,7 +279,7 @@ public class controller : MonoBehaviour {
 		shopPanel.SetActive(false);
 
 		//Set other variables
-		modalOpen = false;
+		closeModal();
 		playerIndicator.transform.position = regionButtons[0].transform.position+playerIndicatorOffset;
 
 
@@ -373,6 +373,8 @@ public class controller : MonoBehaviour {
 		prestigeButton.gameObject.SetActive(completedRegions[1]);
 
 		bonusEnemy = false;
+
+		buildingController.ChangeLevel(level);
 
 		idleTimer = idleStartTimer;
 		idlingText.gameObject.SetActive(false);
@@ -734,7 +736,7 @@ public class controller : MonoBehaviour {
 			if (advanceLevel) {
 				level++;
 				levelCount = 1;
-				buildingController.centerOnButton();
+				buildingController.LevelHasChanged();
 				buildingController.RefreshBuildingPreviews();
 			}
 			instaGoldText.text = calculateMaxGold()+" GOLD";
@@ -806,18 +808,19 @@ public class controller : MonoBehaviour {
 		if (boss) {
 			levelText.text = "LEVEL "+level;
 			amountText.text = "BOSS FIGHT!";
-			enemySelector = 5;
+			// enemySelector = 5;
 			startBossTime();
 		}
 		else {
 			levelText.text = "LEVEL "+level;
 			amountText.text = levelCount+" / "+levelMaxCount;
-			enemySelector = ((level-1)/2)%5;
+			// enemySelector = ((level-1)/2)%5;
 			bonusEnemy = UnityEngine.Random.value <= bonusEnemyChance;
 		}
 
-		GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,houseSpawnY,-5f),Quaternion.Euler(0,0, 0));
-		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ enemyNouns[enemySelector];
+		// GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,houseSpawnY,-5f),Quaternion.Euler(0,0, 0));
+		GameObject newEnemy = (GameObject) Instantiate(buildingController.currentBuildingPrefab, new Vector3(0f,houseSpawnY,-5f),Quaternion.Euler(0,0, 0));
+		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ buildingController.currentBuildingPrefab.name;
 		if (delay)
 			newEnemy.GetComponent<House>().delay();
 	}
@@ -958,7 +961,7 @@ public class controller : MonoBehaviour {
 			boss = false;
 			spawnNewEnemy(true);
 			
-			saveStateController.SaveData();
+			// saveStateController.SaveData();
 			uiclickAudio.navigateSound();
 			return true;
 		}
@@ -1131,16 +1134,26 @@ public class controller : MonoBehaviour {
 		closeCoalModal();
 	}
 
+	public void activateModal() {
+		modalBackDrop.SetActive(true);
+		modalOpen = true;
+	}
+
+	public void closeModal() {
+		modalBackDrop.SetActive(false);
+		modalOpen = false;
+	}
+
 	public void showCoalModal() {
 		coalConversionText.text = NumberFormat.format(coal);
 		diamondConversionText.text = NumberFormat.format(coal);
 		coalModal.SetActive(true);
-		modalOpen = true;
+		activateModal();
 	}
 
 	public void closeCoalModal() {
 		coalModal.SetActive(false);
-		modalOpen = false;
+		closeModal();
 	}
 #endregion
 
@@ -1169,8 +1182,8 @@ public class controller : MonoBehaviour {
 
 	IEnumerator SpawnUFOs() {
 		while (true) {
-			// float waitSeconds = UnityEngine.Random.Range(10f, 100f);
-			float waitSeconds = UnityEngine.Random.Range(5f, 10f);
+			float waitSeconds = UnityEngine.Random.Range(10f, 100f);
+			// float waitSeconds = UnityEngine.Random.Range(5f, 10f);
 			yield return new WaitForSeconds(waitSeconds);
 			int ufoIndex = Mathf.RoundToInt(UnityEngine.Random.Range(0,UFOPrefabs.Length));
 			GameObject ufo = Instantiate(UFOPrefabs[ufoIndex],Vector3.zero,Quaternion.Euler(0, 0, 0));

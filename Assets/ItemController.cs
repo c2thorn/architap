@@ -93,12 +93,14 @@ public class ItemController : MonoBehaviour {
 
 	public void showItemModal(Item item) {
 		itemModal.SetActive(true);
+		controller.activateModal();
 		GameObject itemSlot = GameObject.Find("Item Modal Slot");
 		setItemIcon(itemSlot,item);
 	}
 
 	public void closeItemModal() {
 		itemModal.SetActive(false);
+		controller.closeModal();
 		itemDrop = false;
 	}
 
