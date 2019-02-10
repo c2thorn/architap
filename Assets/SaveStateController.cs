@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Net;
@@ -127,10 +126,12 @@ public class SaveStateController : MonoBehaviour {
 		itemController.modern = LoadBool("modern");
 		if(LoadBool("soundMute")){
 			soundController.soundMute = true;
+			soundController.soundToggle.Toggle();
 		}
 		if(LoadBool("musicMute")) {
 			soundController.musicMute = true;
 			soundController.musicAudioSource.volume = 0;
+			soundController.musicToggle.Toggle();
 		}
 		foreach(String key in skillController.keys){
 			skillController.skillsBought[key] = LoadBool(key+"Bought");
@@ -156,6 +157,7 @@ public class SaveStateController : MonoBehaviour {
 
 	public void SaveData() {
 		if (canSave){
+			// Debug.Log("Saving");
 			countdownNumber = 60;
 			autoSaveText.text = "Autosave in " + countdownNumber;
 
@@ -427,11 +429,11 @@ public class SaveStateController : MonoBehaviour {
 
 	public void OpenIdleModal() {
 		idleRewardModal.SetActive(true);
-		controller.modalOpen = true;
+		controller.activateModal();
 	}
 
 	public void CloseIdleModal() {
 		idleRewardModal.SetActive(false);
-		controller.modalOpen = false;
+		controller.closeModal();
 	}
 }

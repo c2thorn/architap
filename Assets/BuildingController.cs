@@ -26,6 +26,8 @@ public class BuildingController : MonoBehaviour {
 	public GameObject selectedPanel;
 	public float buttonDistance = 200f;
 	public RectTransform canvasRect;
+	public int currentBuildingIndex = 0;
+	public GameObject currentBuildingPrefab;
 
 
 	// Use this for initialization
@@ -69,7 +71,7 @@ public class BuildingController : MonoBehaviour {
 			int buildingIndex = i%levelBuildingLists[region].buildings.Length;
 			Sprite buildingSprite = levelBuildingLists[region].buildings[buildingIndex].transform.Find("Structure").GetComponent<SpriteRenderer>().sprite;
 			GameObject previewButton = (GameObject) Instantiate(previewButtonPrefab,new Vector3(0,0,0),Quaternion.Euler(0, 0, 0),previewList.transform);
-			previewButton.GetComponent<SVGImage>().m_Sprite = buildingSprite;
+			previewButton.transform.Find("Structure").gameObject.GetComponent<SVGImage>().m_Sprite = buildingSprite;
 			RectTransform rect = previewButton.GetComponent<RectTransform>();
 			rect.anchoredPosition = new Vector2(i*buttonDistance + 75,0);
 			previewButton.transform.GetComponentInChildren<Text>().text = ""+(i+minLevel);
@@ -84,7 +86,7 @@ public class BuildingController : MonoBehaviour {
 
 		}
 		contentRect.sizeDelta = new Vector2(((levelRange+0)*buttonDistance+(75f)),contentRect.sizeDelta.y);
-		centerOnButton();
+		LevelHasChanged();
 
 	}
 
@@ -92,17 +94,12 @@ public class BuildingController : MonoBehaviour {
 		int region = controller.region;
 		int levelRange = controller.regionLevels[region,1]-controller.regionLevels[region,0]+1;
 
-		int currentIndex = controller.level - controller.regionLevels[region,0]+1;
-
 		float canvasRatio = (canvasRect.rect.width/675f);
 
 
-		float scrollPosition = (((float)currentIndex-2)*canvasRatio)/((float)(levelRange-3)*canvasRatio);
+		float scrollPosition = (((float)currentBuildingIndex-2)*canvasRatio)/((float)(levelRange-3)*canvasRatio);
 		
-
-		// scrollRect.horizontalNormalizedPosition = Mathf.Min(1,Mathf.Max(0,scrollPosition));
-		// Debug.Log(controller.level + ", " + scrollPosition);
-		selectedPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2((currentIndex-1)*buttonDistance + 75,0);
+		selectedPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2((currentBuildingIndex-1)*buttonDistance + 75,0);
 		StopCoroutine(ScrollTowards(scrollPosition));
 		StartCoroutine(ScrollTowards(scrollPosition));
 	}
@@ -123,10 +120,23 @@ public class BuildingController : MonoBehaviour {
 
 	}
 
+	public void UpdateCurrentBuilding(int level){
+		int region = controller.region;
+		currentBuildingIndex = level - controller.regionLevels[region,0]+1;
+		int buildingNumber = (currentBuildingIndex-1)%levelBuildingLists[region].buildings.Length;
+		currentBuildingPrefab = levelBuildingLists[region].buildings[buildingNumber];
+	}
+
 	public void ChangeLevel(int level) {
+		UpdateCurrentBuilding(level);
 		if (controller.levelJump(level)) {
 			centerOnButton();
 		}
+	}
+
+	public void LevelHasChanged() {
+		UpdateCurrentBuilding(controller.level);
+		centerOnButton();
 	}
 
 	public void RefreshBuildingPreviews() {

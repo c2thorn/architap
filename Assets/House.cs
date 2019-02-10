@@ -31,7 +31,7 @@ public class House : MonoBehaviour {
 
     public GameObject maskObject;
 
-    private float rectHeight;
+    public float rectHeight = 1f;
 
     public bool startedDying = false;
     public bool finishingDying = false;
@@ -153,8 +153,6 @@ public class House : MonoBehaviour {
         createFloatText(mousePosition,NumberFormat.format(clickDamage), Color.red, critical);
         createDust(wp);
         controller.totalClicks++;
-        //TODO best way?
-        tutorialController.RemovePointer();
     }
 
 
@@ -166,7 +164,6 @@ public class House : MonoBehaviour {
 
     public void updateMaskPercentage() {
         double percentage = Math.Min(1,((.92f)*health/maxHealth)+0.08f);
-        rectHeight = 1f;
         maskObject.transform.localPosition = new Vector3(0,(float)percentage*rectHeight,-.16f);
     }
 
@@ -174,6 +171,7 @@ public class House : MonoBehaviour {
 
     bool checkDead() {
         if (health >= maxHealth) {
+            tutorialController.RemoveHousePointer();
             // _animator.SetBool("death", true);
             StartCoroutine(startDying());
             return true;

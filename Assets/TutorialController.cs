@@ -23,7 +23,7 @@ public class TutorialController : MonoBehaviour {
 		pointer.StartPointing();
 	}
 
-	public void RemovePointer() {
+	public void RemoveHousePointer() {
 		pointer.gameObject.SetActive(false);
 	}
 }

@@ -13,7 +13,7 @@ public class upgradeController : MonoBehaviour {
 	public Button architectButton;
 	public Button skillTabButton;
 	public Button achievementsButton;
-	public GameObject multiLevelButton;
+	public GameObject multiLevelPanel;
 	public GameObject goldPanel;
 	public GameObject diamondPanel;
 	public GameObject itemPanel;
@@ -130,10 +130,10 @@ public class upgradeController : MonoBehaviour {
 		panelArea.SetActive(false);
 		individualCharacterPanel.SetActive(false);
 		diamondCountText.SetActive(false);
-		multiLevelButton.SetActive(false);
+		multiLevelPanel.SetActive(false);
 		multiLevelUpEnabled = false;
 		currentMultiLevelUpIndex = 0;
-		multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
+		multiLevelPanel.GetComponentInChildren<Text>().text = "Buy "+multiLevelUpValues[currentMultiLevelUpIndex];
 		for (int i = 0; i < characterBoards.Length; i++){ 
 			Text gildText = characterBoards[i].transform.Find("Gilds Text").GetComponent<Text>();
 			gildText.text = "Gilds: " + NumberFormat.format(controller.characterGilds[i]);
@@ -464,7 +464,7 @@ public class upgradeController : MonoBehaviour {
 		// goldButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
 		if (multiLevelUpEnabled)
-			multiLevelButton.SetActive(true);
+			multiLevelPanel.SetActive(true);
 		ChangeTabIndicators(0);
 	}
 	public void resetScroll() {
@@ -485,7 +485,7 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(false);
 		diamondButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
-		multiLevelButton.SetActive(false);
+		multiLevelPanel.SetActive(false);
 		ChangeTabIndicators(1);
 	}
 
@@ -499,7 +499,7 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(false);
 		itemButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
-		multiLevelButton.SetActive(false);
+		multiLevelPanel.SetActive(false);
 		ChangeTabIndicators(2);
 	}
 
@@ -527,7 +527,7 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(false);
 		achievementsButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
-		multiLevelButton.SetActive(false);
+		multiLevelPanel.SetActive(false);
 		ChangeTabIndicators(3);
 	}
 
@@ -540,7 +540,7 @@ public class upgradeController : MonoBehaviour {
 		skillPanel.SetActive(true);
 		skillTabButton.gameObject.GetComponent<tabButton>().stopNotification();
 		uiClickAudio.tabSound();
-		multiLevelButton.SetActive(false);
+		multiLevelPanel.SetActive(false);
 		ChangeTabIndicators(4);
 	}
 
@@ -554,7 +554,7 @@ public class upgradeController : MonoBehaviour {
 			controller.individualLevelUpButton.interactable = controller.gold >= controller.characterUpgradeCost[i];
 			individualCharacterPanel.SetActive(true);
 			if (multiLevelUpEnabled)
-				multiLevelButton.SetActive(true);
+				multiLevelPanel.SetActive(true);
 			selectedCharacter = i;
 			RefreshCharacterPanel();
 			uiClickAudio.clickSound();
@@ -617,21 +617,24 @@ public class upgradeController : MonoBehaviour {
 	public void enableMultiLevelUpButton() {
 		multiLevelUpEnabled = true;
 		if (goldPanel.activeSelf || individualCharacterPanel.activeSelf)
-			multiLevelButton.SetActive(true);
+			multiLevelPanel.SetActive(true);
 	}
 
-	public void changeMultiLevelUp() {
-		currentMultiLevelUpIndex++;
-		if (currentMultiLevelUpIndex == multiLevelUpValues.Length )
+	public void changeMultiLevelUp(int inc) {
+		currentMultiLevelUpIndex += inc;
+		if (currentMultiLevelUpIndex >= multiLevelUpValues.Length )
 			currentMultiLevelUpIndex = 0;
+		else if (currentMultiLevelUpIndex < 0) {
+			currentMultiLevelUpIndex = multiLevelUpValues.Length - 1;
+		}
 		
 		if (currentMultiLevelUpIndex == multiLevelUpValues.Length - 1) {
 			CalculalteMaxMultiLevelUp();
-			multiLevelButton.GetComponentInChildren<Text>().text = "MAX";
+			multiLevelPanel.GetComponentInChildren<Text>().text = "Buy MAX";
 		} else {
 			for (int i = 0; i < controller.levelUpButton.Length; i++)
 				controller.RecalculateCharacterUpgradeCost(i);
-			multiLevelButton.GetComponentInChildren<Text>().text = "x"+multiLevelUpValues[currentMultiLevelUpIndex];
+			multiLevelPanel.GetComponentInChildren<Text>().text = "Buy "+multiLevelUpValues[currentMultiLevelUpIndex];
 		}
 
 		if (individualCharacterPanel.activeSelf)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 public class ItemController : MonoBehaviour {
 
@@ -93,12 +92,14 @@ public class ItemController : MonoBehaviour {
 
 	public void showItemModal(Item item) {
 		itemModal.SetActive(true);
+		controller.activateModal();
 		GameObject itemSlot = GameObject.Find("Item Modal Slot");
 		setItemIcon(itemSlot,item);
 	}
 
 	public void closeItemModal() {
 		itemModal.SetActive(false);
+		controller.closeModal();
 		itemDrop = false;
 	}
 

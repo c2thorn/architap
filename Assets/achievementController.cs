@@ -49,9 +49,7 @@ public class achievementController : MonoBehaviour {
       // Set default session duration values.
       FirebaseAnalytics.SetMinimumSessionDuration(new TimeSpan(0, 0, 10));
       FirebaseAnalytics.SetSessionTimeoutDuration(new TimeSpan(0, 30, 0));
-      bool firebaseInitialized = true;
 	  FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLogin);
-	  Debug.Log("trying to log");
     }
 	
 
