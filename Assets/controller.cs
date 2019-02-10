@@ -292,7 +292,7 @@ public class controller : MonoBehaviour {
 		if (highestLevel > 1 || levelCount > 1 || totalPrestiges > 0) {
 			upgradeController.enableGoldButton();
 			settingsController.enableSettings();
-			tutorialController.RemovePointer();
+			tutorialController.RemoveHousePointer();
 		} else{
 			tutorialController.PointAtHouse();
 		}
@@ -804,7 +804,6 @@ public class controller : MonoBehaviour {
 		foreach (GameObject obj in GameObject.FindGameObjectsWithTag("enemy")) {
 			Destroy(obj);
 		}
-		int enemySelector;
 		if (boss) {
 			levelText.text = "LEVEL "+level;
 			amountText.text = "BOSS FIGHT!";
@@ -814,13 +813,11 @@ public class controller : MonoBehaviour {
 		else {
 			levelText.text = "LEVEL "+level;
 			amountText.text = levelCount+" / "+levelMaxCount;
-			// enemySelector = ((level-1)/2)%5;
 			bonusEnemy = UnityEngine.Random.value <= bonusEnemyChance;
 		}
 
-		// GameObject newEnemy = (GameObject) Instantiate(enemyPrefabs[enemySelector], new Vector3(0f,houseSpawnY,-5f),Quaternion.Euler(0,0, 0));
 		GameObject newEnemy = (GameObject) Instantiate(buildingController.currentBuildingPrefab, new Vector3(0f,houseSpawnY,-5f),Quaternion.Euler(0,0, 0));
-		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ buildingController.currentBuildingPrefab.name;
+		enemyDescriptionText.text = enemyAdjectives[((level-regionLevels[region,0])/buildingController.levelBuildingLists[region].buildings.Length) %20] +" "+ buildingController.currentBuildingPrefab.name;
 		if (delay)
 			newEnemy.GetComponent<House>().delay();
 	}
@@ -905,7 +902,8 @@ public class controller : MonoBehaviour {
 
 		GameObject newUnique = (GameObject) Instantiate(uniqueBossPrefabs[i], new Vector3(0f,houseSpawnY,-5f),Quaternion.Euler(0,0,0));
 		newUnique.GetComponent<House>().health = 0;
-		enemyDescriptionText.text = enemyAdjectives[((level-1)/10)%20] +" "+ uniqueNouns[i];
+		enemyDescriptionText.text = uniqueNouns[i];
+		// enemyDescriptionText.text = enemyAdjectives[((level-regionLevels[region,0])/buildingController.levelBuildingLists[region].buildings.Length) %20] +" "+ uniqueNouns[i];
 		newUnique.GetComponent<House>().delay();
 		startBossTime();
 	}
@@ -1187,7 +1185,7 @@ public class controller : MonoBehaviour {
 			yield return new WaitForSeconds(waitSeconds);
 			int ufoIndex = Mathf.RoundToInt(UnityEngine.Random.Range(0,UFOPrefabs.Length));
 			GameObject ufo = Instantiate(UFOPrefabs[ufoIndex],Vector3.zero,Quaternion.Euler(0, 0, 0));
-			ufo.GetComponent<UFO>().value = Math.Round((baseGoldDrop*Math.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2)*(1+waitSeconds/100));
+			ufo.GetComponent<UFO>().value = Math.Round((3*baseGoldDrop*Math.Pow(baseGoldMultiplier,highestLevel)*goldMultiplier1*goldMultiplier2)*(1+waitSeconds/100));
 		}
 	}
 }

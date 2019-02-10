@@ -182,7 +182,6 @@ public class SkillController : MonoBehaviour {
 
 	public void SetRadialColor(string key) {
 		if (skillFlag[key]) {
-			Color newCol;
 			if (skillDoubled[key]) {
 				if (!skillGlow[key].activeSelf){
 					skillGlow[key].SetActive(true);

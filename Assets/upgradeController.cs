@@ -620,11 +620,13 @@ public class upgradeController : MonoBehaviour {
 			multiLevelPanel.SetActive(true);
 	}
 
-	public void changeMultiLevelUp() {
-		Debug.Log("click");
-		currentMultiLevelUpIndex++;
-		if (currentMultiLevelUpIndex == multiLevelUpValues.Length )
+	public void changeMultiLevelUp(int inc) {
+		currentMultiLevelUpIndex += inc;
+		if (currentMultiLevelUpIndex >= multiLevelUpValues.Length )
 			currentMultiLevelUpIndex = 0;
+		else if (currentMultiLevelUpIndex < 0) {
+			currentMultiLevelUpIndex = multiLevelUpValues.Length - 1;
+		}
 		
 		if (currentMultiLevelUpIndex == multiLevelUpValues.Length - 1) {
 			CalculalteMaxMultiLevelUp();
