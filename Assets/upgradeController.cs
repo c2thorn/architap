@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Firebase;
+using Firebase.Analytics;
 
 public class upgradeController : MonoBehaviour {
 	public controller controller;
@@ -207,17 +209,53 @@ public class upgradeController : MonoBehaviour {
 		int characterLevel = controller.characterLevel[i];
 		controller.characterUnitLevelText[i].text = characterLevel > 0 ? "LEVEL: " + characterLevel + 
 		" UNITS: "+NumberFormat.format(controller.units[i]): "";
-
+		int prevLevel = controller.lastLevel;
 		if (i != 0 || characterLevel > 1)
 			controller.RecalculateCharacterUpgradeCost(i);
-		if (characterLevel >= boostLevelRequirements[0]) 
+		if (characterLevel >= boostLevelRequirements[0]) {
 			enableBoost1(i);
-		if (characterLevel >= boostLevelRequirements[1]) 
+			Debug.Log ("gen boost 1 available");
+			FirebaseAnalytics.LogEvent("char_gen_boost_1_available");
+			if(prevLevel< boostLevelRequirements[0]){
+				if(i==1){
+					Debug.Log ("reeda boost 1 available");
+					FirebaseAnalytics.LogEvent("char_Reeda_boost_1_available");
+				}
+			}
+		}
+		if (characterLevel >= boostLevelRequirements[1]) {
 			enableBoost2(i);
-		if (characterLevel >= boostLevelRequirements[2]) 
+			Debug.Log ("gen boost 2 available");
+			FirebaseAnalytics.LogEvent("char_gen_boost_2_available");
+			if(prevLevel< boostLevelRequirements[0]){
+				if(i==1){
+					Debug.Log ("reeda boost 2 available");
+					FirebaseAnalytics.LogEvent("char_Reeda_boost_2_available");
+				}
+			}
+		}
+		if (characterLevel >= boostLevelRequirements[2]) {
 			enableBoost3(i);
-		if (characterLevel >= boostLevelRequirements[3])
+			Debug.Log ("gen boost 3 available");
+			FirebaseAnalytics.LogEvent("char_gen_boost_3_available");
+			if(prevLevel< boostLevelRequirements[0]){
+				if(i==1){
+					Debug.Log ("reeda boost 1 available");
+					FirebaseAnalytics.LogEvent("char_Reeda_boost_3_available");
+				}
+			}
+		}
+		if (characterLevel >= boostLevelRequirements[3]){
 			enableSkill(i);
+			Debug.Log ("gen skill available");
+			FirebaseAnalytics.LogEvent("char_gen_skill_available");
+			if(prevLevel< boostLevelRequirements[0]){
+				if(i==1){
+					Debug.Log ("reeda boost 1 available");
+					FirebaseAnalytics.LogEvent("char_Reeda_skill_available");
+				}
+			}
+		}
 		if ((i != 0 && characterLevel > 0 ) || characterLevel > 1)
 			enableBoard(i);
 	
@@ -367,6 +405,45 @@ public class upgradeController : MonoBehaviour {
 		SetBoostImageIcon(selectedCharacter,"Boost 1", true);
 		characterAudio.BoostSound();
 		RefreshCharacterPanel();
+		Debug.Log("bought boost 1");
+		FirebaseAnalytics.LogEvent("char_boost_1_gen_bought");
+		if (selectedCharacter == 0 ){
+			Debug.Log("student bought boost 1");
+			FirebaseAnalytics.LogEvent("char_Student_boost_1_bought");
+			}
+//			else if (selectedCharacter == 1 ){
+//			Debug.Log("Reeda bought boost 1");
+//			FirebaseAnalytics.LogEvent("Reeda_boost_1_bought");
+//			}
+//			else if (selectedCharacter == 2 ){
+//			Debug.Log("Billy bought boost 1");
+//			FirebaseAnalytics.LogEvent("Billy_boost_1_bought");
+//			}
+//			else if (selectedCharacter == 3 ){
+///			Debug.Log("Brick bought boost 1");
+//			FirebaseAnalytics.LogEvent("Brick_boost_1_bought");
+//			}
+//			else if (selectedCharacter == 4 ){
+//			Debug.Log("connor bought boost 1");
+//			FirebaseAnalytics.LogEvent("Connor_boost_1_bought");
+//			}
+//			else if (selectedCharacter == 5 ){
+//			Debug.Log("chris bought boost 1");
+//			FirebaseAnalytics.LogEvent("Chris_boost_1_bought");
+//			}
+//			else if (selectedCharacter == 6 ){
+//			Debug.Log("alena bought boost 1");
+//			FirebaseAnalytics.LogEvent("Alena_boost_1_bought");
+//			}
+//			else if (selectedCharacter == 7 ){
+//			Debug.Log("dan bought boost 1");
+//			FirebaseAnalytics.LogEvent("Dan_boost_1_bought");
+//			}
+//			else if (selectedCharacter == 8 ){
+//			Debug.Log("bill bought boost 1");
+//			FirebaseAnalytics.LogEvent("Nye_boost_1_bought");
+//			}
+
 	}
 
 	public void buyBoost2() {
@@ -378,6 +455,44 @@ public class upgradeController : MonoBehaviour {
 		SetBoostImageIcon(selectedCharacter,"Boost 2", true);
 		characterAudio.BoostSound();
 		RefreshCharacterPanel();
+		Debug.Log("bought boost 2");
+		FirebaseAnalytics.LogEvent("char_gen_boost_2_bought");
+		if (selectedCharacter == 0 ){
+			Debug.Log("student bought boost 2");
+			FirebaseAnalytics.LogEvent("char_Student_boost_2_bought");
+			}
+//			else if (selectedCharacter == 1 ){
+//			Debug.Log("Reeda bought boost 2");
+//			FirebaseAnalytics.LogEvent("Reeda_boost_2_bought");
+//			}
+//			else if (selectedCharacter == 2 ){
+//			Debug.Log("Billy bought boost 2");
+//			FirebaseAnalytics.LogEvent("Billy_boost_2_bought");
+//			}
+//			else if (selectedCharacter == 3 ){
+//			Debug.Log("Brick bought boost 2");
+//			FirebaseAnalytics.LogEvent("Brick_boost_2_bought");
+//			}
+//			else if (selectedCharacter == 4 ){
+//			Debug.Log("connor bought boost 2");
+//			FirebaseAnalytics.LogEvent("Connor_boost_2_bought");
+//			}
+//			else if (selectedCharacter == 5 ){
+//			Debug.Log("chris bought boost 2");
+//			FirebaseAnalytics.LogEvent("Chris_boost_2_bought");
+//			}
+//			else if (selectedCharacter == 6 ){
+//			Debug.Log("alena bought boost 2");
+//			FirebaseAnalytics.LogEvent("Alena_boost_2_bought");
+//			}
+//			else if (selectedCharacter == 7 ){
+//			Debug.Log("dan bought boost 2");
+//			FirebaseAnalytics.LogEvent("Dan_boost_2_bought");
+//			}
+//			else if (selectedCharacter == 8 ){
+//			Debug.Log("bill bought boost 2");
+//			FirebaseAnalytics.LogEvent("Nye_boost_2_bought");
+//			}
 	}
 
 	public void buyBoost3() {
@@ -389,6 +504,44 @@ public class upgradeController : MonoBehaviour {
 		SetBoostImageIcon(selectedCharacter,"Boost 3", true);
 		characterAudio.BoostSound();
 		RefreshCharacterPanel();
+		Debug.Log("bought boost 3");
+		FirebaseAnalytics.LogEvent("char_gen_boost_3_bought");
+		if (selectedCharacter == 0 ){
+			Debug.Log("student bought boost 3");
+			FirebaseAnalytics.LogEvent("char_Student_boost_3_bought");
+			}
+//			else if (selectedCharacter == 1 ){
+//			Debug.Log("Reeda bought boost 3");
+//			FirebaseAnalytics.LogEvent("Reeda_boost_3_bought");
+//			}
+//			else if (selectedCharacter == 2 ){
+//			Debug.Log("Billy bought boost 3");
+//			FirebaseAnalytics.LogEvent("Billy_boost_3_bought");
+//			}
+//			else if (selectedCharacter == 3 ){
+//			Debug.Log("Brick bought boost 3");
+//			FirebaseAnalytics.LogEvent("Brick_boost_3_bought");
+//			}
+//			else if (selectedCharacter == 4 ){
+//			Debug.Log("connor bought boost 3");
+//			FirebaseAnalytics.LogEvent("Connor_boost_3_bought");
+//			}
+//			else if (selectedCharacter == 5 ){
+//			Debug.Log("chris bought boost 3");
+//			FirebaseAnalytics.LogEvent("Chris_boost_3_bought");
+//			}
+//			else if (selectedCharacter == 6 ){
+//			Debug.Log("alena bought boost 3");
+//			FirebaseAnalytics.LogEvent("Alena_boost_3_bought");
+//			}
+//			else if (selectedCharacter == 7 ){
+//			Debug.Log("dan bought boost 3");
+//			FirebaseAnalytics.LogEvent("Dan_boost_3_bought");
+//			}
+//			else if (selectedCharacter == 8 ){
+//			Debug.Log("bill bought boost 3");
+//			FirebaseAnalytics.LogEvent("Nye_boost_3_bought");
+//			}
 	}
 
 	public void BuyIndividualCharacterSkill() {
@@ -397,6 +550,44 @@ public class upgradeController : MonoBehaviour {
 		SetBoostImageIcon(selectedCharacter,"Skill", true);
 		characterAudio.BoostSound();
 		RefreshCharacterPanel();
+		Debug.Log("bought skill");
+		FirebaseAnalytics.LogEvent("char_gen_skill_bought");
+		if (selectedCharacter == 0 ){
+			Debug.Log("student bought skill");
+			FirebaseAnalytics.LogEvent("char_Student_skill_bought");
+			}
+//			else if (selectedCharacter == 1 ){
+//			Debug.Log("Reeda bought skill");
+//			FirebaseAnalytics.LogEvent("Reeda_skill_bought");
+//			}
+//			else if (selectedCharacter == 2 ){
+//			Debug.Log("Billy bought skill");
+//			FirebaseAnalytics.LogEvent("Billy_skill_bought");
+//			}
+//			else if (selectedCharacter == 3 ){
+//			Debug.Log("Brick bought skill");
+//			FirebaseAnalytics.LogEvent("Brick_skill_bought");
+//			}
+//			else if (selectedCharacter == 4 ){
+//			Debug.Log("connor bought skill");
+//			FirebaseAnalytics.LogEvent("Connor_skill_bought");
+//			}
+//			else if (selectedCharacter == 5 ){
+//			Debug.Log("chris bought skill");
+//			FirebaseAnalytics.LogEvent("Chris_skill_bought");
+//			}
+//			else if (selectedCharacter == 6 ){
+//			Debug.Log("alena bought skill");
+//			FirebaseAnalytics.LogEvent("Alena_skill_bought");
+//			}
+//			else if (selectedCharacter == 7 ){
+//			Debug.Log("dan bought skill");
+//			FirebaseAnalytics.LogEvent("Dan_skill_bought");
+//			}
+//			else if (selectedCharacter == 8 ){
+//			Debug.Log("bill bought skill");
+//			FirebaseAnalytics.LogEvent("Nye_skill_bought");
+//			}
 	}
 
 	public void SetBoostImageIcon(int i, String name, bool bought) {
@@ -487,6 +678,9 @@ public class upgradeController : MonoBehaviour {
 		uiClickAudio.tabSound();
 		multiLevelButton.SetActive(false);
 		ChangeTabIndicators(1);
+		//event opened diamond tab
+			Debug.Log("event open diamond tab");
+			FirebaseAnalytics.LogEvent("diamond_tab_opened");
 	}
 
 	public void itemTab() {
@@ -542,6 +736,9 @@ public class upgradeController : MonoBehaviour {
 		uiClickAudio.tabSound();
 		multiLevelButton.SetActive(false);
 		ChangeTabIndicators(4);
+		//get coal event
+			Debug.Log("evet open skill tab");
+			FirebaseAnalytics.LogEvent("skill_tab_opened");
 	}
 
 	public void openCharacterPanel(int i) {

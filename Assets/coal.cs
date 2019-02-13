@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.UI;
+using Firebase;
+using Firebase.Analytics;
+
 public class coal : MonoBehaviour {
     public controller controller = null;
 
@@ -16,6 +20,9 @@ public class coal : MonoBehaviour {
 		StartCoroutine(startDying());
 		Physics2D.IgnoreLayerCollision(0,1,true);
 		controller.getCoal();
+		//get coal event
+			Debug.Log("get coal event");
+			FirebaseAnalytics.LogEvent("coal_found");
 	}
 	
 	// Update is called once per frame

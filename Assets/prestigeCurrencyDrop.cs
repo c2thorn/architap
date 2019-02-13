@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.UI;
+using Firebase;
+using Firebase.Analytics;
+
 public class prestigeCurrencyDrop : MonoBehaviour {
 
 	// Use this for initialization
@@ -13,6 +17,11 @@ public class prestigeCurrencyDrop : MonoBehaviour {
 		GetComponent<Rigidbody2D>().AddForce(direction);
 		StartCoroutine(startDying());
 		Physics2D.IgnoreLayerCollision(0,1,true);
+
+		//get notes event
+			Debug.Log("get notes event");
+			FirebaseAnalytics.LogEvent("notes_found");
+		
 	}
 	
 	// Update is called once per frame

@@ -23,36 +23,10 @@ public class achievementController : MonoBehaviour {
 	
 		// Use this for initialization
 	public void Start() {
-      FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
-        var dependencyStatus = task.Result;
-        if (dependencyStatus == DependencyStatus.Available) {
-          InitializeFirebase();
-        } else {
-          Debug.LogError(
-            "Could not resolve all Firebase dependencies: " + dependencyStatus);
-        }
-      });
+     
     }
 
-	// Handle initialization of the necessary firebase modules:
-    void InitializeFirebase() {
-      Debug.Log("Enabling data collection.");
-      FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
 
-      Debug.Log("Set user properties.");
-      // Set the user's sign up method.
-      FirebaseAnalytics.SetUserProperty(
-        FirebaseAnalytics.UserPropertySignUpMethod,
-        "Google");
-      // Set the user ID.
-      FirebaseAnalytics.SetUserId("uber_user_510");
-      // Set default session duration values.
-      FirebaseAnalytics.SetMinimumSessionDuration(new TimeSpan(0, 0, 10));
-      FirebaseAnalytics.SetSessionTimeoutDuration(new TimeSpan(0, 30, 0));
-      bool firebaseInitialized = true;
-	  FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLogin);
-	  Debug.Log("trying to log");
-    }
 	
 
 	
@@ -71,10 +45,28 @@ public class achievementController : MonoBehaviour {
 					controller.RecalculateAchievementMultipliers();
 					saveStateController.SaveData();			
 					
-					// Log an event with no parameters.
-				
-					FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventUnlockAchievement);					
-			
+					// Log an Achievement with no parameters.
+					FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventUnlockAchievement, FirebaseAnalytics.ParameterAchievementId, requirement+requirementValue);
+					 Debug.Log("trying to log achievement directly in achievment controller");
+					 FirebaseAnalytics.LogEvent("achievement_unlocked","level_achievement_unlocked", controller.lastLevel);
+
+						// analyticsController.AnalyticsAchievement();
+					if(i==1){
+						FirebaseAnalytics.LogEvent("achievement_1_unlocked","level_achievement_unlocked", controller.lastLevel);
+						 Debug.Log("achievement 1 unlocked event");
+					}
+			//		if(i==2){
+			//			FirebaseAnalytics.LogEvent("achievement_2_unlocked");
+			//			 Debug.Log("achievement 2 unlocked event");
+			//		}
+			//		if(i==3){
+			//			FirebaseAnalytics.LogEvent("achievement_3_unlocked");
+			//			 Debug.Log("achievement 3 unlocked event");
+			//		}
+			//		if(i==4){
+			//			FirebaseAnalytics.LogEvent("achievement_4_unlocked");
+			//			 Debug.Log("achievement 4 unlocked event");
+			//		}
 				}
 			}
 		}
