@@ -25,13 +25,6 @@ public class achievementController : MonoBehaviour {
 	public void Start() {
      
     }
-
-	// Handle initialization of the necessary firebase modules:
-    void InitializeFirebase() {
-      Debug.Log("Enabling data collection.");
-      FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
-	
-
 	
 	// Update is called once per frame
 	void Update () {
