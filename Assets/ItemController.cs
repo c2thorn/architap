@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Globalization;
+using Firebase;
+using Firebase.Analytics;
 public class ItemController : MonoBehaviour {
 
 	public controller controller;
@@ -18,6 +20,11 @@ public class ItemController : MonoBehaviour {
 	public ItemTemplate[] ancientPool;
 	public ItemTemplate[] modernPool;
 	public bool modern = false;
+	//public int level = 1;
+	//public int highestLevel = 1;
+	//public int levelCount = 1;
+	//public int levelMaxCount = 10;
+	//public Text levelText = null;
 
 	// Use this for initialization
 	void Start () {
@@ -116,10 +123,67 @@ public class ItemController : MonoBehaviour {
 			if (i.name.Equals(item.name) && i.rarity == item.rarity) {
 				found = true;
 				i.count++;
+				// Log an event 
+				Debug.Log("Logging a duplicate item unlock event.");
+				FirebaseAnalytics.LogEvent(
+				"item_duplicate",
+				//new Parameter(FirebaseAnalytics.ParameterLevel, level),
+				new Parameter(FirebaseAnalytics.ParameterItemName, item.name),
+				new Parameter(FirebaseAnalytics.ParameterItemVariant, item.rarity));
+				if(item.rarity==0){
+					Debug.Log("logging dup common item found)");
+					FirebaseAnalytics.LogEvent(
+				"item_common_duplicate",
+				//new Parameter(FirebaseAnalytics.ParameterLevel, level),
+				new Parameter(FirebaseAnalytics.ParameterItemName, item.name));
+				}
+				if(item.rarity==1){
+					Debug.Log("logging dup rare item found)");
+					FirebaseAnalytics.LogEvent(
+				"item_rare_duplicate",
+				//new Parameter(FirebaseAnalytics.ParameterLevel, level),
+				new Parameter(FirebaseAnalytics.ParameterItemName, item.name));
+				}
+				if(item.rarity==2){
+					Debug.Log("logging dup legendary item found)");
+					FirebaseAnalytics.LogEvent(
+				"item_legendary_duplicate",
+				//new Parameter(FirebaseAnalytics.ParameterLevel, level),
+				new Parameter(FirebaseAnalytics.ParameterItemName, item.name));
+				}
 			}
 		}
 		if (!found)
 			inventory.Add(item);
+			    
+			// Log an event 
+			Debug.Log("Logging a new item unlock event.");
+			FirebaseAnalytics.LogEvent(
+				"item_new",
+				//new Parameter(FirebaseAnalytics.ParameterLevel, level),
+				new Parameter(FirebaseAnalytics.ParameterItemName, item.name),
+				new Parameter(FirebaseAnalytics.ParameterItemVariant, item.rarity));
+				if(item.rarity==0){
+					Debug.Log("logging common item found)");
+					FirebaseAnalytics.LogEvent(
+				"item_common_new",
+				//new Parameter(FirebaseAnalytics.ParameterLevel, level),
+				new Parameter(FirebaseAnalytics.ParameterItemName, item.name));
+				}
+				if(item.rarity==1){
+					Debug.Log("logging rare item found)");
+					FirebaseAnalytics.LogEvent(
+				"item_rare_new",
+				//new Parameter(FirebaseAnalytics.ParameterLevel, level),
+				new Parameter(FirebaseAnalytics.ParameterItemName, item.name));
+				}
+				if(item.rarity==2){
+					Debug.Log("logging legendary item found)");
+					FirebaseAnalytics.LogEvent(
+				"item_legendary_new",
+				//new Parameter(FirebaseAnalytics.ParameterLevel, level),
+				new Parameter(FirebaseAnalytics.ParameterItemName, item.name));
+				}
 	}
 
 	public Item getRandomItem() {

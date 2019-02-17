@@ -4,6 +4,10 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
+
+using Firebase;
+using Firebase.Analytics;
+
 public class SkillController : MonoBehaviour {
 
 	public Transform contentTr;
@@ -128,7 +132,6 @@ public class SkillController : MonoBehaviour {
 		{"buildingReduction",false},
 		{"cooldownReduction",false}
 	};
-
 	public Dictionary<string,GameObject> skillGlow = new Dictionary<string,GameObject>() {
 		{"autoClick",null},
 		{"clickBoost",null},
@@ -296,12 +299,17 @@ public class SkillController : MonoBehaviour {
 		int numberClicks = Mathf.FloorToInt(skillDuration["autoClick"]/autoClickRate);
 		float timeLeft = skillDuration["autoClick"];
 		skillFlag["autoClick"] = true;
+		FirebaseAnalytics.LogEvent("skill_autoclick_used");
+	 	Debug.Log("autoclick skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 		for (int i = 0; i < numberClicks; i++){
 			GameObject.FindGameObjectWithTag("enemy").GetComponent<House>().autoClick();
 			skillRadial["autoClick"].fillAmount = 1 - ((float)i/(float)numberClicks);
 			timeLeft -= autoClickRate;
 			skillText["autoClick"].text = FormatSeconds(Mathf.Ceil(timeLeft));
 			yield return new WaitForSeconds(autoClickRate);
+			
 		}
 		SkillFinished("autoClick");
     }
@@ -311,6 +319,10 @@ public class SkillController : MonoBehaviour {
 		controller.RecalculateUnit(0);
 		yield return StartCoroutine(DurationWait("clickBoost"));
 		controller.RecalculateUnit(0);
+	//	FirebaseAnalytics.LogEvent("skill_click_boost_used");
+	 //	Debug.Log("boost click skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 	}
 
 	protected IEnumerator BoostPartnersForDuration() {
@@ -318,15 +330,27 @@ public class SkillController : MonoBehaviour {
 		controller.RecalculateAllUnits();
 		yield return StartCoroutine(DurationWait("partnerBoost"));
 		controller.RecalculateAllUnits();
+	//	FirebaseAnalytics.LogEvent("skill_partner_boost_used");
+	 //	Debug.Log("partner boost skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 	}
 	protected IEnumerator BoostGoldForDuration() {
 		yield return StartCoroutine(DurationWait("goldBoost"));
+	//	FirebaseAnalytics.LogEvent("skill_gold_boost_used");
+	 //	Debug.Log("gold boost skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 	}
 
 	protected IEnumerator BoostCriticalClicksForDuration() {
 		skillFlag["criticalClickChanceBoost"] = true;
 		controller.criticalClickChance += (float)GetSkillEffect("criticalClickChanceBoost");
 		yield return StartCoroutine(DurationWait("criticalClickChanceBoost"));
+	//	FirebaseAnalytics.LogEvent("skill_critical_click_boost_used");
+	// 	Debug.Log("critical click skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 	}
 
 	protected IEnumerator BoostGoldHouseChanceForDuration() {
@@ -334,6 +358,10 @@ public class SkillController : MonoBehaviour {
 		controller.bonusEnemyChance += (float)GetSkillEffect("goldHouseChanceBoost");
 		yield return StartCoroutine(DurationWait("goldHouseChanceBoost"));
 		controller.RecalculateItemMultipliers();
+	//	FirebaseAnalytics.LogEvent("skill_gold_house_used");
+	// 	Debug.Log("gold house skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 	}
 
 	public void SetDoubleNextSkill() {
@@ -342,6 +370,10 @@ public class SkillController : MonoBehaviour {
 		skillButtons["doubleNextSkill"].transform.Find("Icon").gameObject.SetActive(false);
 		skillNotificationPanel.SetActive(true);
 		skillNotificationPanel.transform.Find("Text").GetComponent<Text>().text = "Select an ability to boost";
+	//	FirebaseAnalytics.LogEvent("skill_double_next_skill_used");
+	// 	Debug.Log("double skill skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 	}
 
 	protected IEnumerator ReduceBuildingRequirementForDuration() {
@@ -351,6 +383,10 @@ public class SkillController : MonoBehaviour {
 		controller.levelCount = Math.Min(controller.levelMaxCount, controller.levelCount);
 		yield return StartCoroutine(DurationWait("buildingReduction"));
 		controller.levelMaxCount = Math.Max(1,controller.levelMaxCount + effect);
+	//	FirebaseAnalytics.LogEvent("skill_reduce_building_req_used");
+	 //	Debug.Log("reduce building req skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 	}
 
 	public void ResetCooldownForNextSkill() {
@@ -359,6 +395,10 @@ public class SkillController : MonoBehaviour {
 		skillNotificationPanel.transform.Find("Text").GetComponent<Text>().text = "Select an ability to reset";
 		skillButtons["cooldownReduction"].transform.Find("Cancel").gameObject.SetActive(true);
 		skillButtons["cooldownReduction"].transform.Find("Icon").gameObject.SetActive(false);
+	//	FirebaseAnalytics.LogEvent("skill_reset_cooldown_used");
+	 //	Debug.Log("cooldown skill used");
+		FirebaseAnalytics.LogEvent("skill_used");
+	 	Debug.Log("general skill used");  
 	}
 	
 	public IEnumerator DurationWait(string key) {

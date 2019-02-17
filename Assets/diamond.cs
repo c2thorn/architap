@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.UI;
+using Firebase;
+using Firebase.Analytics;
+
 public class diamond : MonoBehaviour {
     public controller controller = null;
 
@@ -16,6 +20,10 @@ public class diamond : MonoBehaviour {
 		StartCoroutine(startDying());
 		Physics2D.IgnoreLayerCollision(0,1,true);
 		controller.getDiamond();
+
+		//get diamond event
+			Debug.Log("get diamond event");
+			FirebaseAnalytics.LogEvent("diamond_found");
 	}
 	
 	// Update is called once per frame

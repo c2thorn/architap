@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Firebase;
+using Firebase.Analytics;
+
+
 
 public class controller : MonoBehaviour {
 #region Variables
@@ -61,6 +65,8 @@ public class controller : MonoBehaviour {
 #endregion
 #region Characters
 	public int[] characterLevel = new int[] {1, 0, 0, 0, 0, 0, 0, 0};
+	public int[] prevcharacterLevel = new int[] {1, 0, 0, 0, 0, 0, 0, 0};
+	public int lastLevel = 0;
 	public double[] characterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public double[] baseCharacterUpgradeCost = new double[] {10, 60, 700, 8000, 90000, 100000, 1100000, 12000000};
 	public double[] characterUpgradeCostMultiplier = new double[] {1.07, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1};
@@ -137,6 +143,10 @@ public class controller : MonoBehaviour {
 	public Text[] unitMultiplierText;
 	public GameObject regionCompleteText;
 	public Text levelText = null;
+	public int levelStart=1;
+	public int levelEnd=1;
+	public int bosslevel=-1;
+	public string totalPrestigesText;
 	public Text amountText;
 	public Text goldText = null;
 	public Text diamondText = null;
@@ -216,8 +226,38 @@ public class controller : MonoBehaviour {
 		StartCoroutine(SpawnUFOs());
 		//Should be last
 		saveStateController.CheckIdleTime();
+
+		 FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
+       	var dependencyStatus = task.Result;
+        if (dependencyStatus == DependencyStatus.Available) {
+          InitializeFirebase();
+        } else {
+          Debug.LogError(
+            "Could not resolve all Firebase dependencies: " + dependencyStatus);
+        }
+      });
 	}
 	
+
+	// Handle initialization of the necessary firebase modules:
+    public void InitializeFirebase() {
+      Debug.Log("Enabling data collection.");
+      FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
+
+      Debug.Log("Set user properties.");
+      // Set the user's sign up method.
+      FirebaseAnalytics.SetUserProperty(
+        FirebaseAnalytics.UserPropertySignUpMethod,
+        "Google");
+      // Set the user ID.
+      FirebaseAnalytics.SetUserId("uber_user_510");
+      // Set default session duration values.
+      FirebaseAnalytics.SetMinimumSessionDuration(new TimeSpan(0, 0, 10));
+      FirebaseAnalytics.SetSessionTimeoutDuration(new TimeSpan(0, 30, 0));
+      bool firebaseInitialized = true;
+	  FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLogin);
+	  Debug.Log("trying to log 2");
+    }
 	// Update is called once per frame
 	void Update () {
 		RecalculateSumUnits();
@@ -243,6 +283,32 @@ public class controller : MonoBehaviour {
 	}
 
 	void OnApplicationQuit() {
+		levelEnd = level;
+		if(levelEnd>levelStart+10){
+			//event levels progressed greater than 10
+			Debug.Log("levels progressed>10");
+			FirebaseAnalytics.LogEvent("Progressed_>_10");
+		}
+		//else if(levelEnd>levelStart+50){
+			//event levels progressed greater than 50
+		//	Debug.Log("levels progressed>50");
+		//	FirebaseAnalytics.LogEvent("Progressed_>_50");
+	//	}
+		//else if(levelEnd>levelStart+25){
+			//event levels progressed greater than 25
+		//	Debug.Log("levels progressed>25");
+		//	FirebaseAnalytics.LogEvent("Progressed_>_25");
+	//	}
+	//	else if(levelEnd>levelStart+100){
+	//		//event levels progressed greater than 10
+	//		Debug.Log("levels progressed>100");
+	//		FirebaseAnalytics.LogEvent("Progressed_>_100");
+	//	}	
+		else if(levelEnd==levelStart){
+			//event no levels progressed
+			Debug.Log("levels progressed = 0");
+			FirebaseAnalytics.LogEvent("Progressed_0");
+		}	
 		// saveStateController.SaveData();
 	}
 
@@ -254,9 +320,14 @@ public class controller : MonoBehaviour {
 
 		//Screen text
 		levelText.text = "LEVEL "+level;
+		levelStart = level;
 		amountText.text = levelCount+" / "+levelMaxCount;
 		levelUpButton[0].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[0]);
 		characterUnitLevelText[0].text = "LEVEL: "+characterLevel[0]+" UNITS: "+units[0];
+		totalPrestigesText = NumberFormat.format(totalPrestiges);
+		Debug.Log("Set user properties prestige.");
+      	// Set the user's sign up method.
+      	FirebaseAnalytics.SetUserProperty("Prestige_Level", totalPrestigesText);
 		for (int i = 1; i < upgradeController.characterAmount; i++) {
 			levelUpButton[i].gameObject.transform.Find("Action Text").GetComponent<Text>().text = "HIRE";
 			levelUpButton[i].gameObject.transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = NumberFormat.format(characterUpgradeCost[i]);
@@ -483,15 +554,112 @@ public class controller : MonoBehaviour {
 	public void levelUp(int i) {
 		int numLevels = upgradeController.GetNumLevels(i);
 		int previousLevel = characterLevel[i];
-
+		lastLevel = previousLevel;
 		characterLevel[i] += numLevels;
 		gold -= characterUpgradeCost[i];
 		upgradeController.RefreshCharacterBoard(i);
 		LevelUpUnit(i,numLevels);
+
 		if (!characterEverBought[i]){
 			characterEverBought[i] = true;
+			Debug.Log("Builder bought event");
+			FirebaseAnalytics.LogEvent("char_gen_builder_bought");
+			if (i == 1 ){
+			Debug.Log("Reeda bought event");
+			FirebaseAnalytics.LogEvent("char_Reeda_bought");
+			}
+			//else if (i == 2 ){
+			//Debug.Log("Billy bought event");
+			//FirebaseAnalytics.LogEvent("char_Billy_bought");
+			//}
+			//else if (i == 3 ){
+			//Debug.Log("Brick bought event");
+			//FirebaseAnalytics.LogEvent("char_Brick_bought");
+			//}
+			//else if (i == 4 ){
+			//Debug.Log("connor bought event");
+			//FirebaseAnalytics.LogEvent("char_Connor_bought");
+			//}
+			//else if (i == 5 ){
+			//Debug.Log("chris bought event");
+			//FirebaseAnalytics.LogEvent("char_Chris_bought");
+			//}
+			//else if (i == 6 ){
+			//Debug.Log("alena bought event");
+			//FirebaseAnalytics.LogEvent("char_Alena_bought");
+			//}
+			//else if (i == 7 ){
+			//Debug.Log("dan bought event");
+			//FirebaseAnalytics.LogEvent("char_Dan_bought");
+			//}
+			//else if (i == 8 ){
+			//Debug.Log("bill bought event");
+			//FirebaseAnalytics.LogEvent("char_Nye_bought");
+			//}
 		}
-
+		//check for student bought
+		if (previousLevel == 1 && i == 0){
+			//student bought event
+			Debug.Log("student bought event");
+			FirebaseAnalytics.LogEvent("char_Student_bought");
+			Debug.Log("Builder bought event");
+			FirebaseAnalytics.LogEvent("char_gen_builder_bought");
+		}
+		//check for upgrades
+		if (previousLevel > 1 && i == 0){
+			Debug.Log("student upgrade event");
+			FirebaseAnalytics.LogEvent("char_Student_upgraded");
+			Debug.Log("Builder upgrade event");
+			FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		}
+		if (previousLevel > 0 && i == 1){
+			Debug.Log(" Reeda upgrade event");
+			FirebaseAnalytics.LogEvent("char_Reeda_upgraded");
+			Debug.Log("Builder upgrade event");
+			FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		}
+		//if (previousLevel > 0 && i == 2){
+		//	Debug.Log(" billy upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_Billy_upgraded");
+		//	Debug.Log("Builder upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		//}
+		//if (previousLevel > 0 && i == 3){
+		//	Debug.Log(" brick upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_Brick_upgraded");
+		//	Debug.Log("Builder upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		//}
+		//if (previousLevel > 0 && i == 4){
+		//	Debug.Log(" connnor upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_Connor_upgraded");
+		//	Debug.Log("Builder upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		//}
+		//if (previousLevel > 0 && i == 5){
+		//	Debug.Log(" chris upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_Chris_upgraded");
+		//	Debug.Log("Builder upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		//}
+		//if (previousLevel > 0 && i == 6){
+		//	Debug.Log(" alena upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_Alena_upgraded");
+		//	Debug.Log("Builder upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		//}
+		//if (previousLevel > 0 && i == 7){
+		//	Debug.Log(" dan upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_Dan_upgraded");
+		//	Debug.Log("Builder upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		//}//
+		//if (previousLevel > 0 && i == 8){
+		//	Debug.Log(" bill upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_Nye_upgraded");
+		//	Debug.Log("Builder upgrade event");
+		//	FirebaseAnalytics.LogEvent("char_gen_builder_upgrade");
+		//}
 		if (previousLevel == 0 || (previousLevel == 1 && i == 0))
 			if ((i+1) < upgradeController.characterAmount)
 				upgradeController.ScrollABit();
@@ -526,6 +694,11 @@ public class controller : MonoBehaviour {
 		unitMultiplierText[i].text = "CURRENT BONUS: + "+(m1Level[i]-1)*25+"%"; 
 		RecalculateUnit(i);
 		saveStateController.SaveData();
+		//event buy click boost
+			Debug.Log("clicks diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_clicks");
+			Debug.Log("diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_general");
 	}
 
 	public void buyAllPartnersM1Up() {
@@ -540,12 +713,22 @@ public class controller : MonoBehaviour {
 		unitM1Button[1].transform.Find("Level Up Layout").Find("Price Text").GetComponent<Text>().text = m1UpgradeCost[1]+"";
 		unitMultiplierText[1].text = "CURRENT BONUS: + "+(m1Level[1]-1)*25+"%"; 
 		saveStateController.SaveData();
+		//event buy partners 25%
+			Debug.Log("partners diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_partner_boost");
+			Debug.Log("diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_general");
 	}
 
 	public void buyInstaGold() {
 		IncrementGold(calculateMaxGold());
 		diamonds -= instaGoldPrice;
 		saveStateController.SaveData();
+		//event buy insta gold
+			Debug.Log("gold diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_instagold");
+			Debug.Log("diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_general");
 	}
 
 	public void buyRandomItem() {
@@ -555,6 +738,11 @@ public class controller : MonoBehaviour {
 			diamonds -= randomItemPrice;
 			saveStateController.SaveData();
 		}
+		//event buy item
+			Debug.Log("items diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_items");
+			Debug.Log("diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_general");
 	}
 
 	public void buyInstantPrestige() {
@@ -562,6 +750,11 @@ public class controller : MonoBehaviour {
 		unconvertedPrestigeCurrency = 0;
 		diamonds -= instantPrestigePrice;
 		saveStateController.SaveData();
+		//event buy instaprestige
+			Debug.Log("prestige diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_prestige");
+			Debug.Log("diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_general");
 	}
 
 	public void gildRandomCharacter() {
@@ -575,6 +768,11 @@ public class controller : MonoBehaviour {
 		int index = rnd.Next(heroIndices.Count);
 		gildCharacter(index);
 		saveStateController.SaveData();
+		//event buy partners 25%
+			Debug.Log("gild diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_gild");
+			Debug.Log("diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_general");
 	}
 
 	public void gildCharacter(int index) {
@@ -582,12 +780,23 @@ public class controller : MonoBehaviour {
 		upgradeController.RefreshCharacterBoard(index);
 		RecalculateUnit(index);
 		saveStateController.SaveData();
+		Debug.Log("gildgen char");
+		FirebaseAnalytics.LogEvent("char_gen_gild");
+		if(index==1){
+			Debug.Log("gild reeda");
+			FirebaseAnalytics.LogEvent("char_Reeda_gild",new Parameter(FirebaseAnalytics.ParameterLevel, characterGilds[index]));
+		}
 	}
 
 	public void buyResetCooldowns() {
 		diamonds -= resetSkillCooldownsPrice;
 		skillController.ResetSkillCooldowns();
 		saveStateController.SaveData();
+		//event buy reset cooldown
+			Debug.Log("reset cooldown diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_cooldown");
+			Debug.Log("diamond purchase");
+			FirebaseAnalytics.LogEvent("diamond_purchase_general");
 	}
 #endregion
 
@@ -750,6 +959,11 @@ public class controller : MonoBehaviour {
 	}
 
 	public void enemyDied (bool spawn, bool advanceLevel) {
+		if (bonusEnemy == true){
+			Debug.Log("defeated gold house");
+			FirebaseAnalytics.LogEvent("gold_house_defeated");
+			bonusEnemy= false;
+		}
 		bonusEnemy = false;
 		if (uniqueBoss || boss)
 			endBossTime();	
@@ -757,6 +971,9 @@ public class controller : MonoBehaviour {
 			if (level == 1 && levelCount == 1){
 				upgradeController.enableGoldButton();
 				settingsController.enableSettings();
+				//End of tutorial
+				Debug.Log("Logging a tutorial end event.");
+     			 FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventTutorialComplete);
 			}
 
 			if (level == highestRegionLevels[region]){
@@ -882,7 +1099,42 @@ public class controller : MonoBehaviour {
 			if (level == uniqueBossLevels[i]-10){
 				uniqueBossButtons[i].interactable = true;
 				dropBlueprint = true;
-				break;
+				//Unlock a boss
+			Debug.Log("Logging a boss unlocked event.");
+			FirebaseAnalytics.LogEvent("boss_gen_unlocked",FirebaseAnalytics.ParameterLevel, i);
+			if (i==0){
+				Debug.Log("Logging boss 1 unlocked event.");
+				FirebaseAnalytics.LogEvent("boss_1_unlocked");
+			}
+		//	if (i==1){
+		//		Debug.Log("Logging boss 2 unlocked event.");
+		//		FirebaseAnalytics.LogEvent("boss_2_unlocked");
+		//	}
+		//	if (i==2){
+		//		Debug.Log("Logging boss 3 unlocked event.");
+		//		FirebaseAnalytics.LogEvent("boss_3_unlocked");
+		//	}
+		//	if (i==3){
+		///		Debug.Log("Logging boss 4 unlocked event.");
+		//		FirebaseAnalytics.LogEvent("boss_4_unlocked");
+		//	}
+		//	if (i==4){
+		//		Debug.Log("Logging boss 5 unlocked event.");
+		//		FirebaseAnalytics.LogEvent("boss_5_unlocked");
+		//	}
+		//	if (i==5){
+		//		Debug.Log("Logging boss 6 unlocked event.");
+		//		FirebaseAnalytics.LogEvent("boss_6_unlocked");
+		//	}
+		//	if (i==6){
+		//		Debug.Log("Logging boss 7 unlocked event.");
+		//		FirebaseAnalytics.LogEvent("boss_7_unlocked");
+		//	}
+		//	if (i==7){
+		//		Debug.Log("Logging boss 8 unlocked event.");
+		//		FirebaseAnalytics.LogEvent("boss_8_unlocked");
+		//	}
+			break;
 			}
 		}
 		if (dropBlueprint){
@@ -906,6 +1158,42 @@ public class controller : MonoBehaviour {
 		// enemyDescriptionText.text = enemyAdjectives[((level-regionLevels[region,0])/buildingController.levelBuildingLists[region].buildings.Length) %20] +" "+ uniqueNouns[i];
 		newUnique.GetComponent<House>().delay();
 		startBossTime();
+		//Log a boss startes event
+			Debug.Log("Logging a boss started event.");
+			FirebaseAnalytics.LogEvent("boss_gen_started",FirebaseAnalytics.ParameterLevel, i);
+			bosslevel = i;
+			if (i==0){
+				Debug.Log("Logging boss 1 started event.");
+				FirebaseAnalytics.LogEvent("boss_1_started");
+			}
+		//	if (i==1){
+		//		Debug.Log("Logging boss 2 started event.");
+		//		FirebaseAnalytics.LogEvent("boss_2_started");
+		//	}
+		//	if (i==2){
+		//		Debug.Log("Logging boss 3 started event.");
+		//		FirebaseAnalytics.LogEvent("boss_3_started");
+		//	}
+		//	if (i==3){
+		//		Debug.Log("Logging boss 4 started event.");
+		//		FirebaseAnalytics.LogEvent("boss_4_started");
+		//	}
+		//	if (i==4){
+		//		Debug.Log("Logging boss 5 started event.");
+		//		FirebaseAnalytics.LogEvent("boss_5_started");
+		//	}
+		//	if (i==5){
+		//		Debug.Log("Logging boss 6 started event.");
+		//		FirebaseAnalytics.LogEvent("boss_6_started");
+		//	}
+		//	if (i==6){
+		//		Debug.Log("Logging boss 7 started event.");
+		//		FirebaseAnalytics.LogEvent("boss_7_started");
+		//	}
+		//	if (i==7){
+		//		Debug.Log("Logging boss 8 started event.");
+		//		FirebaseAnalytics.LogEvent("boss_8_started");
+		//	}
 	}
 
 	public void checkBossReward(Vector3 pos) {
@@ -913,6 +1201,42 @@ public class controller : MonoBehaviour {
 			endBossTime();
 			Item item = itemController.getRandomItem();
 			DropItem(pos, item);
+			//Log a boss defeted event
+			Debug.Log("Logging a boss defeated event.");
+			FirebaseAnalytics.LogEvent("boss_gen_defeated",FirebaseAnalytics.ParameterLevel, levelText.text);
+			if (bosslevel==0){
+				Debug.Log("Logging boss 1 defeated event.");
+				FirebaseAnalytics.LogEvent("boss_1_defeated");
+			}
+		//	if (bosslevel==1){
+		//		Debug.Log("Logging boss 2 defeated event.");
+		//		FirebaseAnalytics.LogEvent("boss_2_defeated");
+		//	}
+		//	if (bosslevel==2){
+		//		Debug.Log("Logging boss 3 defeated event.");
+		//		FirebaseAnalytics.LogEvent("boss_3_defeated");
+		//	}
+		//	if (bosslevel==3){
+		//		Debug.Log("Logging boss 4 defeated event.");
+		//		FirebaseAnalytics.LogEvent("boss_4_defeated");
+		//	}
+		//	if (bosslevel==4){
+		//		Debug.Log("Logging boss 5 defeated event.");
+		//		FirebaseAnalytics.LogEvent("boss_5_defeated");
+		//	}
+		//	if (bosslevel==5){
+		//		Debug.Log("Logging boss 6 defeated event.");
+		//		FirebaseAnalytics.LogEvent("boss_6_defeated");
+		//	}
+		//	if (bosslevel==6){
+		//		Debug.Log("Logging boss 7 defeated event.");
+		//		FirebaseAnalytics.LogEvent("boss_7_defeated");
+		//	}
+		//	if (bosslevel==7){
+		//		Debug.Log("Logging boss 8 defeated event.");
+		//		FirebaseAnalytics.LogEvent("boss_8_defeated");
+		//	}
+
 		} else {
 			if(unlockUniqueBoss()){
 				GameObject blueprint = (GameObject) Instantiate(blueprintPrefab,pos+new Vector3(0,2.25f,-3f),Quaternion.Euler(0, 0, 0));
@@ -970,13 +1294,41 @@ public class controller : MonoBehaviour {
 		upgradeController.enableMapButton(true);
 		completedRegions[region] = true;
 		regionCompleteText.SetActive(true);
+		Debug.Log("region complete event");
+		FirebaseAnalytics.LogEvent("region_gen_complete");
 		if (regionButtons.Length > region+1)
 			regionButtons[region+1].SetActive(true);
 		achievementController.checkAchievement("region",region);
 		if (region == 1) {
 			prestigeButton.gameObject.SetActive(true);
 			itemController.modern = true;
+			// Log a prestige unlock event  need to update parameter
+			Debug.Log("Logging a pprestige unlock event.");
+			FirebaseAnalytics.LogEvent("prestige_unlock",FirebaseAnalytics.ParameterLevel, "prestige");
+			//region 2 complete
+		//	Debug.Log("region 2 complete event");
+		//	FirebaseAnalytics.LogEvent("region_2_complete");
 		}
+		if (region == 0) {
+			//region 1 complete
+			Debug.Log("region 1 complete event");
+			FirebaseAnalytics.LogEvent("region_1_complete");
+		}
+	//	if (region == 2) {
+	//		//region 3 complete
+	//		Debug.Log("region 3 complete event");
+	//		FirebaseAnalytics.LogEvent("region_3_complete");
+	//	}
+	//	if (region == 3) {
+	//		//region 4 complete
+	//		Debug.Log("region 4 complete event");
+	//		FirebaseAnalytics.LogEvent("region_4_complete");
+	//	}
+	//	if (region == 4) {
+	//		//region 5 complete
+	//		Debug.Log("region 5 complete event");
+	//		FirebaseAnalytics.LogEvent("region_5_complete");
+	//	}
 		totalRegionsCompleted++;
 		saveStateController.SaveData();
 	}
@@ -1056,6 +1408,9 @@ public class controller : MonoBehaviour {
 			levelArea.SetActive(false);
 			shopPanel.SetActive(true);
 			buildingController.HideNavigationScrollView();
+			//opened store event
+			Debug.Log("opened shop event");
+			FirebaseAnalytics.LogEvent("shop_opened");
 		}
 	}
 
@@ -1100,6 +1455,9 @@ public class controller : MonoBehaviour {
 		upgradeController.SetCurrencyPanelPrestige();
 		totalPrestiges++;
 		saveStateController.SaveData();
+		//event prestige
+			Debug.Log("prestige event");
+			FirebaseAnalytics.LogEvent("prestiged");			
 	}
 
 #endregion
