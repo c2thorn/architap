@@ -221,9 +221,19 @@ public class controller : MonoBehaviour {
 	void Start () {
 		Application.runInBackground = true;
 
+<<<<<<< Updated upstream
 		SetUp();
 
 		StartCoroutine(SpawnUFOs());
+=======
+<<<<<<< HEAD
+			SetUp();
+=======
+		SetUp();
+
+		StartCoroutine(SpawnUFOs());
+>>>>>>> master
+>>>>>>> Stashed changes
 		//Should be last
 		saveStateController.CheckIdleTime();
 

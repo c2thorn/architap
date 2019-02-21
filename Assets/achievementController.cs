@@ -25,6 +25,28 @@ public class achievementController : MonoBehaviour {
 	public void Start() {
      
     }
+<<<<<<< Updated upstream
+=======
+
+
+<<<<<<< HEAD
+=======
+      Debug.Log("Set user properties.");
+      // Set the user's sign up method.
+      FirebaseAnalytics.SetUserProperty(
+        FirebaseAnalytics.UserPropertySignUpMethod,
+        "Google");
+      // Set the user ID.
+      FirebaseAnalytics.SetUserId("uber_user_510");
+      // Set default session duration values.
+      FirebaseAnalytics.SetMinimumSessionDuration(new TimeSpan(0, 0, 10));
+      FirebaseAnalytics.SetSessionTimeoutDuration(new TimeSpan(0, 30, 0));
+	  FirebaseAnalytics.LogEvent(FirebaseAnalytics.EventLogin);
+    }
+>>>>>>> master
+	
+
+>>>>>>> Stashed changes
 	
 	// Update is called once per frame
 	void Update () {

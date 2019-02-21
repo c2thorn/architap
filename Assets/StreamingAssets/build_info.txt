@@ -1,1 +1,9 @@
+<<<<<<< Updated upstream
 Build from MAGNUS at 2/10/2019 5:20:31 PM
+=======
+<<<<<<< HEAD
+Build from DESKTOP-0TQV3N3 at 1/6/2019 9:15:22 PM
+=======
+Build from MAGNUS at 2/10/2019 5:20:31 PM
+>>>>>>> master
+>>>>>>> Stashed changes

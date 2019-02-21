@@ -132,6 +132,10 @@ public class SkillController : MonoBehaviour {
 		{"buildingReduction",false},
 		{"cooldownReduction",false}
 	};
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 	public Dictionary<string,GameObject> skillGlow = new Dictionary<string,GameObject>() {
 		{"autoClick",null},
 		{"clickBoost",null},
@@ -366,14 +370,24 @@ public class SkillController : MonoBehaviour {
 
 	public void SetDoubleNextSkill() {
 		skillFlag["doubleNextSkill"] = true;
+<<<<<<< Updated upstream
 		skillButtons["doubleNextSkill"].transform.Find("Cancel").gameObject.SetActive(true);
 		skillButtons["doubleNextSkill"].transform.Find("Icon").gameObject.SetActive(false);
 		skillNotificationPanel.SetActive(true);
 		skillNotificationPanel.transform.Find("Text").GetComponent<Text>().text = "Select an ability to boost";
+=======
+<<<<<<< HEAD
+>>>>>>> Stashed changes
 	//	FirebaseAnalytics.LogEvent("skill_double_next_skill_used");
 	// 	Debug.Log("double skill skill used");
 		FirebaseAnalytics.LogEvent("skill_used");
 	 	Debug.Log("general skill used");  
+=======
+		skillButtons["doubleNextSkill"].transform.Find("Cancel").gameObject.SetActive(true);
+		skillButtons["doubleNextSkill"].transform.Find("Icon").gameObject.SetActive(false);
+		skillNotificationPanel.SetActive(true);
+		skillNotificationPanel.transform.Find("Text").GetComponent<Text>().text = "Select an ability to boost";
+>>>>>>> master
 	}
 
 	protected IEnumerator ReduceBuildingRequirementForDuration() {
@@ -391,14 +405,24 @@ public class SkillController : MonoBehaviour {
 
 	public void ResetCooldownForNextSkill() {
 		skillFlag["cooldownReduction"] = true;
+<<<<<<< Updated upstream
 		skillNotificationPanel.SetActive(true);
 		skillNotificationPanel.transform.Find("Text").GetComponent<Text>().text = "Select an ability to reset";
 		skillButtons["cooldownReduction"].transform.Find("Cancel").gameObject.SetActive(true);
 		skillButtons["cooldownReduction"].transform.Find("Icon").gameObject.SetActive(false);
+=======
+<<<<<<< HEAD
+>>>>>>> Stashed changes
 	//	FirebaseAnalytics.LogEvent("skill_reset_cooldown_used");
 	 //	Debug.Log("cooldown skill used");
 		FirebaseAnalytics.LogEvent("skill_used");
 	 	Debug.Log("general skill used");  
+=======
+		skillNotificationPanel.SetActive(true);
+		skillNotificationPanel.transform.Find("Text").GetComponent<Text>().text = "Select an ability to reset";
+		skillButtons["cooldownReduction"].transform.Find("Cancel").gameObject.SetActive(true);
+		skillButtons["cooldownReduction"].transform.Find("Icon").gameObject.SetActive(false);
+>>>>>>> master
 	}
 	
 	public IEnumerator DurationWait(string key) {
